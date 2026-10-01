@@ -180,6 +180,13 @@ def predictors(members: list[Member], frames, params: dict, horizon: str, now: d
             scale = np.where(obs, 1.0 / s12, 1.0).astype(np.float32)[:, None, None]
             a12 = frame_amounts(m.p * scale, m.t_end, frames)[1]
             a12o = frame_amounts(m.p * obs[:, None, None], m.t_end, frames)[1]
+            # The level is about what is coming. Rain already fallen counts in a 12-h window only
+            # in so far as the episode goes on: fully when the scenario still brings obs_gate_mm,
+            # not at all when it brings nothing (what has fallen then matters through the ravines).
+            a12f = frame_amounts(m.p * ~obs[:, None, None], m.t_end, frames)[1]
+            gate = np.clip(s12 * a12f / params.get("obs_gate_mm", 20.0), 0.0, 1.0)
+            a12 = a12f + gate * np.maximum(a12 - a12f, 0.0)
+            a12o = gate * a12o
         if sample_mask is not None and fam.get("sampled", False):
             a1 = np.where(sample_mask, a1, -1.0)
             a12 = np.where(sample_mask, a12, -1.0)

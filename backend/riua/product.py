@@ -354,9 +354,9 @@ def ens_npz_members(z, run: datetime) -> list[risk.Member]:
 
 
 def ens_members(state: Path, now: datetime) -> tuple[list[risk.Member], dict]:
-    """ECMWF ENS (51 members, 0.25 deg) straight from ECMWF open data: 12-h accumulations."""
+    """ECMWF ENS (50 members, 0.25 deg) straight from ECMWF open data: 12-h accumulations."""
     from .sources import ecmwf_open as E
-    rep = {"id": "ifs_ens", "label": "ECMWF ENS 51 miembros", "ok": False, "family": "ens"}
+    rep = {"id": "ifs_ens", "label": "ECMWF ENS 50 miembros", "ok": False, "family": "ens"}
     n = ingest.naive(now)
     cands = []
     base = n.replace(hour=(n.hour // 12) * 12, minute=0, second=0, microsecond=0)
@@ -539,6 +539,27 @@ def run_cycle(state: Path, out: Path, now: datetime | None = None, with_radar: b
     sources.extend(rep)
     timing["nwp"] = round(time.time() - t, 1)
 
+    # a real ensemble for 6-48 h (ECMWF ENS 3-hourly, ICON-EU-EPS), AROME driven by IFS, IFS at 9 km,
+    # and the hourly AROME-PI for the first hours; together the 90 ensemble members weigh about a third
+    t = time.time()
+    extra = []
+    try:
+        from .sources import extra_models as X
+        extra, xrep = X.extra_members(state / "extra", now, ("ens3h", "icon_eu_eps", "arome_ifs", "ifs_hres", "arome_pi"),
+                                      budget_s=45)
+        sources.extend(xrep)
+        for m in extra:
+            m.weight *= {"ifs_ens3h": 0.6, "icon_eu_eps": 0.6, "arome_ifs": 0.7}.get(m.model, 1.0)
+        ingest.fill_gaps(nwp + extra)                 # AROME-IFS and AROME-PI have no data south of ~38 N
+    except Exception as e:
+        log.error("extra models failed: %s", traceback.format_exc())
+        notes.append(f"extra models: {type(e).__name__}: {e}"[:200])
+        extra = [m for m in extra if not np.isnan(m.p).any()]
+    pi = [m for m in extra if m.model == "arome_pi"]
+    mid_extra = [m for m in extra if m.model != "arome_pi"]
+    has_hres = any(m.model == "ifs_hres" for m in mid_extra)
+    timing["extra"] = round(time.time() - t, 1)
+
     t = time.time()
     ens, erep = ens_members(state, now) if with_ens else ([], {"id": "ifs_ens", "ok": False, "label": "ECMWF ENS"})
     sources.append(erep)
@@ -553,8 +574,8 @@ def run_cycle(state: Path, out: Path, now: datetime | None = None, with_radar: b
     jj, ii = np.mgrid[0:grid.NY, 0:grid.NX]
     lattice = (jj % 2 == 0) & (ii % 2 == 0)
     horizon_members = {
-        "now": past(radar_m + nwp),
-        "mid": past(nwp),
+        "now": past(radar_m + nwp + pi),
+        "mid": past([m for m in nwp if not (has_hres and m.model == "ifs")] + mid_extra),
         "long": past(ens + [m for m in nwp if m.family == "global"]),
     }
     snap = {"v": S.SNAPSHOT_VERSION, "generated": S.iso(now), "params_version": params.get("version"),

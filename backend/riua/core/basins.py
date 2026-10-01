@@ -101,6 +101,7 @@ def member_basin_ratios(p: np.ndarray, t_end: np.ndarray, frames, bs: BasinSet, 
     lvl1 = np.vstack([bs.t1h, red1 * ex["x1h"]])       # (4, B)
     lvl12 = np.vstack([bs.t12h, red12 * ex["x12h"]])
 
+    gate_mm = 0.5 * params.get("obs_gate_mm", 20.0)        # basin means are about half the point amounts
     # hourly series of the largest ratio over durations, per scope: (4, T, B)
     r_own = np.zeros((4, T, bs.n))
     r_up = np.zeros((4, T, bs.n))
@@ -109,8 +110,11 @@ def member_basin_ratios(p: np.ndarray, t_end: np.ndarray, frames, bs: BasinSet, 
             continue  # coarse/long-step scenarios are judged on 12 h only
         s = fam["s12h"] if d >= 6 else fam["s1h"] if d == 1 else 0.5 * (fam["s1h"] + fam["s12h"])
         thr = duration_thresholds(lvl1, lvl12, float(d))          # (4, B)
-        r_own = np.maximum(r_own, (_rolling(cs_own_o, d) + s * bias * _rolling(cs_own_f, d))[None] / (thr * k_own)[:, None, :])
-        r_up = np.maximum(r_up, (_rolling(cs_up_o, d) + s * bias * _rolling(cs_up_f, d))[None] / (thr * k_up)[:, None, :])
+        # rain already fallen counts only in so far as the scenario still brings rain (see risk.predictors)
+        fo, fu = s * _rolling(cs_own_f, d), s * _rolling(cs_up_f, d)
+        go, gu = np.clip(fo / gate_mm, 0.0, 1.0), np.clip(fu / gate_mm, 0.0, 1.0)
+        r_own = np.maximum(r_own, (go * _rolling(cs_own_o, d) + bias * fo)[None] / (thr * k_own)[:, None, :])
+        r_up = np.maximum(r_up, (gu * _rolling(cs_up_o, d) + bias * fu)[None] / (thr * k_up)[:, None, :])
 
     # unit peak discharge from the upstream-scope rain: losses on the trailing 24 h total
     wet_o, wet_f = _rolling(cs_up_o, 24), fam["s12h"] * _rolling(cs_up_f, 24)

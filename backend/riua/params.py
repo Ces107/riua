@@ -63,9 +63,13 @@ DEFAULTS: dict = {
         "regional": {"weight": 0.6, "s1h": 1.6, "s12h": 1.2, "use_1h": True,  "neigh": True, "sampled": True},
         "global":   {"weight": 0.5, "s1h": 2.2, "s12h": 1.3, "use_1h": False, "neigh": True, "sampled": True},
         "ens":      {"weight": 0.04, "s1h": 2.2, "s12h": 1.5, "use_1h": False, "neigh": True},
+        # regional ensemble at ~13 km (ICON-EU-EPS): finer than the 25-km ENS, so a smaller factor
+        "eps":      {"weight": 0.04, "s1h": 1.8, "s12h": 1.3, "use_1h": False, "neigh": True},
     },
     # radius used only to bridge the 0.1 deg sampling lattice for members without neighbourhood
     "lattice_fill_km": 8.0,
+    # rain already measured counts fully in a 12-h amount when the scenario still brings this much (mm)
+    "obs_gate_mm": 20.0,
     "age_halflife_h": {"now": 3.0, "mid": 12.0, "long": 36.0},
     # --- Hydrology ----------------------------------------------------------------------
     "hydro": {
