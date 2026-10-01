@@ -56,7 +56,7 @@ export function prepare(raw, origin) {
       if (best > top) top = best;
     }
     hz[key] = {
-      key, F, N, frames, tau: h.tau, level, p, top, maxLevel, maxFrame,
+      key, F, N, frames, tau: h.tau, sigma: h.sigma, bias: h.bias ?? 1, fam: h.fam || null, level, p, top, maxLevel, maxFrame,
       e1: b64(h.cells.e1), e12: b64(h.cells.e12),
       m1: b64(h.cells.m1), q1: b64(h.cells.q1), m12: b64(h.cells.m12), q12: b64(h.cells.q12),
       members: h.members || [], basins: h.basins || null, points: h.points || null,

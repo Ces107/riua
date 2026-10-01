@@ -78,8 +78,8 @@ function renderControls() {
   $('prev').disabled = f === 'max';
   $('next').disabled = f !== 'max' && f >= h.F - 1;
   let text;
-  if (f === 'max') text = `Lo peor del periodo · ${spanLabel(h.frames)}`;
-  else text = `${frameLabel(state.hz, h.frames[f])} · tramo ${f + 1} de ${h.F}${h.frames[f].ok ? '' : ' · sin datos'}`;
+  if (f === 'max') text = 'máximo';
+  else text = `${frameLabel(state.hz, h.frames[f])}${h.frames[f].ok ? '' : ' · sin datos'}`;
   label.textContent = text;
   range.setAttribute('aria-valuetext', text);
   $('mode-celdas').setAttribute('aria-pressed', String(state.mode === 'celdas'));
@@ -88,6 +88,7 @@ function renderControls() {
 
 function renderPick(ctx) {
   const el = $('pick');
+  if (!el) return;
   if (!ctx) { el.innerHTML = '<span class="dim">Toca el mapa o busca tu municipio.</span>'; return; }
   let L = null;
   if (ctx.h && ctx.n >= 0) L = ctx.h.level[ctx.f * ctx.h.N + ctx.n];
@@ -103,8 +104,8 @@ function renderFresh() {
   el.classList.toggle('stale', stale);
   const dev = DEV ? 'DATOS INVENTADOS PARA PRUEBAS · ' : '';
   el.textContent = stale
-    ? `${dev}ATENCIÓN: la última predicción es de ${dayTime(snap.generated, now)} (${age(snap.generated, now)}). Puede no reflejar la situación actual.`
-    : `${dev}Actualizado ${dayTime(snap.generated, now)} · ${age(snap.generated, now)}`;
+    ? `${dev}Desactualizado: ${dayTime(snap.generated, now)} (${age(snap.generated, now)})`
+    : `${dev}${dayTime(snap.generated, now)} · ${age(snap.generated, now)}`;
 }
 
 function render(parts = {}) {
@@ -183,7 +184,13 @@ function wire() {
   $('place').addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (!b) return;
-    if (b.dataset.hz) { state.hz = b.dataset.hz; state.f = Number(b.dataset.f); render(); const again = $('place').querySelector('.tl-cells button.on'); if (again) again.focus(); }
+    if (b.dataset.ll) {
+      const [la, lo] = b.dataset.ll.split(',').map(Number);
+      if (b.dataset.hz && snap.hz[b.dataset.hz]) { state.hz = b.dataset.hz; state.f = 'max'; }
+      if (Number.isFinite(la)) select(la, lo, null, 9);
+      return;
+    }
+    if (b.dataset.hz) { state.hz = b.dataset.hz; state.f = Number(b.dataset.f); render(); const again = $('place').querySelector('.strip button.on'); if (again) again.focus(); }
     else if (b.dataset.pt) selectPoint(b.dataset.pt, true);
   });
   $('barrancos').addEventListener('click', (e) => {
@@ -260,8 +267,13 @@ function wire() {
 
   // the fixed bar must never cover content: reserve exactly its height
   const bar = $('bar');
-  const fit = () => document.documentElement.style.setProperty('--bar-h', `${bar.offsetHeight + 6}px`);
-  if (window.ResizeObserver) new ResizeObserver(fit).observe(bar);
+  const top = document.querySelector('.top');
+  const fit = () => {
+    document.documentElement.style.setProperty('--bar-h', `${bar.offsetHeight}px`);
+    document.documentElement.style.setProperty('--top-h', `${top.offsetHeight}px`);
+    if (mapApi && mapApi.invalidate) mapApi.invalidate();
+  };
+  if (window.ResizeObserver) { new ResizeObserver(fit).observe(bar); new ResizeObserver(fit).observe(top); }
   fit();
 }
 

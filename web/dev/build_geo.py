@@ -140,15 +140,17 @@ def main() -> None:
         print("no control points yet: points.json not written")
 
 
+CAPS = json.loads((HYD / "capacity.json").read_text(encoding="utf-8")) if (HYD / "capacity.json").exists() else {}
+
+
 def slim_point(p: dict, s: dict) -> dict:
-    """What the page needs of a control point. Capacity = the value the backend uses (static.hydro_net)."""
-    cap = s.get("q_capacity") or s.get("q_bankfull")
-    rng = s.get("q_bankfull_range")
+    """What the page needs of a control point. Capacity = the one the backend uses (geo/hydro/capacity.json)."""
+    c = CAPS.get(p["id"])
     return {"id": p["id"], "stream": p.get("stream"), "town": p.get("town"),
             "lat": round(float(p["lat"]), 5), "lon": round(float(p["lon"]), 5),
             "area_km2": p.get("area_unregulated_km2") or p.get("area_km2"), "tc_h": p.get("tc_h"),
-            "cap": float(cap) if cap else None, "cap_range": rng if rng else None,
-            "bank_m": s.get("bankfull_depth_m"), "lining": s.get("lining"),
+            "cap": c["q"] if c else None, "cap_src": c["source"] if c else None,
+            "bank_m": s.get("bankfull_depth_m") if c and c.get("rating") else None,
             "confidence": s.get("confidence"), "gauge": p.get("gauge_id") or p.get("gauge")}
 
 

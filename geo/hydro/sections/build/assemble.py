@@ -160,7 +160,10 @@ def main():
         print(f'{x[0]:24s} {x[1]:7.0f} {str([round(v) for v in x[2]]):>14s} {x[3] if x[3] is not None else float("nan"):7.0f} {x[4]:22s} {x[5]:6s} '
               f'{str(x[6]):>6s} {str(x[7]):>6s} {str(x[8]):>6s} {str(x[9]):>6s}')
     # contact sheet
-    ids = [p["id"] for p in load_seed() if os.path.exists(os.path.join(PLOTS, p["id"] + ".png"))]
+    import sys
+    if "--fast" in sys.argv:
+        return
+    ids =[p["id"] for p in load_seed() if os.path.exists(os.path.join(PLOTS, p["id"] + ".png"))]
     if ids:
         tw, th, ncol = 1140, 384, 2
         sheet = Image.new("RGB", (tw * ncol, th * ((len(ids) + ncol - 1) // ncol)), "white")

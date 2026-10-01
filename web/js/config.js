@@ -12,7 +12,7 @@ export const TZ = 'Europe/Madrid';
 export const STALE_MIN = 90;            // older than this: the update line becomes a warning
 
 export const HORIZONS = ['now', 'mid', 'long'];
-export const HZ_LABEL = { now: 'Ahora · 0–6 h', mid: 'Próximas 48 h', long: 'Días 2–7' };
+export const HZ_LABEL = { now: 'Ahora', mid: '48 h', long: 'Días 2–7' };
 export const HZ_PLAIN = { now: 'las próximas 6 horas', mid: 'las próximas 48 horas', long: 'los días 2 a 7' };
 
 export const INK = '#1b1a17';

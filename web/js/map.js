@@ -109,6 +109,7 @@ export function createMap(el, getScene, handlers) {
   return {
     map,
     redraw: () => layer.redraw(),
+    invalidate: () => { map.invalidateSize({ pan: false }); layer.redraw(); },
     home,
     view() { const c = map.getCenter(); return { lat: c.lat, lon: c.lng, z: map.getZoom() }; },
     setView(v) { map.setView([v.lat, v.lon], v.z, { animate: false }); },

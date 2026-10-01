@@ -45,36 +45,30 @@ export function pointRows(h, fSel) {
 
 const signed = (v) => `${v >= 0 ? '+' : '−'}${num(Math.abs(v), 1)}`;
 
-function heightText(h) {
-  if (h[0] == null && h[1] == null) return '—';
-  const main = h[0] == null ? '—' : h[0] >= 0 ? `${signed(h[0])} m` : `no desborda (${num(-h[0], 1)} m por debajo)`;
-  const high = h[1] == null ? '' : h[1] >= 0 ? `<br><span class="dim">alto: ${signed(h[1])} m</span>` : '';
-  return main + high;
+function row(r, open, snap, h) {
+  const cap = r.cap == null ? '<span class="dim" title="sin capacidad del cauce: nivel por caudal específico">—</span>' : num(r.cap);
+  const over = r.cap == null ? '<span class="dim">—</span>' : pct(r.pOver);
+  const hgt = r.hover[0] == null ? '' : r.hover[0] >= 0 ? `${signed(r.hover[0])} m` : '';
+  let out = `<tr class="${open ? 'open' : ''}"><td><span class="lv lv${r.level}">${r.level || '–'}</span></td>
+<th class="wrap"><button type="button" class="link" data-pt="${esc(r.pt.id)}" aria-expanded="${open}">${esc(r.pt.stream || r.pt.id)}</button><span class="town">${esc(r.pt.town || '')}</span></th>
+<td>${over}</td><td>${r.q[0] == null ? '—' : num(r.q[0])}</td><td>${cap}</td><td>${hgt}</td><td>${r.tPeak ? esc(dayTime(r.tPeak).replace(/:00$/, ' h')) : ''}</td></tr>`;
+  if (open) out += `<tr class="chart-row"><td colspan="7">${hydrograph(snap, h, r)}</td></tr>`;
+  return out;
 }
+
+const HEAD = '<thead><tr><th></th><th class="wrap">Cauce</th><th title="probabilidad de desbordar">Desborde</th><th title="caudal punta, escenario central">Punta m³/s</th><th title="capacidad del cauce">Cauce m³/s</th><th title="altura del agua sobre el borde">Sobre borde</th><th>Punta</th></tr></thead>';
 
 export function renderPoints(root, snap, st) {
   const h = snap && snap.hz[st.hz];
   const rows = pointRows(h, st.f);
   if (!rows.length) { root.hidden = true; root.innerHTML = ''; return; }
   root.hidden = false;
-  const period = st.f === 'max' ? 'lo peor del periodo' : frameLabel(st.hz, h.frames[Math.min(st.f, h.F - 1)]);
-  let body = '';
-  for (const r of rows) {
-    const open = st.pt === r.pt.id;
-    body += `<tr class="${open ? 'open' : ''}"><td>${`<span class="lv lv${r.level}">${r.level || '–'}</span>`}</td>
-<th scope="row"><button type="button" class="link" data-pt="${esc(r.pt.id)}" aria-expanded="${open}">${esc(r.pt.stream || r.pt.id)}</button><br><span class="town">${esc(r.pt.town || '')}</span></th>
-<td>${pct(r.pOver)}</td>
-<td>${r.q[0] == null ? '—' : num(r.q[0])} / ${r.cap == null ? '—' : num(r.cap)}${r.q[1] == null ? '' : `<br><span class="dim">alto: ${num(r.q[1])}</span>`}</td>
-<td>${heightText(r.hover)}</td>
-<td>${r.tPeak ? dayTime(r.tPeak).replace(/:00$/, ' h') : '—'}</td></tr>`;
-    if (open) body += `<tr class="chart-row"><td colspan="6">${hydrograph(snap, h, r)}</td></tr>`;
-  }
-  root.innerHTML = `<h2>Barrancos y ríos</h2>
-<p>Caudal estimado a partir de la lluvia prevista en la cuenca de cada punto, comparado con lo que cabe en el cauce. ${esc(period.charAt(0).toUpperCase() + period.slice(1))}.
-Toca un nombre para ver su hidrograma y situarlo en el mapa.</p>
-<div class="scroll"><table class="data points"><thead><tr><th scope="col">Nivel</th><th scope="col">Barranco o río<br>municipio</th><th scope="col">P(desborde)</th>
-<th scope="col">Punta prevista / capacidad (m³/s)</th><th scope="col">Altura sobre el borde</th><th scope="col">Hora de la punta</th></tr></thead><tbody>${body}</tbody></table></div>
-<p class="dim">Es una estimación de escorrentía en régimen natural: no ve desembalses, puentes taponados ni el alcantarillado. Niveles: 2 el barranco baja con fuerza, 3 cerca del borde, 4 desborda, 5 el agua supera el borde en más de 1 m.</p>`;
+  const key = (r) => r.level >= 2 || (r.pOver ?? 0) >= 0.1 || st.pt === r.pt.id;
+  const main = rows.filter(key), rest = rows.filter((r) => !key(r));
+  const body = (list) => list.map((r) => row(r, st.pt === r.pt.id, snap, h)).join('');
+  root.innerHTML = `<h2>Cauces</h2>
+${main.length ? `<div class="scroll"><table class="data points">${HEAD}<tbody>${body(main)}</tbody></table></div>` : '<p class="dim">Ningún cauce en riesgo.</p>'}
+${rest.length ? `<details${rest.some((r) => st.pt === r.pt.id) ? ' open' : ''}><summary>Todos (${rows.length})</summary><div class="scroll"><table class="data points">${HEAD}<tbody>${body(rest)}</tbody></table></div></details>` : ''}`;
 }
 
 function niceStep(max, ticks) {
@@ -120,7 +114,7 @@ function hydrograph(snap, h, r) {
   g += `<path d="${band}" fill="${RIVER}" fill-opacity="0.22"/><path d="${path(q50)}" fill="none" stroke="${RIVER}" stroke-width="2.2"/>`;
   if (cap) {
     g += `<line x1="${mL}" x2="${W - mR}" y1="${Y(cap).toFixed(1)}" y2="${Y(cap).toFixed(1)}" stroke="${LEVEL[4].color}" stroke-width="1.6" stroke-dasharray="7 4"/>`
-      + `<text x="${W - mR - 4}" y="${(Y(cap) - 5).toFixed(1)}" text-anchor="end" fill="${LEVEL[4].color}">capacidad del cauce: ${num(cap)} m³/s</text>`;
+      + `<text x="${W - mR - 4}" y="${(Y(cap) - 5).toFixed(1)}" text-anchor="end" fill="${LEVEL[4].color}">cauce ${num(cap)}</text>`;
   }
   let gaugeNote = 'No hay un aforo con caudal medido junto a este punto.';
   if (gauge) {
@@ -129,7 +123,8 @@ function hydrograph(snap, h, r) {
     gaugeNote = `Cuadrado negro: caudal medido en el aforo «${esc(gauge.it.name)}», ${num(gauge.it.flow_m3s, 1)} m³/s (${dayTime(new Date(gauge.it.t_utc))}; dato provisional).`;
   }
   const label = `Hidrograma previsto de ${r.pt.stream} en ${r.pt.town}. Punta mediana ${num(r.q[0])} metros cúbicos por segundo; capacidad del cauce ${cap ? num(cap) : 'desconocida'}.`;
-  return `<figure class="hydro"><figcaption><strong>${esc(r.pt.stream)}</strong> en ${esc(r.pt.town)} · caudal en m³/s</figcaption>
+  return `<figure class="hydro">
 <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}" preserveAspectRatio="xMidYMid meet">${g}</svg>
-<p class="dim">Línea: escenario central (mediana). Banda: entre el escenario bajo (1 de cada 10 queda por debajo) y el alto (1 de cada 10 lo supera). ${gaugeNote}</p></figure>`;
+<figcaption>m³/s · línea: central · banda: 1 de cada 10 por debajo / por encima${gauge ? ' · ■ aforo medido' : ''}</figcaption>
+</figure>`;
 }

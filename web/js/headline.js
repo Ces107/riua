@@ -2,7 +2,7 @@
 
 import { HORIZONS, LEVEL } from './config.js';
 import { geo } from './geo.js';
-import { parts, weekdayLong, valid } from './time.js';
+import { frameLabel, parts, weekdayLong, valid } from './time.js';
 
 /** "esta noche", "mañana por la tarde", "el viernes de madrugada", "el sábado" ... */
 export function whenPhrase(hzKey, fr, now) {
@@ -56,8 +56,7 @@ export function headline(snap, now = new Date()) {
   for (const k of present) top = Math.max(top, snap.hz[k].top);
   const missing = HORIZONS.length - present.length;
   if (top <= 1) {
-    const span = missing ? 'en los plazos disponibles' : 'en los próximos 7 días';
-    return { level: top, text: top === 0 ? 'No hay datos de predicción en este momento.' : `Sin riesgo apreciable ${span}.`, hz: present[0], frame: null };
+    return { level: top, text: top === 0 ? 'Sin datos de predicción' : `Sin riesgo${missing ? '' : ' en 7 días'}`, hz: present[0], frame: null };
   }
   // every frame that has the top level, in time order; count the cells per zone
   const zoneCount = new Map();
@@ -78,15 +77,15 @@ export function headline(snap, now = new Date()) {
       if (!peak || count > peak.count) peak = item;
     }
   }
-  const word = `${LEVEL[top].word} (${top})`;
-  let where;
-  if (!geo.cells) where = '';
-  else if (!inside) where = ' aguas arriba, fuera de la Comunitat Valenciana, en cuencas que desaguan en ella';
-  else {
-    where = ` en ${zonesPhrase([...zoneCount.entries()].sort((a, b) => b[1] - a[1]).map(([zi]) => geo.cells.zoneNames[zi]))}`;  }
-  let text = `Riesgo ${word} ${whenPhrase(first.hz, first.fr, now)}${where}.`;
-  const samePeak = peak.hz === first.hz && peak.f === first.f;
-  if (!samePeak || first.hz !== 'long') text += ` Máximo previsto ${peakPhrase(peak.hz, peak.fr)}.`;
+  // "Muy alto en Castellón · vie 2, 05–08 h": level, where (zones, or provinces when many), worst frame
+  let where = '';
+  if (geo.cells && !inside) where = ' aguas arriba';
+  else if (geo.cells) {
+    const names = [...zoneCount.entries()].sort((a, b) => b[1] - a[1]).map(([zi]) => geo.cells.zoneNames[zi]);
+    const provs = [...new Set(names.map((n) => (/ de ([^ ]+)$/.exec(n) || [])[1]).filter(Boolean))];
+    where = names.length <= 2 ? ` en ${names.join(' y ')}` : ` en ${listEs(provs)}`;
+  }
+  const text = `${LEVEL[top].name}${where} · ${frameLabel(peak.hz, peak.fr)}`;
   return { level: top, text, hz: first.hz, frame: first.f, peak };
 }
 

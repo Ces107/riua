@@ -29,7 +29,7 @@ DEFAULTS: dict = {
     # Cell scale: accumulation at least this multiple of the zone's RED threshold.
     "extreme": {
         "x1h": 1.5,     # 1-h accumulation >= 1.5 x red (135 mm where red is 90 mm)
-        "x12h": 1.67,   # 12-h accumulation >= 1.67 x red (300 mm where red is 180 mm)
+        "x12h": 5 / 3,  # 12-h accumulation >= 5/3 x red (300 mm where red is 180 mm)
         # Basin scale: estimated unit peak discharge at least this fraction of the
         # envelope of the largest flash floods observed in the Mediterranean,
         # q_env = 100 * A^-0.4 m3/s/km2 (Gaume et al. 2009).

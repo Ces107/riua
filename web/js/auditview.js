@@ -3,7 +3,7 @@
 
 import { DEFAULT_THR, HORIZONS, HZ_LABEL, LEVEL } from './config.js';
 import { cellCentre, cellFrame, loadExplain, mmOrNull, prob } from './data.js';
-import { auditCell, weightedStats } from './maths.js';
+import { auditCell, normCdf, weightedStats } from './maths.js';
 import { esc, frameExact, frameLabel, num, pct } from './time.js';
 
 const FAMILY = { radar: 'radar (extrapolación)', cp: 'alta resolución', regional: 'regional', global: 'global', ens: 'conjunto (ensemble)' };
@@ -63,11 +63,59 @@ function levelBlock(l, a) {
     + `  publicado en el snapshot: ${l.published == null ? 'n/d' : fx(l.published, 3)}     tau = ${fx(l.tau, 2)}     ${l.reached ? 'SE ALCANZA' : 'no se alcanza'}\n`;
 }
 
+/**
+ * Scenario-based probabilities (what the backend uses until a calibration is fitted):
+ *   r_m,L = max(s1h·a1/T1h_L, s12h·a12/T12h_L)
+ *   P(>=L) = Σ w_m Φ(ln(b·r_m,L)/σ) / Σ w_m
+ */
+async function auditDressing(ctx) {
+  const { snap, hzKey, f, n } = ctx;
+  const h = snap.hz[hzKey];
+  const fr = h.frames[f];
+  const c = cellFrame(h, f, n);
+  const thr = thresholdsFor(snap, ctx.zone);
+  const sigma = Number(h.sigma), bias = Number(h.bias || 1);
+  const rows = scenarios(h, await loadExplain(snap, hzKey), f, n).filter((r) => r.w > 0);
+  const P = [0, 0, 0, 0];
+  let W = 0;
+  const body = rows.map((r, k) => {
+    const fam = (h.fam && h.fam[r.family]) || { s1h: 1, s12h: 1 };
+    const ps = [0, 1, 2, 3].map((L) => {
+      const r1 = r.a1 == null ? 0 : (fam.s1h * r.a1) / thr.t1[L];
+      const r12 = r.a12 == null ? 0 : (fam.s12h * r.a12) / thr.t12[L];
+      const rr = Math.max(r1, r12);
+      return rr > 0 ? normCdf(Math.log(bias * rr) / sigma) : 0;
+    });
+    if (r.a1 != null || r.a12 != null) { W += r.w; ps.forEach((p, L) => { P[L] += r.w * p; }); }
+    return `<tr><td>${k + 1}</td><th class="wrap">${esc(r.name)}</th><td>${pct(r.w, 1)}</td><td>${mmv(r.a1)}</td><td>${mmv(r.a12)}</td>`
+      + `<td>${fam.s1h === 1 && fam.s12h === 1 ? '1' : `${fx(fam.s1h, 1)}/${fx(fam.s12h, 1)}`}</td>${ps.map((p) => `<td>${fx(p, 2)}</td>`).join('')}</tr>`;
+  }).join('');
+  const Pn = P.map((p) => (W > 0 ? p / W : 0));
+  for (let L = 1; L < 4; L++) Pn[L] = Math.min(Pn[L], Pn[L - 1]);
+  let level = 1;
+  [2, 3, 4, 5].forEach((L, k) => { if (Pn[k] >= Number(h.tau[String(L)])) level = L; });
+  const blank = '<td></td><td></td><td></td><td></td>';
+  const head = `<tr><th>#</th><th class="wrap">Escenario</th><th>Peso</th><th>1 h</th><th>12 h</th><th title="factor de representatividad 1 h / 12 h">s</th>${[2, 3, 4, 5].map((L) => `<th>P≥${L}</th>`).join('')}</tr>`;
+  const tot = `<tr><th></th><th class="wrap"><b>Total</b></th>${blank}${Pn.map((p) => `<td><b>${fx(p, 2)}</b></td>`).join('')}</tr>`
+    + `<tr><th></th><th class="wrap">publicado</th>${blank}${c.p.map((p) => `<td>${fx(p, 2)}</td>`).join('')}</tr>`
+    + `<tr><th></th><th class="wrap">mínimo τ</th>${blank}${[2, 3, 4, 5].map((L) => `<td>${fx(Number(h.tau[String(L)]), 2)}</td>`).join('')}</tr>`;
+  const cc = cellCentre(snap, n);
+  const sw = (L) => `<span class="lv lv${L}">${L || '–'}</span>`;
+  return `<p class="num">${fx(cc.lat, 3)}° N ${fx(cc.lon, 3)}° · ${esc(frameExact(fr))}</p>
+<pre class="calc">r = max(s₁·lluvia1h / U₁ , s₁₂·lluvia12h / U₁₂)
+P(≥nivel) = Σ peso · Φ( ln(r) / σ )        σ = ${fx(sigma, 2)}
+U₁  = ${thr.t1.map((v) => fx(v, 0)).join(' / ')} mm      (niveles 2 / 3 / 4 / 5)
+U₁₂ = ${thr.t12.map((v) => fx(v, 0)).join(' / ')} mm</pre>
+<div class="scroll tall"><table class="data"><thead>${head}</thead><tbody>${body}${tot}</tbody></table></div>
+<p style="margin-top:.4rem">Nivel: el más alto con P ≥ τ → ${sw(level)} <span class="dim">publicado</span> ${sw(c.level)}</p>`;
+}
+
 /** HTML of the audit. ctx = {snap, hzKey, f, n, zone, cellInfo} */
 export async function auditHtml(ctx) {
   const { snap, hzKey, f, n } = ctx;
   const h = snap.hz[hzKey];
   const fr = h.frames[f];
+  if (fr.method === 'dressing' || !fr.cal) return auditDressing(ctx);
   const c = cellFrame(h, f, n);
   const thr = thresholdsFor(snap, ctx.zone);
   const a = auditCell(c, fr, thr, h.tau);
