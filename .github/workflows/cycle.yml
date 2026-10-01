@@ -18,6 +18,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: write        # each run starts the next one (GitHub's cron is best-effort and often skipped)
 
 concurrency:
   group: cycle
@@ -31,6 +32,9 @@ jobs:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      - name: Start clock
+        run: echo "START=$(date +%s)" >> "$GITHUB_ENV"
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -80,3 +84,15 @@ jobs:
 
       - id: deploy
         uses: actions/deploy-pages@v4
+
+      # Self-sustained 10-minute cycle: wait out the interval, then dispatch the next run,
+      # unless another one is already queued (a push or the cron fallback got there first).
+      - name: Next cycle
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          elapsed=$(( $(date +%s) - START ))
+          [ "$elapsed" -lt 540 ] && sleep $(( 540 - elapsed ))
+          others=$(gh run list --workflow cycle.yml --limit 20 --json status,databaseId             --jq '[.[] | select((.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="waiting" or .status=="requested") and .databaseId != ${{ github.run_id }})] | length')
+          if [ "$others" = "0" ]; then gh workflow run cycle.yml --ref main; else echo "another run is already waiting"; fi
