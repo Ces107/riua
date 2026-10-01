@@ -1,0 +1,14 @@
+coord/
+scratch/
+__pycache__/
+*.pyc
+.venv/
+.idea/
+.env
+*.grib2
+*.grib
+hindcast/cache/
+hindcast/obs/
+hindcast/truth/
+state/
+web/data/

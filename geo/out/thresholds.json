@@ -1,0 +1,422 @@
+{
+ "source": {
+  "document": "Plan Meteoalerta — Anexo 1: Umbrales y niveles de aviso (METEOALERTA_ANX1)",
+  "version": "1",
+  "document_date": "31-may-2022",
+  "url": "https://www.aemet.es/documentos/es/eltiempo/prediccion/avisos/plan_meteoalerta/METEOALERTA_ANX1_Umbrales_y_niveles_de_aviso.pdf",
+  "pages": [
+   13,
+   14
+  ],
+  "n_pages": 20,
+  "parent_plan": "Plan Nacional de Predicción y Vigilancia de Fenómenos Meteorológicos Adversos (Meteoalerta), versión 9, 10-ene-2025",
+  "parent_plan_url": "https://www.aemet.es/documentos/es/eltiempo/prediccion/avisos/plan_meteoalerta/PLAN_METEOALERTA_v9_web_externa.pdf",
+  "publisher": "Agencia Estatal de Meteorología (AEMET)",
+  "retrieved": "2026-10-01",
+  "note": "Parsed from the PDF served by aemet.es on 2026-10-01 (section 3.17 Comunidad Autónoma Valenciana). It is still version 1 of 31-may-2022: the precipitation thresholds of the Valencian zones have NOT been changed (AEMET stated so publicly on 21/22-sep-2026). All 11 zones share the same rain thresholds; litoral/interior zones differ only in temperature, wind and snow (kept under 'other')."
+ },
+ "units": "mm accumulated in 1 hour / in 12 hours; a level is reached when the accumulation is >= the value",
+ "levels": [
+  "yellow",
+  "orange",
+  "red"
+ ],
+ "zones": {
+  "770301": {
+   "name": "Litoral norte de Alicante",
+   "province": "Alicante",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -1,
+     -4,
+     -8
+    ],
+    "gust_kmh": [
+     70,
+     90,
+     130
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "770302": {
+   "name": "Interior de Alicante",
+   "province": "Alicante",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     38,
+     40,
+     44
+    ],
+    "tmin_c": [
+     -4,
+     -8,
+     -12
+    ],
+    "gust_kmh": [
+     70,
+     90,
+     130
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "770303": {
+   "name": "Litoral sur de Alicante",
+   "province": "Alicante",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -1,
+     -4,
+     -8
+    ],
+    "gust_kmh": [
+     70,
+     90,
+     130
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "771201": {
+   "name": "Interior norte de Castellón",
+   "province": "Castellón",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -6,
+     -10,
+     -14
+    ],
+    "gust_kmh": [
+     80,
+     100,
+     140
+    ],
+    "snow_24h_cm": [
+     5,
+     20,
+     40
+    ]
+   }
+  },
+  "771202": {
+   "name": "Litoral norte de Castellón",
+   "province": "Castellón",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -1,
+     -4,
+     -8
+    ],
+    "gust_kmh": [
+     70,
+     90,
+     130
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "771203": {
+   "name": "Interior sur de Castellón",
+   "province": "Castellón",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -6,
+     -10,
+     -14
+    ],
+    "gust_kmh": [
+     80,
+     100,
+     140
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "771204": {
+   "name": "Litoral sur de Castellón",
+   "province": "Castellón",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -1,
+     -4,
+     -8
+    ],
+    "gust_kmh": [
+     70,
+     90,
+     130
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "774601": {
+   "name": "Interior norte de Valencia",
+   "province": "Valencia",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -6,
+     -10,
+     -14
+    ],
+    "gust_kmh": [
+     80,
+     100,
+     140
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "774602": {
+   "name": "Litoral norte de Valencia",
+   "province": "Valencia",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -1,
+     -4,
+     -8
+    ],
+    "gust_kmh": [
+     70,
+     90,
+     130
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "774603": {
+   "name": "Interior sur de Valencia",
+   "province": "Valencia",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     38,
+     40,
+     44
+    ],
+    "tmin_c": [
+     -4,
+     -8,
+     -12
+    ],
+    "gust_kmh": [
+     70,
+     90,
+     130
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  },
+  "774604": {
+   "name": "Litoral sur de Valencia",
+   "province": "Valencia",
+   "precip_1h_mm": {
+    "yellow": 20,
+    "orange": 40,
+    "red": 90
+   },
+   "precip_12h_mm": {
+    "yellow": 60,
+    "orange": 100,
+    "red": 180
+   },
+   "other": {
+    "tmax_c": [
+     36,
+     39,
+     42
+    ],
+    "tmin_c": [
+     -1,
+     -4,
+     -8
+    ],
+    "gust_kmh": [
+     70,
+     90,
+     130
+    ],
+    "snow_24h_cm": [
+     2,
+     5,
+     20
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,200 @@
+{
+ "note": "Hindcast cases. Dates are civil days (Europe/Madrid). 'kind': major (red reached and verified), moderate, null (warning issued or threat signalled, little fell), ordinary (yellow-type rain), dry. Source of the catalogue: AEMET-CV monthly climate summaries and press, see coord/findings/r6-events-science.md.",
+ "cases": [
+  {
+   "id": "2024-10-dana",
+   "kind": "major",
+   "days": [
+    "2024-10-28",
+    "2024-10-29",
+    "2024-10-30",
+    "2024-10-31",
+    "2024-11-01",
+    "2024-11-02",
+    "2024-11-03",
+    "2024-11-04"
+   ],
+   "label": "DANA 29 Oct 2024 (Turís 771 mm, Poyo) + Castellón 31 Oct + 3 Nov red without event"
+  },
+  {
+   "id": "2024-11-13",
+   "kind": "moderate",
+   "days": [
+    "2024-11-12",
+    "2024-11-13",
+    "2024-11-14"
+   ],
+   "label": "Second DANA, red on the Valencia littoral, ~100 mm/1 h locally"
+  },
+  {
+   "id": "2024-12-11",
+   "kind": "ordinary",
+   "days": [
+    "2024-12-11"
+   ],
+   "label": "Ordinary rain, >50 mm in La Safor"
+  },
+  {
+   "id": "2024-04-28",
+   "kind": "ordinary",
+   "days": [
+    "2024-04-28",
+    "2024-04-29"
+   ],
+   "label": "Ordinary rain ~20 mm"
+  },
+  {
+   "id": "2025-03-03",
+   "kind": "moderate",
+   "days": [
+    "2025-03-02",
+    "2025-03-03",
+    "2025-03-04",
+    "2025-03-05",
+    "2025-03-06"
+   ],
+   "label": "Persistent rain, red in interior south Castellón (180 mm/12 h)"
+  },
+  {
+   "id": "2025-09-08",
+   "kind": "null",
+   "days": [
+    "2025-09-08"
+   ],
+   "label": "Orange in Castellón"
+  },
+  {
+   "id": "2025-09-28",
+   "kind": "major",
+   "days": [
+    "2025-09-27",
+    "2025-09-28",
+    "2025-09-29",
+    "2025-09-30"
+   ],
+   "label": "Ex-Gabrielle: red Valencia littoral, Barx 239 mm/4.5 h, Aldaia"
+  },
+  {
+   "id": "2025-10-alice",
+   "kind": "major",
+   "days": [
+    "2025-10-09",
+    "2025-10-10",
+    "2025-10-11",
+    "2025-10-12",
+    "2025-10-13",
+    "2025-10-14"
+   ],
+   "label": "DANA Alice: red Vega Baja (10 Oct) and south Valencia littoral (13 Oct)"
+  },
+  {
+   "id": "2025-11-25",
+   "kind": "dry",
+   "days": [
+    "2025-11-25"
+   ],
+   "label": "Dry autumn day"
+  },
+  {
+   "id": "2025-12-14",
+   "kind": "null",
+   "days": [
+    "2025-12-13",
+    "2025-12-14",
+    "2025-12-15"
+   ],
+   "label": "Emilia: red issued, max 146 mm, 12-h red not reached"
+  },
+  {
+   "id": "2025-12-28",
+   "kind": "major",
+   "days": [
+    "2025-12-27",
+    "2025-12-28",
+    "2025-12-29"
+   ],
+   "label": ">200 mm in <12 h over the Ribera Alta, Magro overflow at Real"
+  },
+  {
+   "id": "2026-01-03",
+   "kind": "moderate",
+   "days": [
+    "2026-01-03",
+    "2026-01-04",
+    "2026-01-05"
+   ],
+   "label": "Storm Francis"
+  },
+  {
+   "id": "2026-03-10",
+   "kind": "moderate",
+   "days": [
+    "2026-03-10",
+    "2026-03-11"
+   ],
+   "label": "March 2026 episode"
+  },
+  {
+   "id": "2026-04-12",
+   "kind": "ordinary",
+   "days": [
+    "2026-04-12"
+   ],
+   "label": "Ordinary rain"
+  },
+  {
+   "id": "2026-06-05",
+   "kind": "ordinary",
+   "days": [
+    "2026-06-05"
+   ],
+   "label": "Ordinary rain, 81 mm max"
+  },
+  {
+   "id": "2026-08-15",
+   "kind": "moderate",
+   "days": [
+    "2026-08-15"
+   ],
+   "label": "Bejís 186 mm in 2.5 h, small-scale storm"
+  },
+  {
+   "id": "2026-09-17",
+   "kind": "null",
+   "days": [
+    "2026-09-17"
+   ],
+   "label": "Orange on the Alicante littoral"
+  },
+  {
+   "id": "2026-07-20",
+   "kind": "dry",
+   "days": [
+    "2026-07-20"
+   ],
+   "label": "Dry summer day"
+  },
+  {
+   "id": "2026-02-10",
+   "kind": "dry",
+   "days": [
+    "2026-02-10"
+   ],
+   "label": "Dry winter day"
+  },
+  {
+   "id": "2024-11-fill",
+   "kind": "ordinary",
+   "days": [
+    "2024-11-05",
+    "2024-11-06",
+    "2024-11-07",
+    "2024-11-08",
+    "2024-11-09",
+    "2024-11-10",
+    "2024-11-11"
+   ],
+   "label": "Days between the two November 2024 episodes (ordinary / dry), to complete a continuous 18-day verification window"
+  }
+ ]
+}

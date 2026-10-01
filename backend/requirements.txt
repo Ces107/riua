@@ -1,0 +1,16 @@
+numpy>=2.0
+scipy>=1.13
+pysteps>=1.17
+wradlib>=2.4
+pykrige>=1.7
+metpy>=1.6
+xarray
+omfiles>=1.2
+eccodes>=2.39
+opencv-python-headless
+requests
+beautifulsoup4
+lxml
+pillow
+fastapi
+uvicorn
