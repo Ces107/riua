@@ -2,7 +2,7 @@
 // Every packed array is decoded from base64 once; frames are read through index arithmetic or
 // subarray() views, never copied.
 
-import { API_BASE, DATA_DIR, DEV, HORIZONS } from './config.js';
+import { DATA_DIR, HORIZONS } from './config.js';
 
 export function b64(s) {
   if (!s) return new Uint8Array(0);
@@ -121,8 +121,7 @@ async function getJson(url, ms) {
 }
 
 /**
- * First the static copy that ships with the page, then (silently) the live API; `onSnap` is
- * called for each one that is newer than what is already shown. Returns when both attempts ended.
+ * The snapshot published with the page; `onSnap` is called if it is newer than what is already shown.
  */
 export async function loadSnapshots(onSnap, onFail, since = 0) {
   let shown = since;
@@ -135,11 +134,8 @@ export async function loadSnapshots(onSnap, onFail, since = 0) {
     shown = t;
     onSnap(snap);
   };
-  const first = getJson(`${DATA_DIR}snapshot.json`, 20000).then((raw) => offer(raw, 'static'))
+  await getJson(`${DATA_DIR}snapshot.json`, 20000).then((raw) => offer(raw, 'static'))
     .catch((e) => { if (!shown && !got) onFail(e); });
-  const live = DEV ? Promise.resolve() : getJson(`${API_BASE}/v1/snapshot`, 70000).then((raw) => offer(raw, 'api')).catch(() => {});
-  await first;
-  await live;
   return shown > 0;
 }
 
@@ -153,7 +149,7 @@ export function loadExplain(snap, key) {
       const h = snap.hz[key];
       const head = h.explain;
       if (!head || !head.M) throw new Error('esta predicción no trae el detalle por escenario');
-      const url = snap.origin === 'api' ? `${API_BASE}/v1/explain/${key}` : `${DATA_DIR}explain-${key}.bin`;
+      const url = `${DATA_DIR}explain-${key}.bin`;
       const r = await fetch(url, { cache: 'no-cache' });
       if (!r.ok) throw new Error(`no se pudo descargar (${r.status})`);
       const buf = new Uint8Array(await r.arrayBuffer());

@@ -1,8 +1,6 @@
 // Constants shared by every module. Nothing here is computed from data.
 
-export const API_BASE = 'https://riua-api.onrender.com';
-
-// `?dev=1` opens the FABRICATED storm of web/dev/fake_snapshot.py (never the live API).
+// `?dev=1` opens the FABRICATED storm of web/dev/fake_snapshot.py (never the live data).
 export const DEV = new URLSearchParams(location.search).has('dev');
 export const DATA_DIR = DEV ? 'dev/data/' : 'data/';
 export const GEO_DIR = 'geo/';
