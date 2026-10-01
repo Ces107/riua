@@ -1,0 +1,149 @@
+{
+ "poyo-chiva": {
+  "q": 453.9,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true
+ },
+ "poyo-torrent": {
+  "q": 2465.9,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true
+ },
+ "poyo-paiporta": {
+  "q": 1136.8,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true
+ },
+ "poyo-catarroja": {
+  "q": 830.3,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true
+ },
+ "saleta-aldaia": {
+  "q": 7.0,
+  "source": "capacidad publicada",
+  "kind": "published",
+  "url": "https://www.chj.es/es-es/medioambiente/GestionRiesgosInundacion/Documents/PGRI/SEGUNDO%20CICLO/Anejo%203_Just_MedEst_CHJ.pdf",
+  "rating": false
+ },
+ "picassent-beniparrell": {
+  "q": 147.0,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true
+ },
+ "carraixet-betera": {
+  "q": 610.4,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true
+ },
+ "carraixet-alfara": {
+  "q": 1477.0,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true
+ },
+ "turia-nuevo-cauce": {
+  "q": 5944.7,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true
+ },
+ "magro-utiel": {
+  "q": 75.0,
+  "source": "capacidad publicada",
+  "kind": "published",
+  "url": "https://www.miteco.gob.es/content/dam/miteco/es/agua/participacion-publica/inundaciones/Propuesta%20plan%20resiliencia%20DANA%20CV%20consulta%20p%C3%BAblica.pdf",
+  "rating": false
+ },
+ "magro-carlet": {
+  "q": 1222.5,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true
+ },
+ "magro-algemesi": {
+  "q": 598.0,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true
+ },
+ "jucar-alzira": {
+  "q": 500.0,
+  "source": "capacidad publicada",
+  "kind": "published",
+  "url": "https://www.chj.es/es-es/ciudadano/participacion_publica/Documents/Jornada%20Gesti%C3%B3n%20Riesgo%20Inundaci%C3%B3n%20Ribera%20del%20J%C3%BAcar/2.%20An%C3%A1lisis%20y%20modelos%20hidr%C3%A1ulicos_1.pdf",
+  "rating": false
+ },
+ "jucar-sueca": {
+  "q": 485.0,
+  "source": "capacidad publicada",
+  "kind": "published",
+  "url": "https://www.chj.es/es-es/ciudadano/participacion_publica/Documents/Jornada%20Gesti%C3%B3n%20Riesgo%20Inundaci%C3%B3n%20Ribera%20del%20J%C3%BAcar/2.%20An%C3%A1lisis%20y%20modelos%20hidr%C3%A1ulicos_1.pdf",
+  "rating": false
+ },
+ "albaida-manuel": {
+  "q": 1825.7,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true
+ },
+ "barxeta-carcaixent": {
+  "q": 264.8,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true
+ },
+ "vaca-tavernes": {
+  "q": 182.5,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true
+ },
+ "sec-borriana": {
+  "q": 350.0,
+  "source": "capacidad publicada",
+  "kind": "published",
+  "url": "https://www.burriana.es/ayuninf/urbanismo/SG/2019-PROYECTO-MODIFICADO/DOC-08-ANEXO-ESTUDIO-INUNDABILIDAD/ESTUDIO-INUNDABILIDAD.pdf",
+  "rating": false
+ },
+ "viuda-almassora": {
+  "q": 597.0,
+  "source": "capacidad publicada",
+  "kind": "published",
+  "url": "https://www.iagua.es/data/infraestructuras/embalses/maria-cristina",
+  "rating": false
+ },
+ "sec-castello": {
+  "q": 280.0,
+  "source": "capacidad publicada",
+  "kind": "published",
+  "url": "https://www.chj.es/es-es/medioambiente/GestionRiesgosInundacion/Documents/PGRI/SEGUNDO%20CICLO/Anejo%203_Just_MedEst_CHJ.pdf",
+  "rating": false
+ },
+ "segura-orihuela": {
+  "q": 350.0,
+  "source": "capacidad publicada",
+  "kind": "published",
+  "url": "https://www.miteco.gob.es/content/dam/miteco/es/agua/temas/gestion-de-los-riesgos-de-inundacion/informe_seguimiento_pgri_segura-2019_tcm30-511310.pdf",
+  "rating": false
+ }
+}

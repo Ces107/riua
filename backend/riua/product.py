@@ -346,24 +346,30 @@ def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: 
     hnow = top_of_hour(now)
     frames = frames_for(hz, now)
     pred = risk.predictors(members, frames, params, hz, hnow, sample_mask=sample_mask, keep_members=True)
-    cals = [calibration(params, hz, lead_class(hz, now, f)) for f in frames]
-    prob, p1, p12 = risk.calibrated_probabilities(pred, cals, thr)
+    F = len(frames)
+    fitted = bool(params.get("calibration", {}).get(hz))
+    cals = [calibration(params, hz, lead_class(hz, now, f)) for f in frames] if fitted else [None] * F
+    if fitted:
+        prob, p1, p12 = risk.calibrated_probabilities(pred, cals, thr)
+        e1 = np.zeros((2, F, grid.NY, grid.NX), np.float32); e12 = np.zeros_like(e1)
+        for f in range(F):
+            if not pred.valid[f]:
+                continue
+            c = cals[f]
+            m12, q12 = np.nan_to_num(pred.m12[f]), np.nan_to_num(pred.q12[f])
+            for i, q in enumerate((0.5, 0.9)):
+                e12[i, f] = c.c12.quantile(m12, q12, q)
+                if pred.has_1h[f] and c.c1 is not None:
+                    e1[i, f] = c.c1.quantile(np.nan_to_num(pred.m1[f]), np.nan_to_num(pred.q1[f]), q)
+                elif c.c1_from12 is not None:
+                    e1[i, f] = c.c1_from12.quantile(m12, q12, q)
+    elif pred.a1 is not None:
+        prob, p1, p12, e1, e12 = risk.dressed_probabilities(pred, thr, params, hz)
+    else:
+        z = np.zeros((4, F, grid.NY, grid.NX), np.float32)
+        prob, p1, p12, e1, e12 = z, z.copy(), z.copy(), z[:2].copy(), z[:2].copy()
     level = risk.decide(prob, params["tau"][hz])
     level[~pred.valid] = 0
-    # calibrated expectation of the two amounts (median and 1-in-10 high scenario)
-    F = len(frames)
-    e1 = np.zeros((2, F, grid.NY, grid.NX), np.float32); e12 = np.zeros_like(e1)
-    for f in range(F):
-        if not pred.valid[f]:
-            continue
-        c = cals[f]
-        m12, q12 = np.nan_to_num(pred.m12[f]), np.nan_to_num(pred.q12[f])
-        for i, q in enumerate((0.5, 0.9)):
-            e12[i, f] = c.c12.quantile(m12, q12, q)
-            if pred.has_1h[f] and c.c1 is not None:
-                e1[i, f] = c.c1.quantile(np.nan_to_num(pred.m1[f]), np.nan_to_num(pred.q1[f]), q)
-            elif c.c1_from12 is not None:
-                e1[i, f] = c.c1_from12.quantile(m12, q12, q)
     out = dict(frames=frames, pred=pred, prob=prob, p1=p1, p12=p12, level=level, e1=e1, e12=e12, cals=cals)
     out["basins"] = B.basin_product(members, frames, bs, params, hz, hnow)
     if net is not None:
@@ -380,7 +386,11 @@ def pack_horizon(hz: str, o: dict, mask: np.ndarray, params: dict) -> tuple[dict
     pred = o["pred"]
     blk = {
         "frames": [{"t0": S.iso(t0), "t1": S.iso(t1), "ok": bool(pred.valid[f]), "has_1h": bool(pred.has_1h[f]),
-                    "cal": o["cals"][f].to_dict()} for f, (t0, t1) in enumerate(o["frames"])],
+                    "method": "emos" if o["cals"][f] is not None else "dressing",
+                    "cal": o["cals"][f].to_dict() if o["cals"][f] is not None else None}
+                   for f, (t0, t1) in enumerate(o["frames"])],
+        "sigma": params["sigma"][hz], "bias": params["bias"][hz],
+        "fam": {k: {"s1h": v["s1h"], "s12h": v["s12h"]} for k, v in params["families"].items()},
         "tau": params["tau"][hz],
         "cells": {"level": S.b64(cells(o["level"])), "p": S.b64(S.code_prob(cells(o["prob"]))),
                   "e1": S.b64(S.code_mm(cells(o["e1"]))), "e12": S.b64(S.code_mm(cells(o["e12"]))),

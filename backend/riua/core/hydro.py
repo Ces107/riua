@@ -116,9 +116,20 @@ def stage(q: np.ndarray, net_: HydroNet) -> np.ndarray:
 
 
 def level_thresholds(net_: HydroNet, hp: dict) -> np.ndarray:
-    """(4, P) discharges at which levels 2..5 start."""
+    """(4, P) discharges at which levels 2..5 start.
+
+    With a channel capacity Qb: 2 at f2*Qb, 3 at f3*Qb, 4 at Qb (overflow), 5 when the
+    water stands d5 m above the bank (or f5*Qb without rating curve).
+    Without a usable capacity: fractions of the envelope of the largest Mediterranean
+    flash floods for that area, Q_env = c * A^(1+e) (Gaume et al. 2009): the unit
+    discharge is the standard severity measure of a flash flood.
+    """
     qb = net_.q_bankfull
     thr = np.stack([hp["f2"] * qb, hp["f3"] * qb, qb, hp["f5"] * qb])
+    env = hp["env_c"] * np.maximum(net_.area, 1.0) ** (1.0 + hp["env_e"])
+    no_cap = ~np.isfinite(qb)
+    for k, frac in enumerate(hp["env_fractions"]):
+        thr[k, no_cap] = frac * env[no_cap]
     for b in range(net_.n):
         rq, rh = net_.rating_q[b], net_.rating_h[b]
         if rq is not None and len(rq) > 1 and np.isfinite(net_.h_bank[b]):
@@ -184,7 +195,6 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
     prob = np.minimum.accumulate((psum / den[None, :, None]).astype(np.float32), axis=0)
     level = decide(prob, params["tau"][horizon])
     level[~ok] = 0
-    level[:, ~np.isfinite(net_.q_bankfull)] = 0
     qser = np.zeros((3, T, P), np.float32)
     qpk = np.zeros((2, F, P), np.float32)
     if QS:

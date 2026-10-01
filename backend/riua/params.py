@@ -17,13 +17,13 @@ HORIZONS = ("now", "mid", "long")
 DEFAULTS: dict = {
     "version": "untuned-defaults",
     # --- Decision rule -------------------------------------------------------------
-    # A level L is issued when P(>= L) reaches tau[L]. The more severe the level, the
-    # lower the probability required (cost/loss reasoning: the costlier a miss, the
-    # lower the optimal probability threshold C/L).
+    # A level L is issued when P(>= L) reaches tau[L]. Still slightly asymmetric (a
+    # missed severe event costs more than a false alarm, cost/loss: threshold = C/L),
+    # but never below 40 %: below that the product cries wolf, which costs trust.
     "tau": {
-        "now":  {"2": 0.50, "3": 0.40, "4": 0.30, "5": 0.20},
-        "mid":  {"2": 0.45, "3": 0.35, "4": 0.25, "5": 0.15},
-        "long": {"2": 0.40, "3": 0.30, "4": 0.20, "5": 0.10},
+        "now":  {"2": 0.60, "3": 0.55, "4": 0.50, "5": 0.45},
+        "mid":  {"2": 0.55, "3": 0.50, "4": 0.45, "5": 0.40},
+        "long": {"2": 0.50, "3": 0.45, "4": 0.40, "5": 0.40},
     },
     # --- What "extreme" means (level 5) ----------------------------------------------
     # Cell scale: accumulation at least this multiple of the zone's RED threshold.
@@ -33,17 +33,22 @@ DEFAULTS: dict = {
         # Basin scale: estimated unit peak discharge at least this fraction of the
         # envelope of the largest flash floods observed in the Mediterranean,
         # q_env = 100 * A^-0.4 m3/s/km2 (Gaume et al. 2009).
-        "envelope_fraction": 0.35,
+        "envelope_fraction": 0.6,     # same as level 5 at the control points
         "envelope_c": 100.0,
         "envelope_exp": -0.4,
     },
     # --- Uncertainty dressing --------------------------------------------------------
-    # Each member's hazard ratio r (forecast / threshold) is treated as the median of a
-    # log-normal with spread sigma: P(exceed) = Phi(ln(bias * r) / sigma).
-    "sigma": {"now": 0.35, "mid": 0.50, "long": 0.65},
+    # Used while no fitted calibration exists (params["calibration"] empty).
+    # Each scenario's hazard ratio r = s * amount / threshold is the median of a
+    # log-normal error: P(exceed | scenario) = Phi(ln(bias * r) / sigma);
+    # P(>= L) = weighted mean over scenarios. sigma 0.3 = a scenario at 0.7 x the
+    # threshold still gives 12 %, one at 1.4 x gives 87 %.
+    "sigma": {"now": 0.25, "mid": 0.30, "long": 0.35},
     "bias": {"now": 1.0, "mid": 1.0, "long": 1.0},
     # --- Neighbourhood radius (km) by horizon, for convection-permitting members -----
-    "radius_km": {"now": 10.0, "mid": 20.0, "long": 0.0},
+    # A 12-km maximum already covers a whole Riuà cell plus a typical 6-12 h displacement
+    # error; larger radii inflate every amount relative to what falls in one cell.
+    "radius_km": {"now": 6.0, "mid": 12.0, "long": 0.0},
     # Displacement applied to each convection-permitting member for basin means (km).
     "basin_shift_km": {"now": 6.0, "mid": 12.0, "long": 0.0},
     # --- Model families ---------------------------------------------------------------
@@ -73,7 +78,11 @@ DEFAULTS: dict = {
         "clark_k": 0.3,        # linear-reservoir constant as a fraction of tc
         "f2": 0.25, "f3": 0.6, "f5": 2.0,   # level starts, as fractions of channel capacity
         "d5_m": 1.0,           # level 5: water this far above the bank crest
-        "sigma": {"now": 0.5, "mid": 0.65, "long": 0.8},
+        # points without a usable channel capacity: levels 2..5 at these fractions of the
+        # envelope Q = env_c * A^(1+env_e) (Gaume et al. 2009, unit q = 100 A^-0.4).
+        # 2024 Poyo at the A-3 gauge: 2283 m3/s on 184 km2, i.e. 1.0 x the envelope.
+        "env_c": 100.0, "env_e": -0.4, "env_fractions": [0.08, 0.18, 0.35, 0.6],
+        "sigma": {"now": 0.4, "mid": 0.5, "long": 0.6},
     },
 }
 

@@ -50,5 +50,14 @@
  "vinalopo-elx": {"name_re": "Vinalop."},
  "abanilla-benferri": {"name_re": "A.?banilla|Benferri", "offset_m": 400, "dx_sec": 100, "note": "rambla incised 7-10 m at Benferri (8 m drop structure 600 m upstream of the section); it carries far more here than further down, where it reaches the Vega Baja plain and loses its channel (projected encauzamiento A-7 to Segura: 170 m3/s)"},
  "segura-orihuela": {"name_re": "Segura", "perennial": true, "snap_w": 60, "note": "walled urban channel ~24 m wide, 5-5.5 m above the water surface seen by the LiDAR; weirs in the city (3 m drop 350 m upstream of the section) make the local slope uncertain"},
- "seco-pilar": {"name_re": "R.o Seco|Riu Sec"}
+ "seco-pilar": {"name_re": "R.o Seco|Riu Sec"},
+ "poyo-cheste": {"name_re": "Barranco de Chiva|Barranc de Xiva|Rambla de Poio|Rambla de Poyo|Rambla del Poyo|Barranco Grande"},
+ "horteta-torrent": {"name_re": "Horteta"},
+ "magro-real": {"name_re": "Magro|Magre"},
+ "verd-alzira": {"name_re": "Riu Verd|Ulls"},
+ "casella-alzira": {"name_re": "Casella"},
+ "beniopa-gandia": {"name_re": "Beniopa|Sant Nicolau"},
+ "chinchilla-orpesa": {"name_re": "Xinxilla|Chinchilla"},
+ "aiguaoliva-vinaros": {"name_re": "Aiguadoliva|Aiguaoliva|Agua Oliva"},
+ "tarafa-aspe": {"name_re": "Tarafa"}
 }

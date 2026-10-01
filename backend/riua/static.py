@@ -146,11 +146,13 @@ def hydro_net():
     remap = {pid.index(i): k for k, i in enumerate(ids)}
     sel = use & np.isin(ta["point_idx"], list(remap))
     pidx = np.array([remap[int(x)] for x in ta["point_idx"][sel]], int)
+    capf = GEO / "hydro" / "capacity.json"
+    caps = json.loads(capf.read_text(encoding="utf-8")) if capf.exists() else {}
     qb, rq, rh, hb = [], [], [], []
     for i in ids:
-        s = secs.get(i, {})
-        cap = (s.get("capacity_recommended") or {}).get("value_m3s") or s.get("q_bankfull")
-        qb.append(float(cap) if cap else np.nan)
+        c = caps.get(i)
+        qb.append(float(c["q"]) if c else np.nan)
+        s = secs.get(i, {}) if (c and c.get("rating")) else {}
         rt = s.get("rating") or {}
         q_tab, h_tab = rt.get("q_m3s"), rt.get("h_m")
         if q_tab and h_tab and len(q_tab) > 1:
@@ -161,4 +163,4 @@ def hydro_net():
     net = HydroNet.build(ids, [order[i].get("area_unregulated_km2") or order[i]["area_km2"] for i in ids],
                          [order[i].get("t_longest_unregulated_h") or order[i]["tc_h"] for i in ids], pidx, ta["cell"][sel].astype(int),
                          ta["lag_h"][sel].astype(int), ta["area_km2"][sel].astype(float), qb, rq, rh, hb)
-    return net, [dict(order[i], section=secs.get(i)) for i in ids]
+    return net, [dict(order[i], section=secs.get(i), capacity=caps.get(i)) for i in ids]

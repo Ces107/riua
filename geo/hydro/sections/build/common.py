@@ -36,6 +36,10 @@ def utm2ll(x, y):
 
 
 def load_seed():
+    """Control points: the final snapped list of h1-catchments (60 points) when present, else the seed."""
+    if os.path.exists(SNAPPED):
+        with open(SNAPPED, encoding="utf-8") as f:
+            return json.load(f)["points"]
     with open(SEED, encoding="utf-8") as f:
         return json.load(f)["points"]
 

@@ -250,6 +250,57 @@ def calibrated_probabilities(pred: Predictors, cal_by_frame: list[Calibration], 
     return prob, p1, p12
 
 
+def dressed_probabilities(pred: Predictors, thr: Thresholds, params: dict, horizon: str):
+    """Probabilities straight from the scenarios (used until a calibration is fitted).
+
+    For scenario m with weight w_m, family factors s1h, s12h and amounts a1, a12:
+        r_L = max(s1h * a1 / T1h_L, s12h * a12 / T12h_L)       (a1 ignored when unknown)
+        P(>= L) = sum_m w_m * Phi(ln(bias * r_L) / sigma) / sum_m w_m
+    Returns prob, p1, p12 (4, F, NY, NX) and the scaled amounts' weighted median and
+    90th percentile e1, e12 (2, F, NY, NX).
+    """
+    sigma, bias = params["sigma"][horizon], params["bias"][horizon]
+    M, F = pred.w.shape
+    shape = (4, F, grid.NY, grid.NX)
+    num, num1, num12 = np.zeros(shape), np.zeros(shape), np.zeros(shape)
+    den, den1 = np.zeros((F, grid.NY, grid.NX)), np.zeros((F, grid.NY, grid.NX))
+    s1 = np.array([params["families"][a["family"]]["s1h"] for a in pred.audit], np.float32)
+    s12 = np.array([params["families"][a["family"]]["s12h"] for a in pred.audit], np.float32)
+    A1 = pred.a1 * s1[:, None, None, None]
+    A12 = pred.a12 * s12[:, None, None, None]
+    for m in range(M):
+        for f in range(F):
+            w = pred.w[m, f]
+            if w <= 0:
+                continue
+            ok12 = np.isfinite(A12[m, f])
+            ok1 = np.isfinite(A1[m, f])
+            for k in range(4):
+                r12 = np.where(ok12, A12[m, f] / thr.t12h[k], 0.0)
+                r1 = np.where(ok1, A1[m, f] / thr.t1h[k], 0.0)
+                pa, pb = dress(r1, sigma, bias), dress(r12, sigma, bias)
+                num1[k, f] += w * np.where(ok1, pa, 0.0)
+                num12[k, f] += w * np.where(ok12, pb, 0.0)
+                num[k, f] += w * np.where(ok12 | ok1, dress(np.maximum(r1, r12), sigma, bias), 0.0)
+            den[f] += w * (ok12 | ok1)
+            den1[f] += w * ok1
+    d = np.maximum(den, 1e-12)[None]
+    prob = np.minimum.accumulate((num / d).astype(np.float32), axis=0)
+    p12 = (num12 / d).astype(np.float32)
+    p1 = (num1 / np.maximum(den1, 1e-12)[None]).astype(np.float32)
+    e1 = np.zeros((2, F, grid.NY, grid.NX), np.float32); e12 = np.zeros_like(e1)
+    for f in range(F):
+        w = pred.w[:, f]
+        if w.sum() <= 0:
+            continue
+        for arr, out in ((A12, e12), (A1, e1)):
+            v = arr[:, f]
+            ww = np.where(np.isfinite(v), w[:, None, None], 0.0)
+            if ww.sum() > 0:
+                out[:, f] = weighted_quantile(np.nan_to_num(v), ww, (0.5, 0.9))
+    return prob, p1, p12, e1, e12
+
+
 def dress(ratio: np.ndarray, sigma: float, bias: float = 1.0) -> np.ndarray:
     """Probability that the truth reaches the threshold given a scenario at `ratio` of it
     (log-normal error around the scenario; used for catchment and discharge scenarios)."""
