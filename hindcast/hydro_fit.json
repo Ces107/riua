@@ -1,0 +1,223 @@
+{
+ "p0_mm": 120.0,
+ "s_mm": 150.0,
+ "phi_mmh": null,
+ "wet_memory_h": 72.0,
+ "score": 0.439,
+ "poyo_2024_m3s": 2185,
+ "n": 37,
+ "residuals": {
+  "mean_ln": -0.02,
+  "sd_ln": 0.86
+ },
+ "events": [
+  {
+   "case": "2024-10-dana",
+   "point": "sellent-carcer",
+   "rain_mm": 52,
+   "observed": 0.3,
+   "before": 15.3,
+   "after": 0.0
+  },
+  {
+   "case": "2024-11-13",
+   "point": "vernissa-real",
+   "rain_mm": 146,
+   "observed": 14.8,
+   "before": 366.9,
+   "after": 67.1
+  },
+  {
+   "case": "2024-11-fill",
+   "point": "vernissa-real",
+   "rain_mm": 106,
+   "observed": 4.4,
+   "before": 304.4,
+   "after": 5.2
+  },
+  {
+   "case": "2024-12-11",
+   "point": "vernissa-real",
+   "rain_mm": 106,
+   "observed": 0.0,
+   "before": 284.9,
+   "after": 82.3
+  },
+  {
+   "case": "2025-03-03",
+   "point": "poyo-ribarroja",
+   "rain_mm": 148,
+   "observed": 0.5,
+   "before": 145.7,
+   "after": 3.6
+  },
+  {
+   "case": "2025-03-03",
+   "point": "carraixet-betera",
+   "rain_mm": 82,
+   "observed": 9.4,
+   "before": 68.7,
+   "after": 0.0
+  },
+  {
+   "case": "2025-03-03",
+   "point": "castellarda-lliria",
+   "rain_mm": 96,
+   "observed": 47.4,
+   "before": 288.8,
+   "after": 0.2
+  },
+  {
+   "case": "2025-03-03",
+   "point": "magro-requena",
+   "rain_mm": 49,
+   "observed": 0.8,
+   "before": 15.9,
+   "after": 0.0
+  },
+  {
+   "case": "2025-03-03",
+   "point": "sellent-carcer",
+   "rain_mm": 276,
+   "observed": 42.7,
+   "before": 324.0,
+   "after": 108.0
+  },
+  {
+   "case": "2025-03-03",
+   "point": "canyoles-canals",
+   "rain_mm": 138,
+   "observed": 9.2,
+   "before": 315.0,
+   "after": 8.4
+  },
+  {
+   "case": "2025-03-03",
+   "point": "vernissa-real",
+   "rain_mm": 275,
+   "observed": 34.5,
+   "before": 206.8,
+   "after": 71.1
+  },
+  {
+   "case": "2025-03-03",
+   "point": "magro-carlet",
+   "rain_mm": 166,
+   "observed": 56.4,
+   "before": 251.5,
+   "after": 34.1
+  },
+  {
+   "case": "2025-09-28",
+   "point": "poyo-ribarroja",
+   "rain_mm": 73,
+   "observed": 0.8,
+   "before": 54.2,
+   "after": 0.0
+  },
+  {
+   "case": "2025-09-28",
+   "point": "carraixet-betera",
+   "rain_mm": 51,
+   "observed": 0.0,
+   "before": 10.0,
+   "after": 0.0
+  },
+  {
+   "case": "2025-09-28",
+   "point": "castellarda-lliria",
+   "rain_mm": 58,
+   "observed": 0.0,
+   "before": 58.3,
+   "after": 0.0
+  },
+  {
+   "case": "2025-09-28",
+   "point": "sellent-carcer",
+   "rain_mm": 49,
+   "observed": 0.2,
+   "before": 37.5,
+   "after": 0.0
+  },
+  {
+   "case": "2025-09-28",
+   "point": "vernissa-real",
+   "rain_mm": 113,
+   "observed": 8.7,
+   "before": 229.4,
+   "after": 109.1
+  },
+  {
+   "case": "2025-09-28",
+   "point": "magro-carlet",
+   "rain_mm": 61,
+   "observed": 3.7,
+   "before": 77.9,
+   "after": 0.0
+  },
+  {
+   "case": "2025-12-14",
+   "point": "sellent-carcer",
+   "rain_mm": 44,
+   "observed": 0.2,
+   "before": 24.3,
+   "after": 0.0
+  },
+  {
+   "case": "2025-12-14",
+   "point": "vernissa-real",
+   "rain_mm": 100,
+   "observed": 5.9,
+   "before": 178.7,
+   "after": 3.6
+  },
+  {
+   "case": "2025-12-28",
+   "point": "poyo-ribarroja",
+   "rain_mm": 79,
+   "observed": 1.8,
+   "before": 143.4,
+   "after": 0.0
+  },
+  {
+   "case": "2025-12-28",
+   "point": "carraixet-betera",
+   "rain_mm": 33,
+   "observed": 0.0,
+   "before": 7.1,
+   "after": 0.0
+  },
+  {
+   "case": "2025-12-28",
+   "point": "magro-requena",
+   "rain_mm": 53,
+   "observed": 8.0,
+   "before": 107.0,
+   "after": 0.0
+  },
+  {
+   "case": "2025-12-28",
+   "point": "vernissa-real",
+   "rain_mm": 102,
+   "observed": 61.2,
+   "before": 280.5,
+   "after": 58.0
+  },
+  {
+   "case": "2025-12-28",
+   "point": "magro-carlet",
+   "rain_mm": 105,
+   "observed": 45.8,
+   "before": 401.4,
+   "after": 2.6
+  },
+  {
+   "case": "2024-10-dana",
+   "point": "poyo-ribarroja",
+   "rain_mm": 0,
+   "observed": 2700.0,
+   "before": 2472.0,
+   "after": 2184.9
+  }
+ ]
+}

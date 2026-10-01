@@ -64,9 +64,10 @@ def response_time_h(area_km2: np.ndarray, hp: dict) -> np.ndarray:
     return np.clip(hp["tc_a"] * np.asarray(area_km2, np.float64) ** hp["tc_b"], 1.0, hp["tc_max_h"])
 
 
-def runoff_mm(p_mm: np.ndarray, p0: float) -> np.ndarray:
-    """Cumulative runoff for cumulative rain P: (P - P0)^2 / (P + 4 P0) once P > P0."""
-    return np.where(p_mm > p0, (p_mm - p0) ** 2 / (p_mm + 4.0 * p0), 0.0)
+def runoff_mm(p_mm: np.ndarray, p0: float, s: float | None = None) -> np.ndarray:
+    """Cumulative runoff for cumulative rain P: (P - P0)^2 / (P - P0 + S) once P > P0 (S = 5 P0: SCS law)."""
+    x = np.maximum(p_mm - p0, 0.0)
+    return x ** 2 / (x + (5.0 * p0 if s is None else s))
 
 
 def _rolling(cs: np.ndarray, d: int) -> np.ndarray:
@@ -113,7 +114,7 @@ def member_basin_ratios(p: np.ndarray, t_end: np.ndarray, frames, bs: BasinSet, 
 
     # unit peak discharge from the upstream-scope rain: losses on the trailing 24 h total
     wet_o, wet_f = _rolling(cs_up_o, 24), fam["s12h"] * _rolling(cs_up_f, 24)
-    e = runoff_mm(wet_o + wet_f, hp["p0_mm"])   # (T, B) cumulative runoff of the event so far
+    e = runoff_mm(wet_o + wet_f, hp["p0_mm"], hp.get("s_mm"))   # (T, B) cumulative runoff of the event so far
     share_f = wet_f / np.maximum(wet_o + wet_f, 1e-9)
     tci = np.maximum(np.rint(tc).astype(int), 1)
     q = np.zeros((T, bs.n))

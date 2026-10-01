@@ -69,7 +69,12 @@ DEFAULTS: dict = {
     "age_halflife_h": {"now": 3.0, "mid": 12.0, "long": 36.0},
     # --- Hydrology ----------------------------------------------------------------------
     "hydro": {
-        "p0_mm": 25.0,        # runoff threshold of the SCS / Norma 5.2-IC loss model
+        # losses E = (W - P0)^2 / (W - P0 + S), fitted to measured SAIH flows in 8 gauged catchments
+        # over 10 rain episodes plus the Poyo flood of 29 Oct 2024 (hindcast/calibrate_hydro.py).
+        # The design value P0 = 25 mm gave 146 m3/s on the Poyo for an episode that measured 0.5.
+        "p0_mm": 120.0,       # runoff threshold: rain the ground takes in before anything runs off
+        "s_mm": 150.0,        # retention still to fill above the threshold
+        "phi_mmh": None,      # infiltration capacity for an intensity-excess term (not supported by the fit)
         "tc_a": 0.5,          # response time tc = tc_a * A^tc_b hours (A in km2)
         "tc_b": 0.38,
         "tc_max_h": 24.0,
@@ -86,7 +91,8 @@ DEFAULTS: dict = {
         # points without a usable capacity but with CAUMAX flood quantiles (all 60 today):
         # level 2 at the 2-year flood, 3 at 5 years, 4 at 25 years, 5 at 100 years (EFAS-like)
         "rp_levels": [2, 5, 25, 100],
-        "sigma": {"now": 0.4, "mid": 0.5, "long": 0.6},
+        # spread of ln(discharge): the fit leaves a residual of 0.86, larger than the rain uncertainty
+        "sigma": {"now": 0.8, "mid": 0.9, "long": 1.0},
     },
 }
 

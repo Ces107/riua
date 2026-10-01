@@ -4,11 +4,11 @@ Chain, for every rainfall scenario:
 
 1. Losses, per grid cell. Wetness W is the rain remembered by the soil,
    W(t) = W(t-1) * exp(-1/tau) + p(t), and the share of the hour's rain that runs off
-   is the marginal runoff coefficient of the SCS / Norma 5.2-IC loss law
-   E = (P - P0)^2 / (P + 4 P0):
-       c(W) = (W - P0) (W + 9 P0) / (W + 4 P0)^2   for W > P0, else 0.
-   Dry ground absorbs the first P0 mm; ground that has already taken 150 mm sheds
-   more than 80 % of what follows.
+   is the marginal runoff coefficient of the loss law E = (W - P0)^2 / (W - P0 + S)
+   (the SCS / Norma 5.2-IC law when S = 5 P0):
+       c(W) = x (x + 2 S) / (x + S)^2,  x = W - P0,  for W > P0, else 0.
+   P0 and S are fitted to measured flows: these ravines swallow about 120 mm before
+   they run, and shed more than half of what falls once 250 mm have fallen.
 
 2. Routing, time-area (isochrone) method. The catchment of each control point was cut
    from the terrain model into travel-time bands. Net rain falling on the band that is
@@ -73,19 +73,32 @@ class HydroNet:
                    None if qT is None else np.asarray(qT, float))
 
 
-def runoff_coefficient(w_mm: np.ndarray, p0: float) -> np.ndarray:
-    w = np.maximum(w_mm, 0.0)
-    return np.where(w > p0, (w - p0) * (w + 9.0 * p0) / (w + 4.0 * p0) ** 2, 0.0)
+def runoff_coefficient(w_mm: np.ndarray, p0: float, s: float | None = None) -> np.ndarray:
+    """Marginal runoff coefficient dE/dW of E = (W - P0)^2 / (W - P0 + S): nothing below the
+    runoff threshold P0, then a share that grows towards 1 as the retention S fills.
+    S = 5 P0 is the SCS / Norma 5.2-IC law (initial abstraction 0.2 S)."""
+    s = 5.0 * p0 if s is None else s
+    x = np.maximum(w_mm - p0, 0.0)
+    return x * (x + 2.0 * s) / (x + s) ** 2
 
 
-def net_rain(p: np.ndarray, p0: float, tau_h: float, w0: np.ndarray | float = 0.0) -> np.ndarray:
-    """p (T, ncell) mm/h -> net rain (T, ncell) mm/h."""
+def net_rain(p: np.ndarray, p0: float, tau_h: float, w0: np.ndarray | float = 0.0,
+             phi: float | None = None, s: float | None = None) -> np.ndarray:
+    """p (T, ncell) mm/h -> net rain (T, ncell) mm/h.
+
+    Two ways of producing runoff, as in Mediterranean ravines: the ground fills up
+    (saturation excess, share c(W) of the rain) or it rains harder than the ground can
+    take in (infiltration excess: what exceeds phi mm/h runs off even on dry ground).
+    """
     decay = float(np.exp(-1.0 / tau_h))
     w = np.zeros(p.shape[1], np.float32) + w0
     out = np.empty_like(p)
     for t in range(p.shape[0]):
         w_new = w * decay + p[t]
-        out[t] = p[t] * runoff_coefficient(0.5 * (w * decay + w_new), p0)
+        c = runoff_coefficient(0.5 * (w * decay + w_new), p0, s)
+        out[t] = p[t] * c
+        if phi is not None:
+            out[t] += (1.0 - c) * np.maximum(p[t] - phi, 0.0)
         w = w_new
     return out
 
@@ -193,7 +206,8 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
         for sj, si, share in variants:
             p = np.nan_to_num(grid.shift(m.area, sj, si), nan=0.0).reshape(len(m.t_end), -1)
             p = p * np.where(m.observed(), 1.0, fam["s12h"])[:, None]      # measured rain is not rescaled
-            q = route(net_rain(p, hp["p0_mm"], hp["wet_memory_h"]), net_, hp["clark_k"])      # (Tm, P)
+            q = route(net_rain(p, hp["p0_mm"], hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm")),
+                      net_, hp["clark_k"])      # (Tm, P)
             # onto the common axis
             pos = np.searchsorted(t_axis, m.t_end)
             inside = (pos < T) & (t_axis[np.minimum(pos, T - 1)] == m.t_end)

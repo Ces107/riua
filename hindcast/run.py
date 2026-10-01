@@ -443,8 +443,8 @@ def poyo_check(truth: Truth) -> dict | None:
     out = {"observed": "SAIH Rambla del Poyo (A-3): 2283 m3/s at 18:55 local (17:55 UTC) on 29 Oct 2024, then the sensor was lost",
            "rain_input": "radar-gauge analysis, cell means", "runs": []}
     flat = p.reshape(len(t), -1)
-    for p0 in (15.0, 25.0, 40.0):
-        q = H.route(H.net_rain(flat, p0, hp["wet_memory_h"]), net, hp["clark_k"])
+    for p0 in (hp["p0_mm"],):
+        q = H.route(H.net_rain(flat, p0, hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm")), net, hp["clark_k"])
         row = {"p0_mm": p0}
         for pid in ("poyo-chiva", "poyo-ribarroja", "poyo-paiporta", "magro-algemesi"):
             if pid in net.ids:

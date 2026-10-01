@@ -52,6 +52,16 @@ def html() -> str:
                    f'<tr><td>A-3 (aforo SAIH)</td><td class="n">{run["poyo-ribarroja"]["peak_m3s"]} m³/s</td><td class="n">2283 m³/s (sensor perdido)</td></tr>'
                    f'<tr><td>Paiporta</td><td class="n">{run["poyo-paiporta"]["peak_m3s"]} m³/s</td><td class="n">≈ 3000–3500 (estimaciones)</td></tr></table>'
                    "<p>La hora de la punta no se puede comprobar: el radar de Cullera quedó atenuado durante el máximo y no hay datos horarios abiertos de pluviómetros de 2024.</p>")
+    fit = ROOT / "hindcast" / "hydro_fit.json"
+    if fit.exists():
+        hf = json.loads(fit.read_text(encoding="utf-8"))
+        rows = "".join(f'<tr><td>{e["point"]}</td><td class="n">{e["case"][:7]}</td><td class="n">{e["rain_mm"] or "—"}</td>'
+                       f'<td class="n">{e["observed"]:g}</td><td class="n">{e["after"]:g}</td><td class="n">{e["before"]:g}</td></tr>'
+                       for e in hf["events"])
+        out.append("<h2>Caudal: medido y calculado</h2>"
+                   f'<p class="n">{hf["n"]} crecidas · aforos SAIH Júcar · umbral de escorrentía {hf["p0_mm"]:g} mm · retención {hf["s_mm"]:g} mm</p>'
+                   "<table><tr><th>Punto</th><th>Episodio</th><th>Lluvia (mm)</th><th>Medido (m³/s)</th><th>Calculado</th>"
+                   f"<th>Antes (25 mm)</th></tr>{rows}</table>")
     out.append("<h2>Límites</h2><ul><li>Pocos casos de nivel 5: las cifras de ese nivel son orientativas.</li>"
                "<li>Se comprueba «lluvia de ese nivel a menos de 12 km del punto» (6 km en «Ahora»).</li>"
                "<li>«Ahora» usa series de AROME de muy corto plazo: resultado optimista.</li>"

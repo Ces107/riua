@@ -70,7 +70,7 @@ r = max(s1·rain_1h / T_1h , s12·rain_12h / T_12h)        P(≥ level) = Σ wei
 
 **Basins.** Each scenario is also averaged over every basin unit and over everything upstream of it, for 1, 3, 6 and 12 h, against the thresholds reduced by the areal factor of Norma 5.2-IC. Rain already on its way from upstream counts.
 
-**Control points.** Losses with a runoff threshold (P0, with memory of earlier rain), time–area routing on travel times derived from the terrain model, a linear reservoir, then: level 2/3 at the 2-/5-year flood or when the channel is 25 % / 60 % full, level 4 when it overflows, level 5 at +1 m over the bank. Channel capacity comes from a LiDAR cross-section with Manning's equation when it is plausible against CAUMAX, else from a published figure; without capacity, levels 4/5 are the 25-/100-year floods.
+**Control points.** Losses E = (W − P0)² / (W − P0 + S) on a wetness W with a 72-h memory, P0 = 120 mm and S = 150 mm fitted to measured SAIH flows in eight gauged catchments (`hindcast/calibrate_hydro.py`; the design value P0 = 25 mm overestimated ordinary episodes by two orders of magnitude), time–area routing on travel times derived from the terrain model, a linear reservoir, then: level 2/3 at the 2-/5-year flood or when the channel is 25 % / 60 % full, level 4 when it overflows, level 5 at +1 m over the bank. Channel capacity comes from a LiDAR cross-section with Manning's equation when it is plausible against CAUMAX, else from a published figure; without capacity, levels 4/5 are the 25-/100-year floods.
 
 ## Validation
 
@@ -104,7 +104,7 @@ See `hindcast/results.json` and the Validación page. Method: forecasts that rea
 | 4 | 40 % | 8 | 35 | 6 | 19 % | 43 % |
 | 5 | 40 % | 0 | 12 | 0 | 0 % | — |
 
-**Rambla del Poyo, 29 Oct 2024** (observed rain as input): 2472 m³/s at the A-3 gauge (measured 2283 m³/s when the sensor was lost), 3205 m³/s at Paiporta. Peak timing cannot be verified: the Cullera radar was attenuated during the maximum and no open sub-daily gauge data exist for 2024.
+**Rambla del Poyo, 29 Oct 2024** (observed rain as input): 2185 m³/s at the A-3 gauge (measured 2283 m³/s when the sensor was lost), 2840 m³/s at Paiporta. Peak timing cannot be verified: the Cullera radar was attenuated during the maximum and no open sub-daily gauge data exist for 2024.
 <!-- /VALIDATION-TABLE -->
 
 ## Known limitations
