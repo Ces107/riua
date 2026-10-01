@@ -4,10 +4,13 @@
 - Web: https://ces107.github.io/riua/ (branch `gh-pages`, published by `deploy/publish.sh`).
 - API: https://riua-api.onrender.com (`/healthz`, `/v1/status`, `/v1/snapshot`, `/v1/point?lat=&lon=`, `/docs`);
   Render free service `srv-dav1q28jo6nc73f47k80`, image `render/Dockerfile`, polls the snapshot from Pages.
-- Compute: GitHub Actions workflow `.github/workflows/cycle.yml`, cron every 10 min (GitHub may delay
-  scheduled runs), ~8 min per run, state kept in the Actions cache, deploys Pages directly. First cloud run
-  10:39Z, all sources OK. Manual run: `gh workflow run cycle.yml -R Ces107/riua`.
-  The PC scheduled task was removed; `deploy/loop.sh` remains as a local fallback.
+- Compute: GitHub Actions `.github/workflows/cycle.yml`. GitHub's cron did NOT fire for 2.5 h, so the
+  workflow chains itself: each run computes (~2.5 min), deploys Pages, waits out 9 min and dispatches the
+  next run (permission `actions: write`); the cron stays only as a restart. If the chain ever stops:
+  `gh workflow run cycle.yml -R Ces107/riua`. Verified 13:09Z -> 13:19Z.
+- Control points: all 60 have CAUMAX (CEDEX) return-period flows (`geo/hydro/caumax_points.json`, built by
+  `geo/hydro/build_caumax.py` from the local CAUMAX rasters); 42 have a channel capacity. Levels: with
+  capacity 2/3 at min(0.25/0.6 Qb, T2/T5), 4 overflow, 5 +1 m over bank; without: T2/T5/T25/T100.
 
 ## First real cycle (09:42Z)
 All sources OK: radar OPERA+AEMET (13 frames), 413 gauges, AROME-HD/AROME/ICON-EU/ARPEGE/IFS lagged runs,
