@@ -205,10 +205,12 @@ def gauge_ceiling(gauges: list[dict], radius_cells: int = 4) -> np.ndarray:
         c = grid.cell_of(x["lat"], x["lon"])
         if c:
             g[c] = max(g[c], float(x["p_12h"])); has[c] = 1.0
-    size = 2 * radius_cells + 1
-    near = ndimage.maximum_filter(g, size=size)
-    cover = ndimage.maximum_filter(has, size=size) > 0
-    return np.where(cover, 1.5 * near + 10.0, np.inf).astype(np.float32)
+    out = np.full(g.shape, 2.0 * float(g.max()) + 10.0, np.float32)     # no gauge within 50 km: twice the largest anywhere
+    for rc in (10, radius_cells):                                        # ~50 km, then ~20 km
+        size = 2 * rc + 1
+        cover = ndimage.maximum_filter(has, size=size) > 0
+        out = np.where(cover, 1.5 * ndimage.maximum_filter(g, size=size) + 10.0, out)
+    return out.astype(np.float32)
 
 
 def gauge_factor(raw12: np.ndarray, gauges: list[dict]):
