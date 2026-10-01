@@ -144,6 +144,13 @@ def level_thresholds(net_: HydroNet, hp: dict) -> np.ndarray:
         both = ~no_cap & np.all(np.isfinite(net_.qT), axis=1)
         for k in (0, 1):
             thr[k, both] = np.minimum(thr[k, both], net_.qT[both, col[int(hp["rp_levels"][k])]])
+    # no level for a trickle: where CAUMAX is implausibly low (semi-endorheic basins such as the Tarafa)
+    # levels 2 and 3 need at least 0.6 and 1.5 x A^0.6 m3/s (20 and 50 m3/s for 340 km2)
+    a06 = np.maximum(net_.area, 1.0) ** 0.6
+    thr[0] = np.maximum(thr[0], hp.get("min_q2", 0.6) * a06)
+    thr[1] = np.maximum(thr[1], hp.get("min_q3", 1.5) * a06)
+    thr[2] = np.maximum(thr[2], thr[1])
+    thr[3] = np.maximum(thr[3], thr[2])
     for b in range(net_.n):
         rq, rh = net_.rating_q[b], net_.rating_h[b]
         if rq is not None and len(rq) > 1 and np.isfinite(net_.h_bank[b]):
@@ -182,7 +189,7 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
             continue
         fam = params["families"][m.family]
         variants = [(0, 0, 0.4), (dj, 0, 0.15), (-dj, 0, 0.15), (0, di, 0.15), (0, -di, 0.15)] \
-            if fam.get("neigh") and (dj or di) else [(0, 0, 1.0)]
+            if m.family in ("cp", "radar") and (dj or di) else [(0, 0, 1.0)]
         for sj, si, share in variants:
             p = np.nan_to_num(grid.shift(m.area, sj, si), nan=0.0).reshape(len(m.t_end), -1) * fam["s12h"]
             q = route(net_rain(p, hp["p0_mm"], hp["wet_memory_h"]), net_, hp["clark_k"])      # (Tm, P)

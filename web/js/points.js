@@ -65,7 +65,7 @@ export function renderPoints(root, snap, st) {
   const rows = pointRows(h, st.f);
   if (!rows.length) { root.hidden = true; root.innerHTML = ''; return; }
   root.hidden = false;
-  const key = (r) => r.level >= 2 || (r.pOver ?? 0) >= 0.1 || st.pt === r.pt.id;
+  const key = (r) => r.level >= 2 || st.pt === r.pt.id;
   const main = rows.filter(key), rest = rows.filter((r) => !key(r));
   const body = (list) => list.map((r) => row(r, st.pt === r.pt.id, snap, h)).join('');
   root.innerHTML = `<h2>Cauces</h2>

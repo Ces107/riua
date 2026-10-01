@@ -179,7 +179,7 @@ def basin_product(members: list[Member], frames, bs: BasinSet, params: dict, hor
         fam = params["families"][m.family]
         # displacement uncertainty: a convection-permitting scenario is also tried
         # moved one step N, S, E and W; the unmoved field keeps 40 % of the weight.
-        if fam.get("neigh") and (dj or di):
+        if m.family in ("cp", "radar") and (dj or di):
             variants = [(0, 0, 0.4), (dj, 0, 0.15), (-dj, 0, 0.15), (0, di, 0.15), (0, -di, 0.15)]
         else:
             variants = [(0, 0, 1.0)]

@@ -289,6 +289,25 @@ def _with_timeout(fn, seconds: float):
         ex.shutdown(wait=False, cancel_futures=True)
 
 
+def ens_npz_members(z, run: datetime) -> list[risk.Member]:
+    """ECMWF ENS file (tp since init at 12-hourly steps, cropped to the box) -> one Member per ensemble member.
+    12-h accumulations are spread evenly over their hours (native_step_h = 12: no hourly information)."""
+    data, steps = z["data"], z["steps"].astype(int)             # (M, S, lat, lon) mm since init
+    rg = ingest.regridder("ens025", z["lat"], z["lon"])
+    members = []
+    for k in range(data.shape[0]):
+        t_list, p_list = [], []
+        for s in range(1, len(steps)):
+            dt_h = int(steps[s] - steps[s - 1])
+            inc = np.maximum(rg(data[k, s] - data[k, s - 1]), 0.0) / dt_h
+            for h in range(dt_h):
+                t_list.append(np.datetime64(run + timedelta(hours=int(steps[s - 1]) + h + 1), "h"))
+                p_list.append(inc)
+        members.append(risk.Member(f"ENS m{int(z['members'][k]):02d} · {run:%d/%m %H}Z", "ens", "ifs_ens", run,
+                                   np.array(t_list), np.stack(p_list).astype(np.float32), 12))
+    return members
+
+
 def ens_members(state: Path, now: datetime) -> tuple[list[risk.Member], dict]:
     """ECMWF ENS (51 members, 0.25 deg) straight from ECMWF open data: 12-h accumulations."""
     from .sources import ecmwf_open as E
@@ -318,19 +337,7 @@ def ens_members(state: Path, now: datetime) -> tuple[list[risk.Member], dict]:
             if isinstance(e, TimeoutError):
                 break                                   # resume the download in the next cycle
             continue
-        data, steps = z["data"], z["steps"].astype(int)             # (M, S, lat, lon) mm since init
-        rg = ingest.regridder("ens025", z["lat"], z["lon"])
-        members = []
-        for k in range(data.shape[0]):
-            t_list, p_list = [], []
-            for s in range(1, len(steps)):
-                dt_h = int(steps[s] - steps[s - 1])
-                inc = np.maximum(rg(data[k, s] - data[k, s - 1]), 0.0) / dt_h
-                for h in range(dt_h):
-                    t_list.append(np.datetime64(run + timedelta(hours=int(steps[s - 1]) + h + 1), "h"))
-                    p_list.append(inc)
-            members.append(risk.Member(f"ENS m{int(z['members'][k]):02d} · {run:%d/%m %H}Z", "ens", "ifs_ens", run,
-                                       np.array(t_list), np.stack(p_list).astype(np.float32), 12))
+        members = ens_npz_members(z, run)
         rep.update(ok=True, runs=[run.strftime("%Y-%m-%dT%H:%MZ")], n=len(members))
         for old in (state / "ens").glob("ifsens_tp_*.npz"):
             if old != out:
@@ -370,7 +377,9 @@ def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: 
         prob, p1, p12, e1, e12 = z, z.copy(), z.copy(), z[:2].copy(), z[:2].copy()
     level = risk.decide(prob, params["tau"][hz])
     level[~pred.valid] = 0
-    out = dict(frames=frames, pred=pred, prob=prob, p1=p1, p12=p12, level=level, e1=e1, e12=e12, cals=cals)
+    acc, acc_total = frame_accumulation(members, frames, params, hz, hnow)
+    out = dict(frames=frames, pred=pred, prob=prob, p1=p1, p12=p12, level=level, e1=e1, e12=e12, cals=cals,
+               acc=acc, acc_total=acc_total)
     out["basins"] = B.basin_product(members, frames, bs, params, hz, hnow)
     if net is not None:
         t_axis = np.unique(np.concatenate([m.t_end for m in members])) if members else np.array([], "datetime64[h]")
@@ -378,6 +387,34 @@ def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: 
         t_axis = t_axis[(t_axis > lo) & (t_axis <= frames[-1][1])]
         out["points"] = H.hydro_product(members, frames, net, params, hz, hnow, t_axis)
     return out
+
+
+def frame_accumulation(members, frames, params: dict, hz: str, now: datetime):
+    """Rain expected AT the cell (no neighbourhood): weighted median and 90th percentile over the
+    scenarios of the accumulation inside each frame, (2, F, NY, NX) mm, and over the whole period
+    covered by the frames, (2, NY, NX). The plain "how much will it rain here"."""
+    F = len(frames)
+    out = np.zeros((2, F, grid.NY, grid.NX), np.float32)
+    total = np.zeros((2, grid.NY, grid.NX), np.float32)
+    spans = list(frames) + [(frames[0][0], frames[-1][1])]
+    for f, (t0, t1) in enumerate(spans):
+        need = int((t1 - t0) / np.timedelta64(1, "h"))
+        vals, ws = [], []
+        for m in members:
+            sel = (m.t_end > t0) & (m.t_end <= t1)
+            if sel.sum() < max(1, int(0.75 * need)):
+                continue
+            w = risk.member_weight(m, params, hz, now)
+            if w <= 0:
+                continue
+            vals.append(m.area[sel].sum(axis=0)); ws.append(w)
+        if vals:
+            q = risk.weighted_quantile(np.stack(vals), np.asarray(ws, np.float64).reshape(-1, 1, 1), (0.5, 0.9))
+            if f < F:
+                out[:, f] = q
+            else:
+                total = q
+    return out, total
 
 
 def pack_horizon(hz: str, o: dict, mask: np.ndarray, params: dict) -> tuple[dict, bytes, dict]:
@@ -394,6 +431,8 @@ def pack_horizon(hz: str, o: dict, mask: np.ndarray, params: dict) -> tuple[dict
         "tau": params["tau"][hz],
         "cells": {"level": S.b64(cells(o["level"])), "p": S.b64(S.code_prob(cells(o["prob"]))),
                   "e1": S.b64(S.code_mm(cells(o["e1"]))), "e12": S.b64(S.code_mm(cells(o["e12"]))),
+                  "acc": S.b64(S.code_mm(cells(o["acc"]))),
+                  "acc_total": S.b64(S.code_mm(cells(o["acc_total"]))),
                   "m1": S.b64(S.code_mm(cells(pred.m1))), "q1": S.b64(S.code_mm(cells(pred.q1))),
                   "m12": S.b64(S.code_mm(cells(pred.m12))), "q12": S.b64(S.code_mm(cells(pred.q12)))},
         "members": pred.audit,

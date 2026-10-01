@@ -1,0 +1,2053 @@
+{
+ "generated": "2026-10-01T15:13Z",
+ "truth_cases": [
+  "2024-10-dana",
+  "2024-11-13",
+  "2024-11-fill",
+  "2025-03-03",
+  "2025-09-28",
+  "2025-12-14",
+  "2025-12-28"
+ ],
+ "thresholds_mm": {
+  "1h": [
+   20,
+   40,
+   90,
+   135
+  ],
+  "12h": [
+   60,
+   100,
+   180,
+   300
+  ]
+ },
+ "mid": {
+  "horizon": "mid",
+  "cases": [
+   "2024-10-dana",
+   "2024-11-13",
+   "2024-11-fill",
+   "2025-03-03",
+   "2025-09-28",
+   "2025-12-14",
+   "2025-12-28"
+  ],
+  "n_frames": 226,
+  "n_cell_frames": 228938,
+  "observed_cell_frames": {
+   "2": 26454,
+   "3": 12289,
+   "4": 3704,
+   "5": 693
+  },
+  "tuned": {
+   "sigma": 0.5,
+   "bias": 1.35,
+   "tau": {
+    "2": 0.2,
+    "3": 0.15,
+    "4": 0.2,
+    "5": 0.2
+   },
+   "mean_BSS": 0.218,
+   "BSS": [
+    0.25820492506436443,
+    0.21023258129130928,
+    0.21514411118193333,
+    0.18782477228937122
+   ]
+  },
+  "tau_min40": {
+   "2": 0.4,
+   "3": 0.4,
+   "4": 0.4,
+   "5": 0.4
+  },
+  "in_sample": {
+   "cell": {
+    "2": {
+     "hits": 16715,
+     "misses": 9739,
+     "false_alarms": 21326,
+     "correct_negatives": 181158,
+     "POD": 0.63,
+     "FAR": 0.56,
+     "CSI": 0.35
+    },
+    "3": {
+     "hits": 7221,
+     "misses": 5068,
+     "false_alarms": 14357,
+     "correct_negatives": 202292,
+     "POD": 0.59,
+     "FAR": 0.67,
+     "CSI": 0.27
+    },
+    "4": {
+     "hits": 1530,
+     "misses": 2174,
+     "false_alarms": 2821,
+     "correct_negatives": 222413,
+     "POD": 0.41,
+     "FAR": 0.65,
+     "CSI": 0.23
+    },
+    "5": {
+     "hits": 393,
+     "misses": 300,
+     "false_alarms": 761,
+     "correct_negatives": 227484,
+     "POD": 0.57,
+     "FAR": 0.66,
+     "CSI": 0.27
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 167,
+     "misses": 41,
+     "false_alarms": 68,
+     "correct_negatives": 98,
+     "POD": 0.8,
+     "FAR": 0.29,
+     "CSI": 0.61
+    },
+    "3": {
+     "hits": 102,
+     "misses": 34,
+     "false_alarms": 53,
+     "correct_negatives": 185,
+     "POD": 0.75,
+     "FAR": 0.34,
+     "CSI": 0.54
+    },
+    "4": {
+     "hits": 29,
+     "misses": 34,
+     "false_alarms": 23,
+     "correct_negatives": 288,
+     "POD": 0.46,
+     "FAR": 0.44,
+     "CSI": 0.34
+    },
+    "5": {
+     "hits": 9,
+     "misses": 4,
+     "false_alarms": 8,
+     "correct_negatives": 353,
+     "POD": 0.69,
+     "FAR": 0.47,
+     "CSI": 0.43
+    }
+   }
+  },
+  "in_sample_min40": {
+   "cell": {
+    "2": {
+     "hits": 11166,
+     "misses": 15288,
+     "false_alarms": 8803,
+     "correct_negatives": 193681,
+     "POD": 0.42,
+     "FAR": 0.44,
+     "CSI": 0.32
+    },
+    "3": {
+     "hits": 3284,
+     "misses": 9005,
+     "false_alarms": 3626,
+     "correct_negatives": 213023,
+     "POD": 0.27,
+     "FAR": 0.52,
+     "CSI": 0.21
+    },
+    "4": {
+     "hits": 706,
+     "misses": 2998,
+     "false_alarms": 268,
+     "correct_negatives": 224966,
+     "POD": 0.19,
+     "FAR": 0.28,
+     "CSI": 0.18
+    },
+    "5": {
+     "hits": 12,
+     "misses": 681,
+     "false_alarms": 14,
+     "correct_negatives": 228231,
+     "POD": 0.02,
+     "FAR": 0.54,
+     "CSI": 0.02
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 124,
+     "misses": 84,
+     "false_alarms": 17,
+     "correct_negatives": 149,
+     "POD": 0.6,
+     "FAR": 0.12,
+     "CSI": 0.55
+    },
+    "3": {
+     "hits": 61,
+     "misses": 75,
+     "false_alarms": 14,
+     "correct_negatives": 224,
+     "POD": 0.45,
+     "FAR": 0.19,
+     "CSI": 0.41
+    },
+    "4": {
+     "hits": 8,
+     "misses": 55,
+     "false_alarms": 8,
+     "correct_negatives": 303,
+     "POD": 0.13,
+     "FAR": 0.5,
+     "CSI": 0.11
+    },
+    "5": {
+     "hits": 3,
+     "misses": 10,
+     "false_alarms": 0,
+     "correct_negatives": 361,
+     "POD": 0.23,
+     "FAR": 0.0,
+     "CSI": 0.23
+    }
+   }
+  },
+  "reliability": {
+   "2": [
+    {
+     "p_forecast": 0.004,
+     "observed_freq": 0.033,
+     "n": 165535
+    },
+    {
+     "p_forecast": 0.093,
+     "observed_freq": 0.154,
+     "n": 19296
+    },
+    {
+     "p_forecast": 0.22,
+     "observed_freq": 0.248,
+     "n": 15846
+    },
+    {
+     "p_forecast": 0.395,
+     "observed_freq": 0.377,
+     "n": 15181
+    },
+    {
+     "p_forecast": 0.588,
+     "observed_freq": 0.553,
+     "n": 7426
+    },
+    {
+     "p_forecast": 0.79,
+     "observed_freq": 0.696,
+     "n": 4369
+    },
+    {
+     "p_forecast": 0.943,
+     "observed_freq": 0.909,
+     "n": 1285
+    }
+   ],
+   "3": [
+    {
+     "p_forecast": 0.003,
+     "observed_freq": 0.016,
+     "n": 192370
+    },
+    {
+     "p_forecast": 0.092,
+     "observed_freq": 0.132,
+     "n": 14990
+    },
+    {
+     "p_forecast": 0.215,
+     "observed_freq": 0.238,
+     "n": 10259
+    },
+    {
+     "p_forecast": 0.392,
+     "observed_freq": 0.338,
+     "n": 7812
+    },
+    {
+     "p_forecast": 0.579,
+     "observed_freq": 0.531,
+     "n": 2474
+    },
+    {
+     "p_forecast": 0.785,
+     "observed_freq": 0.798,
+     "n": 1019
+    },
+    {
+     "p_forecast": 0.905,
+     "observed_freq": 1.0,
+     "n": 14
+    }
+   ],
+   "4": [
+    {
+     "p_forecast": 0.002,
+     "observed_freq": 0.005,
+     "n": 214798
+    },
+    {
+     "p_forecast": 0.09,
+     "observed_freq": 0.114,
+     "n": 7738
+    },
+    {
+     "p_forecast": 0.21,
+     "observed_freq": 0.174,
+     "n": 4300
+    },
+    {
+     "p_forecast": 0.378,
+     "observed_freq": 0.423,
+     "n": 1672
+    },
+    {
+     "p_forecast": 0.555,
+     "observed_freq": 0.823,
+     "n": 430
+    }
+   ],
+   "5": [
+    {
+     "p_forecast": 0.001,
+     "observed_freq": 0.001,
+     "n": 224557
+    },
+    {
+     "p_forecast": 0.082,
+     "observed_freq": 0.042,
+     "n": 2892
+    },
+    {
+     "p_forecast": 0.225,
+     "observed_freq": 0.221,
+     "n": 960
+    },
+    {
+     "p_forecast": 0.348,
+     "observed_freq": 0.378,
+     "n": 529
+    }
+   ]
+  },
+  "cross_validated": {
+   "cell": {
+    "2": {
+     "hits": 17158,
+     "misses": 9296,
+     "false_alarms": 23706,
+     "correct_negatives": 178778,
+     "POD": 0.65,
+     "FAR": 0.58,
+     "CSI": 0.34
+    },
+    "3": {
+     "hits": 7338,
+     "misses": 4951,
+     "false_alarms": 15466,
+     "correct_negatives": 201183,
+     "POD": 0.6,
+     "FAR": 0.68,
+     "CSI": 0.26
+    },
+    "4": {
+     "hits": 1620,
+     "misses": 2084,
+     "false_alarms": 4997,
+     "correct_negatives": 220237,
+     "POD": 0.44,
+     "FAR": 0.76,
+     "CSI": 0.19
+    },
+    "5": {
+     "hits": 411,
+     "misses": 282,
+     "false_alarms": 1447,
+     "correct_negatives": 226798,
+     "POD": 0.59,
+     "FAR": 0.78,
+     "CSI": 0.19
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 170,
+     "misses": 38,
+     "false_alarms": 71,
+     "correct_negatives": 95,
+     "POD": 0.82,
+     "FAR": 0.29,
+     "CSI": 0.61
+    },
+    "3": {
+     "hits": 102,
+     "misses": 34,
+     "false_alarms": 54,
+     "correct_negatives": 184,
+     "POD": 0.75,
+     "FAR": 0.35,
+     "CSI": 0.54
+    },
+    "4": {
+     "hits": 27,
+     "misses": 36,
+     "false_alarms": 31,
+     "correct_negatives": 280,
+     "POD": 0.43,
+     "FAR": 0.53,
+     "CSI": 0.29
+    },
+    "5": {
+     "hits": 8,
+     "misses": 5,
+     "false_alarms": 19,
+     "correct_negatives": 342,
+     "POD": 0.62,
+     "FAR": 0.7,
+     "CSI": 0.25
+    }
+   }
+  },
+  "cross_validated_min40": {
+   "cell": {
+    "2": {
+     "hits": 10526,
+     "misses": 15928,
+     "false_alarms": 8571,
+     "correct_negatives": 193913,
+     "POD": 0.4,
+     "FAR": 0.45,
+     "CSI": 0.3
+    },
+    "3": {
+     "hits": 3151,
+     "misses": 9138,
+     "false_alarms": 3640,
+     "correct_negatives": 213009,
+     "POD": 0.26,
+     "FAR": 0.54,
+     "CSI": 0.2
+    },
+    "4": {
+     "hits": 700,
+     "misses": 3004,
+     "false_alarms": 268,
+     "correct_negatives": 224966,
+     "POD": 0.19,
+     "FAR": 0.28,
+     "CSI": 0.18
+    },
+    "5": {
+     "hits": 12,
+     "misses": 681,
+     "false_alarms": 14,
+     "correct_negatives": 228231,
+     "POD": 0.02,
+     "FAR": 0.54,
+     "CSI": 0.02
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 120,
+     "misses": 88,
+     "false_alarms": 16,
+     "correct_negatives": 150,
+     "POD": 0.58,
+     "FAR": 0.12,
+     "CSI": 0.54
+    },
+    "3": {
+     "hits": 59,
+     "misses": 77,
+     "false_alarms": 14,
+     "correct_negatives": 224,
+     "POD": 0.43,
+     "FAR": 0.19,
+     "CSI": 0.39
+    },
+    "4": {
+     "hits": 8,
+     "misses": 55,
+     "false_alarms": 8,
+     "correct_negatives": 303,
+     "POD": 0.13,
+     "FAR": 0.5,
+     "CSI": 0.11
+    },
+    "5": {
+     "hits": 3,
+     "misses": 10,
+     "false_alarms": 0,
+     "correct_negatives": 361,
+     "POD": 0.23,
+     "FAR": 0.0,
+     "CSI": 0.23
+    }
+   }
+  },
+  "cv_picks": [
+   {
+    "held_out": "2024-10-dana",
+    "sigma": 0.5,
+    "bias": 1.35,
+    "tau": {
+     "2": 0.15,
+     "3": 0.15,
+     "4": 0.1,
+     "5": 0.1
+    }
+   },
+   {
+    "held_out": "2024-11-13",
+    "sigma": 0.5,
+    "bias": 1.35,
+    "tau": {
+     "2": 0.2,
+     "3": 0.15,
+     "4": 0.2,
+     "5": 0.2
+    }
+   },
+   {
+    "held_out": "2024-11-fill",
+    "sigma": 0.5,
+    "bias": 1.35,
+    "tau": {
+     "2": 0.2,
+     "3": 0.15,
+     "4": 0.2,
+     "5": 0.2
+    }
+   },
+   {
+    "held_out": "2025-03-03",
+    "sigma": 0.65,
+    "bias": 1.35,
+    "tau": {
+     "2": 0.2,
+     "3": 0.15,
+     "4": 0.25,
+     "5": 0.25
+    }
+   },
+   {
+    "held_out": "2025-09-28",
+    "sigma": 0.65,
+    "bias": 1.15,
+    "tau": {
+     "2": 0.2,
+     "3": 0.15,
+     "4": 0.2,
+     "5": 0.2
+    }
+   },
+   {
+    "held_out": "2025-12-14",
+    "sigma": 0.65,
+    "bias": 1.35,
+    "tau": {
+     "2": 0.2,
+     "3": 0.2,
+     "4": 0.25,
+     "5": 0.25
+    }
+   },
+   {
+    "held_out": "2025-12-28",
+    "sigma": 0.65,
+    "bias": 1.15,
+    "tau": {
+     "2": 0.15,
+     "3": 0.15,
+     "4": 0.25,
+     "5": 0.15
+    }
+   }
+  ],
+  "radius_km": 12.0,
+  "lead_day2_same_settings": {
+   "cell": {
+    "2": {
+     "hits": 10783,
+     "misses": 15671,
+     "false_alarms": 15569,
+     "correct_negatives": 186915,
+     "POD": 0.41,
+     "FAR": 0.59,
+     "CSI": 0.26
+    },
+    "3": {
+     "hits": 3777,
+     "misses": 8512,
+     "false_alarms": 9612,
+     "correct_negatives": 207037,
+     "POD": 0.31,
+     "FAR": 0.72,
+     "CSI": 0.17
+    },
+    "4": {
+     "hits": 733,
+     "misses": 2971,
+     "false_alarms": 1297,
+     "correct_negatives": 223937,
+     "POD": 0.2,
+     "FAR": 0.64,
+     "CSI": 0.15
+    },
+    "5": {
+     "hits": 0,
+     "misses": 693,
+     "false_alarms": 0,
+     "correct_negatives": 228245,
+     "POD": 0.0,
+     "FAR": null,
+     "CSI": 0.0
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 106,
+     "misses": 102,
+     "false_alarms": 24,
+     "correct_negatives": 142,
+     "POD": 0.51,
+     "FAR": 0.18,
+     "CSI": 0.46
+    },
+    "3": {
+     "hits": 55,
+     "misses": 81,
+     "false_alarms": 21,
+     "correct_negatives": 217,
+     "POD": 0.4,
+     "FAR": 0.28,
+     "CSI": 0.35
+    },
+    "4": {
+     "hits": 9,
+     "misses": 54,
+     "false_alarms": 15,
+     "correct_negatives": 296,
+     "POD": 0.14,
+     "FAR": 0.62,
+     "CSI": 0.12
+    },
+    "5": {
+     "hits": 0,
+     "misses": 13,
+     "false_alarms": 0,
+     "correct_negatives": 361,
+     "POD": 0.0,
+     "FAR": null,
+     "CSI": 0.0
+    }
+   }
+  },
+  "deployed": {
+   "cell": {
+    "2": {
+     "hits": 11166,
+     "misses": 15288,
+     "false_alarms": 8803,
+     "correct_negatives": 193681,
+     "POD": 0.42,
+     "FAR": 0.44,
+     "CSI": 0.32
+    },
+    "3": {
+     "hits": 3284,
+     "misses": 9005,
+     "false_alarms": 3626,
+     "correct_negatives": 213023,
+     "POD": 0.27,
+     "FAR": 0.52,
+     "CSI": 0.21
+    },
+    "4": {
+     "hits": 706,
+     "misses": 2998,
+     "false_alarms": 268,
+     "correct_negatives": 224966,
+     "POD": 0.19,
+     "FAR": 0.28,
+     "CSI": 0.18
+    },
+    "5": {
+     "hits": 12,
+     "misses": 681,
+     "false_alarms": 14,
+     "correct_negatives": 228231,
+     "POD": 0.02,
+     "FAR": 0.54,
+     "CSI": 0.02
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 124,
+     "misses": 84,
+     "false_alarms": 17,
+     "correct_negatives": 149,
+     "POD": 0.6,
+     "FAR": 0.12,
+     "CSI": 0.55
+    },
+    "3": {
+     "hits": 61,
+     "misses": 75,
+     "false_alarms": 14,
+     "correct_negatives": 224,
+     "POD": 0.45,
+     "FAR": 0.19,
+     "CSI": 0.41
+    },
+    "4": {
+     "hits": 8,
+     "misses": 55,
+     "false_alarms": 8,
+     "correct_negatives": 303,
+     "POD": 0.13,
+     "FAR": 0.5,
+     "CSI": 0.11
+    },
+    "5": {
+     "hits": 3,
+     "misses": 10,
+     "false_alarms": 0,
+     "correct_negatives": 361,
+     "POD": 0.23,
+     "FAR": 0.0,
+     "CSI": 0.23
+    }
+   }
+  },
+  "deployed_tau": {
+   "2": 0.4,
+   "3": 0.4,
+   "4": 0.4,
+   "5": 0.4
+  }
+ },
+ "long": {
+  "horizon": "long",
+  "cases": [
+   "2024-10-dana",
+   "2024-11-fill",
+   "2025-03-03",
+   "2025-09-28",
+   "2025-12-14",
+   "2025-12-28"
+  ],
+  "n_frames": 34,
+  "n_cell_frames": 34442,
+  "observed_cell_frames": {
+   "2": 10846,
+   "3": 5802,
+   "4": 1972,
+   "5": 496
+  },
+  "tuned": {
+   "sigma": 1.0,
+   "bias": 1.6,
+   "tau": {
+    "2": 0.1,
+    "3": 0.1,
+    "4": 0.15,
+    "5": 0.3
+   },
+   "mean_BSS": 0.046,
+   "BSS": [
+    -0.03331923439357465,
+    0.060060652540201764,
+    0.09788723326538662,
+    0.05838541779163853
+   ]
+  },
+  "tau_min40": {
+   "2": 0.4,
+   "3": 0.4,
+   "4": 0.4,
+   "5": 0.4
+  },
+  "in_sample": {
+   "cell": {
+    "2": {
+     "hits": 6818,
+     "misses": 4028,
+     "false_alarms": 8186,
+     "correct_negatives": 15410,
+     "POD": 0.63,
+     "FAR": 0.55,
+     "CSI": 0.36
+    },
+    "3": {
+     "hits": 3258,
+     "misses": 2544,
+     "false_alarms": 7459,
+     "correct_negatives": 21181,
+     "POD": 0.56,
+     "FAR": 0.7,
+     "CSI": 0.25
+    },
+    "4": {
+     "hits": 937,
+     "misses": 1035,
+     "false_alarms": 2332,
+     "correct_negatives": 30138,
+     "POD": 0.48,
+     "FAR": 0.71,
+     "CSI": 0.22
+    },
+    "5": {
+     "hits": 110,
+     "misses": 386,
+     "false_alarms": 85,
+     "correct_negatives": 33861,
+     "POD": 0.22,
+     "FAR": 0.44,
+     "CSI": 0.19
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 98,
+     "misses": 24,
+     "false_alarms": 29,
+     "correct_negatives": 47,
+     "POD": 0.8,
+     "FAR": 0.23,
+     "CSI": 0.65
+    },
+    "3": {
+     "hits": 64,
+     "misses": 22,
+     "false_alarms": 43,
+     "correct_negatives": 69,
+     "POD": 0.74,
+     "FAR": 0.4,
+     "CSI": 0.5
+    },
+    "4": {
+     "hits": 15,
+     "misses": 28,
+     "false_alarms": 20,
+     "correct_negatives": 135,
+     "POD": 0.35,
+     "FAR": 0.57,
+     "CSI": 0.24
+    },
+    "5": {
+     "hits": 7,
+     "misses": 5,
+     "false_alarms": 4,
+     "correct_negatives": 182,
+     "POD": 0.58,
+     "FAR": 0.36,
+     "CSI": 0.44
+    }
+   }
+  },
+  "in_sample_min40": {
+   "cell": {
+    "2": {
+     "hits": 2560,
+     "misses": 8286,
+     "false_alarms": 1684,
+     "correct_negatives": 21912,
+     "POD": 0.24,
+     "FAR": 0.4,
+     "CSI": 0.2
+    },
+    "3": {
+     "hits": 1156,
+     "misses": 4646,
+     "false_alarms": 1155,
+     "correct_negatives": 27485,
+     "POD": 0.2,
+     "FAR": 0.5,
+     "CSI": 0.17
+    },
+    "4": {
+     "hits": 309,
+     "misses": 1663,
+     "false_alarms": 620,
+     "correct_negatives": 31850,
+     "POD": 0.16,
+     "FAR": 0.67,
+     "CSI": 0.12
+    },
+    "5": {
+     "hits": 0,
+     "misses": 496,
+     "false_alarms": 0,
+     "correct_negatives": 33946,
+     "POD": 0.0,
+     "FAR": null,
+     "CSI": 0.0
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 42,
+     "misses": 80,
+     "false_alarms": 6,
+     "correct_negatives": 70,
+     "POD": 0.34,
+     "FAR": 0.12,
+     "CSI": 0.33
+    },
+    "3": {
+     "hits": 14,
+     "misses": 72,
+     "false_alarms": 4,
+     "correct_negatives": 108,
+     "POD": 0.16,
+     "FAR": 0.22,
+     "CSI": 0.16
+    },
+    "4": {
+     "hits": 8,
+     "misses": 35,
+     "false_alarms": 6,
+     "correct_negatives": 149,
+     "POD": 0.19,
+     "FAR": 0.43,
+     "CSI": 0.16
+    },
+    "5": {
+     "hits": 0,
+     "misses": 12,
+     "false_alarms": 0,
+     "correct_negatives": 186,
+     "POD": 0.0,
+     "FAR": null,
+     "CSI": 0.0
+    }
+   }
+  },
+  "reliability": {
+   "2": [
+    {
+     "p_forecast": 0.015,
+     "observed_freq": 0.168,
+     "n": 15048
+    },
+    {
+     "p_forecast": 0.092,
+     "observed_freq": 0.36,
+     "n": 7063
+    },
+    {
+     "p_forecast": 0.222,
+     "observed_freq": 0.402,
+     "n": 5462
+    },
+    {
+     "p_forecast": 0.381,
+     "observed_freq": 0.446,
+     "n": 4149
+    },
+    {
+     "p_forecast": 0.587,
+     "observed_freq": 0.594,
+     "n": 1218
+    },
+    {
+     "p_forecast": 0.788,
+     "observed_freq": 0.676,
+     "n": 1502
+    }
+   ],
+   "3": [
+    {
+     "p_forecast": 0.012,
+     "observed_freq": 0.088,
+     "n": 19545
+    },
+    {
+     "p_forecast": 0.092,
+     "observed_freq": 0.206,
+     "n": 6801
+    },
+    {
+     "p_forecast": 0.211,
+     "observed_freq": 0.236,
+     "n": 4914
+    },
+    {
+     "p_forecast": 0.386,
+     "observed_freq": 0.45,
+     "n": 1523
+    },
+    {
+     "p_forecast": 0.607,
+     "observed_freq": 0.44,
+     "n": 1449
+    },
+    {
+     "p_forecast": 0.731,
+     "observed_freq": 0.967,
+     "n": 210
+    }
+   ],
+   "4": [
+    {
+     "p_forecast": 0.01,
+     "observed_freq": 0.025,
+     "n": 24908
+    },
+    {
+     "p_forecast": 0.088,
+     "observed_freq": 0.065,
+     "n": 6265
+    },
+    {
+     "p_forecast": 0.217,
+     "observed_freq": 0.278,
+     "n": 1588
+    },
+    {
+     "p_forecast": 0.4,
+     "observed_freq": 0.249,
+     "n": 1535
+    },
+    {
+     "p_forecast": 0.532,
+     "observed_freq": 0.781,
+     "n": 146
+    }
+   ],
+   "5": [
+    {
+     "p_forecast": 0.008,
+     "observed_freq": 0.005,
+     "n": 29904
+    },
+    {
+     "p_forecast": 0.082,
+     "observed_freq": 0.024,
+     "n": 2598
+    },
+    {
+     "p_forecast": 0.221,
+     "observed_freq": 0.103,
+     "n": 1745
+    },
+    {
+     "p_forecast": 0.33,
+     "observed_freq": 0.564,
+     "n": 195
+    }
+   ]
+  },
+  "cross_validated": {
+   "cell": {
+    "2": {
+     "hits": 6494,
+     "misses": 4352,
+     "false_alarms": 7857,
+     "correct_negatives": 15739,
+     "POD": 0.6,
+     "FAR": 0.55,
+     "CSI": 0.35
+    },
+    "3": {
+     "hits": 3043,
+     "misses": 2759,
+     "false_alarms": 6970,
+     "correct_negatives": 21670,
+     "POD": 0.52,
+     "FAR": 0.7,
+     "CSI": 0.24
+    },
+    "4": {
+     "hits": 953,
+     "misses": 1019,
+     "false_alarms": 3614,
+     "correct_negatives": 28856,
+     "POD": 0.48,
+     "FAR": 0.79,
+     "CSI": 0.17
+    },
+    "5": {
+     "hits": 340,
+     "misses": 156,
+     "false_alarms": 2237,
+     "correct_negatives": 31709,
+     "POD": 0.69,
+     "FAR": 0.87,
+     "CSI": 0.12
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 97,
+     "misses": 25,
+     "false_alarms": 29,
+     "correct_negatives": 47,
+     "POD": 0.8,
+     "FAR": 0.23,
+     "CSI": 0.64
+    },
+    "3": {
+     "hits": 62,
+     "misses": 24,
+     "false_alarms": 43,
+     "correct_negatives": 69,
+     "POD": 0.72,
+     "FAR": 0.41,
+     "CSI": 0.48
+    },
+    "4": {
+     "hits": 11,
+     "misses": 32,
+     "false_alarms": 34,
+     "correct_negatives": 121,
+     "POD": 0.26,
+     "FAR": 0.76,
+     "CSI": 0.14
+    },
+    "5": {
+     "hits": 7,
+     "misses": 5,
+     "false_alarms": 12,
+     "correct_negatives": 174,
+     "POD": 0.58,
+     "FAR": 0.63,
+     "CSI": 0.29
+    }
+   }
+  },
+  "cross_validated_min40": {
+   "cell": {
+    "2": {
+     "hits": 2326,
+     "misses": 8520,
+     "false_alarms": 1575,
+     "correct_negatives": 22021,
+     "POD": 0.21,
+     "FAR": 0.4,
+     "CSI": 0.19
+    },
+    "3": {
+     "hits": 1156,
+     "misses": 4646,
+     "false_alarms": 1155,
+     "correct_negatives": 27485,
+     "POD": 0.2,
+     "FAR": 0.5,
+     "CSI": 0.17
+    },
+    "4": {
+     "hits": 309,
+     "misses": 1663,
+     "false_alarms": 620,
+     "correct_negatives": 31850,
+     "POD": 0.16,
+     "FAR": 0.67,
+     "CSI": 0.12
+    },
+    "5": {
+     "hits": 0,
+     "misses": 496,
+     "false_alarms": 0,
+     "correct_negatives": 33946,
+     "POD": 0.0,
+     "FAR": null,
+     "CSI": 0.0
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 41,
+     "misses": 81,
+     "false_alarms": 6,
+     "correct_negatives": 70,
+     "POD": 0.34,
+     "FAR": 0.13,
+     "CSI": 0.32
+    },
+    "3": {
+     "hits": 14,
+     "misses": 72,
+     "false_alarms": 4,
+     "correct_negatives": 108,
+     "POD": 0.16,
+     "FAR": 0.22,
+     "CSI": 0.16
+    },
+    "4": {
+     "hits": 8,
+     "misses": 35,
+     "false_alarms": 6,
+     "correct_negatives": 149,
+     "POD": 0.19,
+     "FAR": 0.43,
+     "CSI": 0.16
+    },
+    "5": {
+     "hits": 0,
+     "misses": 12,
+     "false_alarms": 0,
+     "correct_negatives": 186,
+     "POD": 0.0,
+     "FAR": null,
+     "CSI": 0.0
+    }
+   }
+  },
+  "cv_picks": [
+   {
+    "held_out": "2024-10-dana",
+    "sigma": 1.0,
+    "bias": 1.6,
+    "tau": {
+     "2": 0.1,
+     "3": 0.1,
+     "4": 0.1,
+     "5": 0.1
+    }
+   },
+   {
+    "held_out": "2024-11-fill",
+    "sigma": 1.0,
+    "bias": 1.6,
+    "tau": {
+     "2": 0.1,
+     "3": 0.1,
+     "4": 0.15,
+     "5": 0.3
+    }
+   },
+   {
+    "held_out": "2025-03-03",
+    "sigma": 1.0,
+    "bias": 1.35,
+    "tau": {
+     "2": 0.1,
+     "3": 0.1,
+     "4": 0.15,
+     "5": 0.25
+    }
+   },
+   {
+    "held_out": "2025-09-28",
+    "sigma": 1.0,
+    "bias": 1.35,
+    "tau": {
+     "2": 0.1,
+     "3": 0.1,
+     "4": 0.15,
+     "5": 0.25
+    }
+   },
+   {
+    "held_out": "2025-12-14",
+    "sigma": 1.0,
+    "bias": 1.6,
+    "tau": {
+     "2": 0.1,
+     "3": 0.1,
+     "4": 0.15,
+     "5": 0.3
+    }
+   },
+   {
+    "held_out": "2025-12-28",
+    "sigma": 0.8,
+    "bias": 1.6,
+    "tau": {
+     "2": 0.1,
+     "3": 0.1,
+     "4": 0.15,
+     "5": 0.25
+    }
+   }
+  ],
+  "deployed": {
+   "cell": {
+    "2": {
+     "hits": 2560,
+     "misses": 8286,
+     "false_alarms": 1684,
+     "correct_negatives": 21912,
+     "POD": 0.24,
+     "FAR": 0.4,
+     "CSI": 0.2
+    },
+    "3": {
+     "hits": 1156,
+     "misses": 4646,
+     "false_alarms": 1155,
+     "correct_negatives": 27485,
+     "POD": 0.2,
+     "FAR": 0.5,
+     "CSI": 0.17
+    },
+    "4": {
+     "hits": 309,
+     "misses": 1663,
+     "false_alarms": 620,
+     "correct_negatives": 31850,
+     "POD": 0.16,
+     "FAR": 0.67,
+     "CSI": 0.12
+    },
+    "5": {
+     "hits": 0,
+     "misses": 496,
+     "false_alarms": 0,
+     "correct_negatives": 33946,
+     "POD": 0.0,
+     "FAR": null,
+     "CSI": 0.0
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 42,
+     "misses": 80,
+     "false_alarms": 6,
+     "correct_negatives": 70,
+     "POD": 0.34,
+     "FAR": 0.12,
+     "CSI": 0.33
+    },
+    "3": {
+     "hits": 14,
+     "misses": 72,
+     "false_alarms": 4,
+     "correct_negatives": 108,
+     "POD": 0.16,
+     "FAR": 0.22,
+     "CSI": 0.16
+    },
+    "4": {
+     "hits": 8,
+     "misses": 35,
+     "false_alarms": 6,
+     "correct_negatives": 149,
+     "POD": 0.19,
+     "FAR": 0.43,
+     "CSI": 0.16
+    },
+    "5": {
+     "hits": 0,
+     "misses": 12,
+     "false_alarms": 0,
+     "correct_negatives": 186,
+     "POD": 0.0,
+     "FAR": null,
+     "CSI": 0.0
+    }
+   }
+  },
+  "deployed_tau": {
+   "2": 0.4,
+   "3": 0.4,
+   "4": 0.4,
+   "5": 0.4
+  }
+ },
+ "now": {
+  "horizon": "now",
+  "cases": [
+   "2024-10-dana",
+   "2024-11-13",
+   "2024-11-fill"
+  ],
+  "n_frames": 684,
+  "n_cell_frames": 692892,
+  "observed_cell_frames": {
+   "2": 35503,
+   "3": 18265,
+   "4": 6690,
+   "5": 1192
+  },
+  "tuned": {
+   "sigma": 0.2,
+   "bias": 0.9,
+   "tau": {
+    "2": 0.45,
+    "3": 0.35,
+    "4": 0.35,
+    "5": 0.55
+   },
+   "mean_BSS": 0.683,
+   "BSS": [
+    0.7169753454095585,
+    0.7315770988373789,
+    0.7043402503763628,
+    0.5808719484289625
+   ]
+  },
+  "tau_min40": {
+   "2": 0.4,
+   "3": 0.4,
+   "4": 0.4,
+   "5": 0.55
+  },
+  "in_sample": {
+   "cell": {
+    "2": {
+     "hits": 27337,
+     "misses": 8166,
+     "false_alarms": 3402,
+     "correct_negatives": 653987,
+     "POD": 0.77,
+     "FAR": 0.11,
+     "CSI": 0.7
+    },
+    "3": {
+     "hits": 14353,
+     "misses": 3912,
+     "false_alarms": 2083,
+     "correct_negatives": 672544,
+     "POD": 0.79,
+     "FAR": 0.13,
+     "CSI": 0.71
+    },
+    "4": {
+     "hits": 5076,
+     "misses": 1614,
+     "false_alarms": 842,
+     "correct_negatives": 685360,
+     "POD": 0.76,
+     "FAR": 0.14,
+     "CSI": 0.67
+    },
+    "5": {
+     "hits": 715,
+     "misses": 477,
+     "false_alarms": 83,
+     "correct_negatives": 691617,
+     "POD": 0.6,
+     "FAR": 0.1,
+     "CSI": 0.56
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 66,
+     "misses": 9,
+     "false_alarms": 8,
+     "correct_negatives": 82,
+     "POD": 0.88,
+     "FAR": 0.11,
+     "CSI": 0.8
+    },
+    "3": {
+     "hits": 42,
+     "misses": 9,
+     "false_alarms": 7,
+     "correct_negatives": 107,
+     "POD": 0.82,
+     "FAR": 0.14,
+     "CSI": 0.72
+    },
+    "4": {
+     "hits": 20,
+     "misses": 3,
+     "false_alarms": 3,
+     "correct_negatives": 139,
+     "POD": 0.87,
+     "FAR": 0.13,
+     "CSI": 0.77
+    },
+    "5": {
+     "hits": 5,
+     "misses": 1,
+     "false_alarms": 5,
+     "correct_negatives": 154,
+     "POD": 0.83,
+     "FAR": 0.5,
+     "CSI": 0.45
+    }
+   }
+  },
+  "in_sample_min40": {
+   "cell": {
+    "2": {
+     "hits": 27754,
+     "misses": 7749,
+     "false_alarms": 4099,
+     "correct_negatives": 653290,
+     "POD": 0.78,
+     "FAR": 0.13,
+     "CSI": 0.7
+    },
+    "3": {
+     "hits": 14127,
+     "misses": 4138,
+     "false_alarms": 1764,
+     "correct_negatives": 672863,
+     "POD": 0.77,
+     "FAR": 0.11,
+     "CSI": 0.71
+    },
+    "4": {
+     "hits": 4959,
+     "misses": 1731,
+     "false_alarms": 623,
+     "correct_negatives": 685579,
+     "POD": 0.74,
+     "FAR": 0.11,
+     "CSI": 0.68
+    },
+    "5": {
+     "hits": 715,
+     "misses": 477,
+     "false_alarms": 83,
+     "correct_negatives": 691617,
+     "POD": 0.6,
+     "FAR": 0.1,
+     "CSI": 0.56
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 67,
+     "misses": 8,
+     "false_alarms": 10,
+     "correct_negatives": 80,
+     "POD": 0.89,
+     "FAR": 0.13,
+     "CSI": 0.79
+    },
+    "3": {
+     "hits": 42,
+     "misses": 9,
+     "false_alarms": 5,
+     "correct_negatives": 109,
+     "POD": 0.82,
+     "FAR": 0.11,
+     "CSI": 0.75
+    },
+    "4": {
+     "hits": 20,
+     "misses": 3,
+     "false_alarms": 3,
+     "correct_negatives": 139,
+     "POD": 0.87,
+     "FAR": 0.13,
+     "CSI": 0.77
+    },
+    "5": {
+     "hits": 5,
+     "misses": 1,
+     "false_alarms": 5,
+     "correct_negatives": 154,
+     "POD": 0.83,
+     "FAR": 0.5,
+     "CSI": 0.45
+    }
+   }
+  },
+  "reliability": {
+   "2": [
+    {
+     "p_forecast": 0.001,
+     "observed_freq": 0.007,
+     "n": 640918
+    },
+    {
+     "p_forecast": 0.091,
+     "observed_freq": 0.119,
+     "n": 11076
+    },
+    {
+     "p_forecast": 0.217,
+     "observed_freq": 0.205,
+     "n": 6482
+    },
+    {
+     "p_forecast": 0.395,
+     "observed_freq": 0.36,
+     "n": 4769
+    },
+    {
+     "p_forecast": 0.602,
+     "observed_freq": 0.601,
+     "n": 4351
+    },
+    {
+     "p_forecast": 0.805,
+     "observed_freq": 0.86,
+     "n": 4883
+    },
+    {
+     "p_forecast": 0.989,
+     "observed_freq": 0.982,
+     "n": 20413
+    }
+   ],
+   "3": [
+    {
+     "p_forecast": 0.0,
+     "observed_freq": 0.003,
+     "n": 667306
+    },
+    {
+     "p_forecast": 0.089,
+     "observed_freq": 0.121,
+     "n": 5293
+    },
+    {
+     "p_forecast": 0.218,
+     "observed_freq": 0.239,
+     "n": 3200
+    },
+    {
+     "p_forecast": 0.4,
+     "observed_freq": 0.404,
+     "n": 2394
+    },
+    {
+     "p_forecast": 0.601,
+     "observed_freq": 0.637,
+     "n": 2339
+    },
+    {
+     "p_forecast": 0.808,
+     "observed_freq": 0.915,
+     "n": 2675
+    },
+    {
+     "p_forecast": 0.984,
+     "observed_freq": 0.997,
+     "n": 9685
+    }
+   ],
+   "4": [
+    {
+     "p_forecast": 0.0,
+     "observed_freq": 0.001,
+     "n": 682603
+    },
+    {
+     "p_forecast": 0.094,
+     "observed_freq": 0.152,
+     "n": 2282
+    },
+    {
+     "p_forecast": 0.213,
+     "observed_freq": 0.238,
+     "n": 1742
+    },
+    {
+     "p_forecast": 0.397,
+     "observed_freq": 0.417,
+     "n": 1327
+    },
+    {
+     "p_forecast": 0.6,
+     "observed_freq": 0.743,
+     "n": 1066
+    },
+    {
+     "p_forecast": 0.813,
+     "observed_freq": 0.976,
+     "n": 1511
+    },
+    {
+     "p_forecast": 0.973,
+     "observed_freq": 1.0,
+     "n": 2361
+    }
+   ],
+   "5": [
+    {
+     "p_forecast": 0.0,
+     "observed_freq": 0.0,
+     "n": 689582
+    },
+    {
+     "p_forecast": 0.093,
+     "observed_freq": 0.066,
+     "n": 1206
+    },
+    {
+     "p_forecast": 0.213,
+     "observed_freq": 0.108,
+     "n": 780
+    },
+    {
+     "p_forecast": 0.403,
+     "observed_freq": 0.297,
+     "n": 437
+    },
+    {
+     "p_forecast": 0.593,
+     "observed_freq": 0.588,
+     "n": 323
+    },
+    {
+     "p_forecast": 0.805,
+     "observed_freq": 0.938,
+     "n": 210
+    },
+    {
+     "p_forecast": 0.968,
+     "observed_freq": 1.0,
+     "n": 354
+    }
+   ]
+  },
+  "cross_validated": {
+   "cell": {
+    "2": {
+     "hits": 27737,
+     "misses": 7766,
+     "false_alarms": 4068,
+     "correct_negatives": 653321,
+     "POD": 0.78,
+     "FAR": 0.13,
+     "CSI": 0.7
+    },
+    "3": {
+     "hits": 14357,
+     "misses": 3908,
+     "false_alarms": 2139,
+     "correct_negatives": 672488,
+     "POD": 0.79,
+     "FAR": 0.13,
+     "CSI": 0.7
+    },
+    "4": {
+     "hits": 4666,
+     "misses": 2024,
+     "false_alarms": 529,
+     "correct_negatives": 685673,
+     "POD": 0.7,
+     "FAR": 0.1,
+     "CSI": 0.65
+    },
+    "5": {
+     "hits": 987,
+     "misses": 205,
+     "false_alarms": 1449,
+     "correct_negatives": 690251,
+     "POD": 0.83,
+     "FAR": 0.59,
+     "CSI": 0.37
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 67,
+     "misses": 8,
+     "false_alarms": 10,
+     "correct_negatives": 80,
+     "POD": 0.89,
+     "FAR": 0.13,
+     "CSI": 0.79
+    },
+    "3": {
+     "hits": 42,
+     "misses": 9,
+     "false_alarms": 7,
+     "correct_negatives": 107,
+     "POD": 0.82,
+     "FAR": 0.14,
+     "CSI": 0.72
+    },
+    "4": {
+     "hits": 20,
+     "misses": 3,
+     "false_alarms": 3,
+     "correct_negatives": 139,
+     "POD": 0.87,
+     "FAR": 0.13,
+     "CSI": 0.77
+    },
+    "5": {
+     "hits": 6,
+     "misses": 0,
+     "false_alarms": 8,
+     "correct_negatives": 151,
+     "POD": 1.0,
+     "FAR": 0.57,
+     "CSI": 0.43
+    }
+   }
+  },
+  "cross_validated_min40": {
+   "cell": {
+    "2": {
+     "hits": 27754,
+     "misses": 7749,
+     "false_alarms": 4099,
+     "correct_negatives": 653290,
+     "POD": 0.78,
+     "FAR": 0.13,
+     "CSI": 0.7
+    },
+    "3": {
+     "hits": 14127,
+     "misses": 4138,
+     "false_alarms": 1764,
+     "correct_negatives": 672863,
+     "POD": 0.77,
+     "FAR": 0.11,
+     "CSI": 0.71
+    },
+    "4": {
+     "hits": 4649,
+     "misses": 2041,
+     "false_alarms": 397,
+     "correct_negatives": 685805,
+     "POD": 0.69,
+     "FAR": 0.08,
+     "CSI": 0.66
+    },
+    "5": {
+     "hits": 818,
+     "misses": 374,
+     "false_alarms": 304,
+     "correct_negatives": 691396,
+     "POD": 0.69,
+     "FAR": 0.27,
+     "CSI": 0.55
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 67,
+     "misses": 8,
+     "false_alarms": 10,
+     "correct_negatives": 80,
+     "POD": 0.89,
+     "FAR": 0.13,
+     "CSI": 0.79
+    },
+    "3": {
+     "hits": 42,
+     "misses": 9,
+     "false_alarms": 5,
+     "correct_negatives": 109,
+     "POD": 0.82,
+     "FAR": 0.11,
+     "CSI": 0.75
+    },
+    "4": {
+     "hits": 20,
+     "misses": 3,
+     "false_alarms": 2,
+     "correct_negatives": 140,
+     "POD": 0.87,
+     "FAR": 0.09,
+     "CSI": 0.8
+    },
+    "5": {
+     "hits": 6,
+     "misses": 0,
+     "false_alarms": 7,
+     "correct_negatives": 152,
+     "POD": 1.0,
+     "FAR": 0.54,
+     "CSI": 0.46
+    }
+   }
+  },
+  "cv_picks": [
+   {
+    "held_out": "2024-10-dana",
+    "sigma": 0.2,
+    "bias": 0.9,
+    "tau": {
+     "2": 0.4,
+     "3": 0.35,
+     "4": 0.5,
+     "5": 0.1
+    }
+   },
+   {
+    "held_out": "2024-11-13",
+    "sigma": 0.2,
+    "bias": 0.9,
+    "tau": {
+     "2": 0.4,
+     "3": 0.35,
+     "4": 0.3,
+     "5": 0.4
+    }
+   },
+   {
+    "held_out": "2024-11-fill",
+    "sigma": 0.2,
+    "bias": 0.9,
+    "tau": {
+     "2": 0.45,
+     "3": 0.3,
+     "4": 0.35,
+     "5": 0.55
+    }
+   }
+  ],
+  "deployed": {
+   "cell": {
+    "2": {
+     "hits": 27337,
+     "misses": 8166,
+     "false_alarms": 3402,
+     "correct_negatives": 653987,
+     "POD": 0.77,
+     "FAR": 0.11,
+     "CSI": 0.7
+    },
+    "3": {
+     "hits": 14127,
+     "misses": 4138,
+     "false_alarms": 1764,
+     "correct_negatives": 672863,
+     "POD": 0.77,
+     "FAR": 0.11,
+     "CSI": 0.71
+    },
+    "4": {
+     "hits": 4959,
+     "misses": 1731,
+     "false_alarms": 623,
+     "correct_negatives": 685579,
+     "POD": 0.74,
+     "FAR": 0.11,
+     "CSI": 0.68
+    },
+    "5": {
+     "hits": 715,
+     "misses": 477,
+     "false_alarms": 83,
+     "correct_negatives": 691617,
+     "POD": 0.6,
+     "FAR": 0.1,
+     "CSI": 0.56
+    }
+   },
+   "zone_day": {
+    "2": {
+     "hits": 66,
+     "misses": 9,
+     "false_alarms": 8,
+     "correct_negatives": 82,
+     "POD": 0.88,
+     "FAR": 0.11,
+     "CSI": 0.8
+    },
+    "3": {
+     "hits": 42,
+     "misses": 9,
+     "false_alarms": 5,
+     "correct_negatives": 109,
+     "POD": 0.82,
+     "FAR": 0.11,
+     "CSI": 0.75
+    },
+    "4": {
+     "hits": 20,
+     "misses": 3,
+     "false_alarms": 3,
+     "correct_negatives": 139,
+     "POD": 0.87,
+     "FAR": 0.13,
+     "CSI": 0.77
+    },
+    "5": {
+     "hits": 5,
+     "misses": 1,
+     "false_alarms": 5,
+     "correct_negatives": 154,
+     "POD": 0.83,
+     "FAR": 0.5,
+     "CSI": 0.45
+    }
+   }
+  },
+  "deployed_tau": {
+   "2": 0.45,
+   "3": 0.4,
+   "4": 0.4,
+   "5": 0.55
+  }
+ },
+ "hydrology_poyo_2024": {
+  "observed": "SAIH Rambla del Poyo (A-3): 2283 m3/s at 18:55 local (17:55 UTC) on 29 Oct 2024, then the sensor was lost",
+  "rain_input": "radar-gauge analysis, cell means",
+  "runs": [
+   {
+    "p0_mm": 15.0,
+    "poyo-chiva": {
+     "peak_m3s": 857,
+     "peak_utc": "2024-10-29T21"
+    },
+    "poyo-ribarroja": {
+     "peak_m3s": 2611,
+     "peak_utc": "2024-10-29T23"
+    },
+    "poyo-paiporta": {
+     "peak_m3s": 3379,
+     "peak_utc": "2024-10-30T01"
+    },
+    "magro-algemesi": {
+     "peak_m3s": 3400,
+     "peak_utc": "2024-10-29T20"
+    }
+   },
+   {
+    "p0_mm": 25.0,
+    "poyo-chiva": {
+     "peak_m3s": 813,
+     "peak_utc": "2024-10-29T21"
+    },
+    "poyo-ribarroja": {
+     "peak_m3s": 2472,
+     "peak_utc": "2024-10-29T23"
+    },
+    "poyo-paiporta": {
+     "peak_m3s": 3205,
+     "peak_utc": "2024-10-30T01"
+    },
+    "magro-algemesi": {
+     "peak_m3s": 3048,
+     "peak_utc": "2024-10-29T20"
+    }
+   },
+   {
+    "p0_mm": 40.0,
+    "poyo-chiva": {
+     "peak_m3s": 738,
+     "peak_utc": "2024-10-29T21"
+    },
+    "poyo-ribarroja": {
+     "peak_m3s": 2238,
+     "peak_utc": "2024-10-29T23"
+    },
+    "poyo-paiporta": {
+     "peak_m3s": 2915,
+     "peak_utc": "2024-10-30T01"
+    },
+    "magro-algemesi": {
+     "peak_m3s": 2552,
+     "peak_utc": "2024-10-29T20"
+    }
+   }
+  ]
+ },
+ "policy": "floor40"
+}

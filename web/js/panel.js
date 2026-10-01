@@ -6,7 +6,7 @@ import { cellAt, cellCentre, cellFrame, mmOrNull } from './data.js';
 import { basinAt, cellBasin, cellZone, distKm, downstreamChain, geo, nearest, zoneAt } from './geo.js';
 import { auditHtml, cellExport, thresholdsFor } from './auditview.js';
 import { pointRows, rpTxt } from './points.js';
-import { dayTime, esc, frameLabel, num, parts, pct } from './time.js';
+import { dayTime, esc, frameLabel, num, parts, pct, spanLabel } from './time.js';
 
 export const lv = (L) => `<span class="lv lv${L}">${L === 0 ? '–' : L}</span>`;
 const SOURCE = { saih_chj: 'SAIH Júcar', saih_segura: 'SAIH Segura', saih_ebro: 'SAIH Ebro', aemet: 'AEMET', avamet: 'AVAMET', meteoclimatic: 'Meteoclimatic' };
@@ -106,9 +106,36 @@ function summary(snap) {
   const wrow = [...byZone.values()].sort((a, b) => b.L - a.L).map((g) => warnRow(g, true)).join('');
 
   return `${zrows ? `<h3>Zonas</h3><ul class="rows">${zrows}</ul>` : `<div class="lvl">${lv(1)}<div><b>Sin riesgo</b><span class="num dim">7 días</span></div></div>`}
-${prow ? `<h3>Cauces</h3><ul class="rows">${prow}</ul>` : ''}
 <h3>Avisos AEMET</h3>${wrow ? `<ul class="rows">${wrow}</ul>` : '<p class="dim">Ninguno de lluvia.</p>'}
-<p class="num dim" style="margin-top:.4rem"><a href="${AEMET_URL}">aemet.es</a></p>`;
+<p class="num dim" style="margin:.4rem 0 1rem"><a href="${AEMET_URL}">aemet.es</a></p>
+${atmosphere(snap)}`;
+}
+
+// ---- atmosphere: the ingredients of heavy rain along the coast, every 6 h ---------------------------
+
+const WIND = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+const card = (deg) => (deg == null ? '' : WIND[Math.round(deg / 45) % 8]);
+
+function atmosphere(snap) {
+  const d = snap.drivers;
+  if (!d || !d.series || !Array.isArray(d.times)) return '';
+  const now = Date.now();
+  const idx = [];
+  d.times.forEach((t, k) => { const ms = Date.parse(t); if (ms >= now - 3 * 3600e3 && idx.length < 6 && (!idx.length || ms - Date.parse(d.times[idx[idx.length - 1]]) >= 6 * 3600e3 - 1)) idx.push(k); });
+  if (!idx.length) return '';
+  const g = (k) => (d.series[k] && Array.isArray(d.series[k].strip) ? d.series[k].strip : null);
+  const row = (label, title, f) => `<tr><th title="${title}">${label}</th>${idx.map((k) => `<td>${f(k)}</td>`).join('')}</tr>`;
+  const val = (k, dec = 0) => (i) => { const a = g(k); return a && a[i] != null ? num(a[i], dec) : '—'; };
+  const wind = (ks, kd) => (i) => { const a = g(ks), b = g(kd); return a && a[i] != null ? `${num(a[i])} ${card(b ? b[i] : null)}` : '—'; };
+  const head = idx.map((k) => { const p = parts(new Date(d.times[k])); return `<th>${p.wd} ${p.hh}</th>`; }).join('');
+  return `<details><summary>Atmósfera</summary><div class="scroll"><table class="data"><thead><tr><th></th>${head}</tr></thead><tbody>
+${row('Agua precipitable mm', 'vapor de agua en la columna (litoral, percentil 90)', val('pwat'))}
+${row('Transporte IVT', 'transporte integrado de vapor, kg/m/s, y de dónde viene', wind('ivt', 'ivt_dir'))}
+${row('CAPE J/kg', 'energía convectiva de la parcela más inestable', val('mucape'))}
+${row('Nube cálida m', 'espesor entre la base de la nube y la isocero: lluvia eficiente por encima de 3000', val('wcd'))}
+${row('Chorro bajo m/s', 'viento máximo en capas bajas y de dónde viene', wind('llj_speed', 'llj_dir'))}
+${row('Corfidi m/s', 'velocidad del vector de propagación: por debajo de 5, tormentas casi estacionarias', val('corfidi_up', 1))}
+</tbody></table></div></details>`;
 }
 
 // ---- place ----------------------------------------------------------------------------------------
@@ -140,14 +167,16 @@ function bars(ctx, cf) {
 }
 
 function rain(ctx, cf) {
-  const thr = thresholdsFor(ctx.snap, ctx.zone);
-  const o = ctx.snap.obs;
-  const fallen = o && o.o1.length ? [mmOrNull(o.o1[ctx.n]), mmOrNull(o.o12[ctx.n])] : [null, null];
-  return `<table class="data"><thead><tr><th>mm</th><th>1 h</th><th>12 h</th></tr></thead><tbody>
-<tr><th>típica</th><td>${mm0(cf.e1[0])}</td><td>${mm0(cf.e12[0])}</td></tr>
-<tr><th title="1 de cada 10 escenarios la supera">alta</th><td>${mm0(cf.e1[1])}</td><td>${mm0(cf.e12[1])}</td></tr>
-<tr><th>umbral rojo</th><td>${num(thr.t1[2])}</td><td>${num(thr.t12[2])}</td></tr>
-<tr><th>ya caída</th><td>${mm0(fallen[0])}</td><td>${mm0(fallen[1])}</td></tr></tbody></table>`;
+  // one number: the rain expected at this point. Whole period in the "máximo" view, the slot otherwise.
+  const h = ctx.h;
+  let a = cf.acc, label = frameLabel(ctx.hzKey, h.frames[ctx.f]);
+  if (ctx.isMax && h.accTotal.length === 2 * h.N) {
+    a = [mmOrNull(h.accTotal[ctx.n]), mmOrNull(h.accTotal[h.N + ctx.n])];
+    label = { now: 'en 6 h', mid: 'en 48 h', long: 'días 2–7' }[ctx.hzKey] || spanLabel(h.frames);
+  }
+  if (!a || a[0] == null) return '';
+  const hi = a[1] != null && a[1] > a[0] + 0.5 ? `<span class="hi" title="1 de cada 10 escenarios lo supera">hasta ${mm0(a[1])}</span>` : '';
+  return `<p class="rain"><b>${mm0(a[0])} mm</b> ${hi}<span class="num dim">${esc(label)}</span></p>`;
 }
 
 function worstIdx(levelFX, pFX, idx) {
@@ -212,7 +241,7 @@ export function renderPanel(root, snap, st, hooks) {
 <span class="num">${esc(frameLabel(ctx.hzKey, ctx.h.frames[ctx.f]))}</span></div></div>
 ${strip(ctx, st)}
 <h3>Probabilidad</h3>${bars(ctx, cf)}
-<h3>Lluvia</h3>${rain(ctx, cf)}
+${rain(ctx, cf) ? `<h3>Lluvia prevista aquí</h3>${rain(ctx, cf)}` : ''}
 ${extra ? `<h3>Cauces</h3><ul class="rows">${extra}</ul>` : ''}
 ${zoneWarnings(ctx)}
 <details class="g"><summary>Pluviómetros</summary><div>${gauges(ctx)}</div></details>

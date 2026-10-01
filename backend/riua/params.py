@@ -48,7 +48,7 @@ DEFAULTS: dict = {
     # --- Neighbourhood radius (km) by horizon, for convection-permitting members -----
     # A 12-km maximum already covers a whole Riuà cell plus a typical 6-12 h displacement
     # error; larger radii inflate every amount relative to what falls in one cell.
-    "radius_km": {"now": 6.0, "mid": 12.0, "long": 0.0},
+    "radius_km": {"now": 6.0, "mid": 12.0, "long": 12.0},
     # Displacement applied to each convection-permitting member for basin means (km).
     "basin_shift_km": {"now": 6.0, "mid": 12.0, "long": 0.0},
     # --- Model families ---------------------------------------------------------------
@@ -59,9 +59,9 @@ DEFAULTS: dict = {
     "families": {
         "radar":    {"weight": 0.15, "s1h": 1.0, "s12h": 1.0, "use_1h": True,  "neigh": True},
         "cp":       {"weight": 1.0, "s1h": 1.0, "s12h": 1.0, "use_1h": True,  "neigh": True,  "sampled": True},
-        "regional": {"weight": 0.6, "s1h": 1.6, "s12h": 1.2, "use_1h": True,  "neigh": False, "sampled": True},
-        "global":   {"weight": 0.5, "s1h": 2.2, "s12h": 1.3, "use_1h": False, "neigh": False},
-        "ens":      {"weight": 0.04, "s1h": 2.2, "s12h": 1.5, "use_1h": False, "neigh": False},
+        "regional": {"weight": 0.6, "s1h": 1.6, "s12h": 1.2, "use_1h": True,  "neigh": True, "sampled": True},
+        "global":   {"weight": 0.5, "s1h": 2.2, "s12h": 1.3, "use_1h": False, "neigh": True, "sampled": True},
+        "ens":      {"weight": 0.04, "s1h": 2.2, "s12h": 1.5, "use_1h": False, "neigh": True},
     },
     # radius used only to bridge the 0.1 deg sampling lattice for members without neighbourhood
     "lattice_fill_km": 8.0,

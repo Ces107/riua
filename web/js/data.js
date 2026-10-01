@@ -57,7 +57,7 @@ export function prepare(raw, origin) {
     }
     hz[key] = {
       key, F, N, frames, tau: h.tau, sigma: h.sigma, bias: h.bias ?? 1, fam: h.fam || null, level, p, top, maxLevel, maxFrame,
-      e1: b64(h.cells.e1), e12: b64(h.cells.e12),
+      e1: b64(h.cells.e1), e12: b64(h.cells.e12), acc: h.cells.acc ? b64(h.cells.acc) : new Uint8Array(0), accTotal: h.cells.acc_total ? b64(h.cells.acc_total) : new Uint8Array(0),
       m1: b64(h.cells.m1), q1: b64(h.cells.q1), m12: b64(h.cells.m12), q12: b64(h.cells.q12),
       members: h.members || [], basins: h.basins || null, points: h.points || null,
       explain: (raw.explain || {})[key] || null,
@@ -94,7 +94,7 @@ export function cellFrame(h, f, n) {
   return {
     level: h.level[o],
     p: [0, 1, 2, 3].map((k) => (h.p.length === 4 * FN ? prob(h.p[k * FN + o]) : null)),
-    e1: two(h.e1), e12: two(h.e12),
+    e1: two(h.e1), e12: two(h.e12), acc: two(h.acc),
     m1: h.m1.length === FN ? mmOrNull(h.m1[o]) : null, q1: h.q1.length === FN ? mmOrNull(h.q1[o]) : null,
     m12: h.m12.length === FN ? mmOrNull(h.m12[o]) : null, q12: h.q12.length === FN ? mmOrNull(h.q12[o]) : null,
   };
