@@ -66,7 +66,7 @@ r = max(s1·rain_1h / T_1h , s12·rain_12h / T_12h)        P(≥ level) = Σ wei
 
 `s` corrects coarse models, `b` and `σ` come from the hindcast. A censored-shifted-gamma EMOS (Scheuerer & Hamill 2015) is implemented in `core/emos.py` and switches on only when a fitted calibration is present.
 
-**Decision rule.** The level is the highest L whose probability reaches τ_L. τ decreases with severity but never goes below 0.40. Current values are in `backend/riua/params.json` (tuned) over `params.py` (defaults).
+**Decision rule.** The level is the highest L whose probability reaches τ_L. τ is 0.40–0.50 for the next six hours, 0.20–0.25 a day ahead (warning services issue a severe tier from 10–30 %; at 0.40 only 13 % of red zone-days were detected, at 0.20 46 %) and 0.25–0.40 for days 2–7. Current values are in `backend/riua/params.json` (tuned) over `params.py` (defaults).
 
 **Basins.** Each scenario is also averaged over every basin unit and over everything upstream of it, for 1, 3, 6 and 12 h, against the thresholds reduced by the areal factor of Norma 5.2-IC. Rain already on its way from upstream counts.
 
@@ -90,17 +90,17 @@ See `hindcast/results.json` and the Validación page. Method: forecasts that rea
 
 | Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |
 |---|---|---|---|---|---|---|
-| 2 | 40 % | 124 | 84 | 17 | 60 % | 12 % |
-| 3 | 40 % | 61 | 75 | 14 | 45 % | 19 % |
-| 4 | 40 % | 8 | 55 | 8 | 13 % | 50 % |
-| 5 | 40 % | 3 | 10 | 0 | 23 % | 0 % |
+| 2 | 20 % | 167 | 41 | 68 | 80 % | 29 % |
+| 3 | 20 % | 94 | 42 | 40 | 69 % | 30 % |
+| 4 | 20 % | 29 | 34 | 23 | 46 % | 44 % |
+| 5 | 25 % | 7 | 6 | 8 | 54 % | 53 % |
 
 **Days 2–7 (issued 3 and 5 days before)** — 6 cases, 34 frames, σ = 1.0, bias = 1.6; per warning zone and day:
 
 | Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |
 |---|---|---|---|---|---|---|
-| 2 | 40 % | 42 | 80 | 6 | 34 % | 12 % |
-| 3 | 40 % | 14 | 72 | 4 | 16 % | 22 % |
+| 2 | 25 % | 71 | 51 | 20 | 58 % | 22 % |
+| 3 | 25 % | 34 | 52 | 15 | 40 % | 31 % |
 | 4 | 40 % | 8 | 35 | 6 | 19 % | 43 % |
 | 5 | 40 % | 0 | 12 | 0 | 0 % | — |
 

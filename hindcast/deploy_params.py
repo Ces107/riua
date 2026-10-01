@@ -3,6 +3,7 @@
     python hindcast/deploy_params.py floor40     # nothing below 40 % (owner's rule)
     python hindcast/deploy_params.py tuned       # CSI-optimal thresholds from the hindcast
     python hindcast/deploy_params.py middle      # 40 / 30 / 25 / 30 % at 48 h and beyond
+    python hindcast/deploy_params.py service     # what warning services do: a severe level from about 20 %
 
 sigma and bias always come from the hindcast. The scores of the deployed thresholds are
 stored in results.json under <horizon>.deployed (computed on the cached hindcast blocks).
@@ -19,6 +20,10 @@ import run as R  # noqa: E402
 policy = sys.argv[1] if len(sys.argv) > 1 else "floor40"
 res = json.loads((ROOT / "hindcast" / "results.json").read_text(encoding="utf-8"))
 MIDDLE = {"2": 0.40, "3": 0.30, "4": 0.25, "5": 0.30}
+# AEMET issues any colour from 10 % (bands 10-40 / 40-70 / > 70 %); no service asks 40 % for its
+# severe tier. Day-ahead red: 0.40 detects 13 % of the zone-days, 0.20 detects 43 % for the same
+# false-alarm ratio (50 -> 53 %). Days 2-7 stay stricter: those probabilities are not reliable yet.
+SERVICE = {"mid": {"2": 0.20, "3": 0.20, "4": 0.20, "5": 0.25}, "long": {"2": 0.25, "3": 0.25, "4": 0.40, "5": 0.40}}
 out = {"version": f"hindcast-{res['generated'][:10]}-{policy}", "sigma": {}, "bias": {}, "tau": {}}
 for hz in ("now", "mid", "long"):
     if hz not in res:
@@ -28,6 +33,8 @@ for hz in ("now", "mid", "long"):
     floor = {str(k): float(v) for k, v in res[hz]["tau_min40"].items()}
     if policy == "tuned":
         tau = tuned
+    elif policy == "service":
+        tau = SERVICE.get(hz) or {k: max(0.40, tuned[k]) for k in tuned}
     elif policy == "middle":
         tau = floor if hz == "now" else MIDDLE
     else:

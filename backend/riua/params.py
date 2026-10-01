@@ -74,7 +74,10 @@ DEFAULTS: dict = {
         # The design value P0 = 25 mm gave 146 m3/s on the Poyo for an episode that measured 0.5.
         "p0_mm": 120.0,       # runoff threshold: rain the ground takes in before anything runs off
         "s_mm": 150.0,        # retention still to fill above the threshold
-        "phi_mmh": None,      # infiltration capacity for an intensity-excess term (not supported by the fit)
+        # intensity excess: rain above this rate on a 5-km cell-hour runs off even on dry ground
+        # (flow starts after 10 mm at 139 mm/h, after 72 mm at 57 mm/h: Camarasa-Belmonte 2021).
+        # Costs nothing on the ordinary episodes and adds 160-300 m3/s to the Poyo of 2024.
+        "phi_mmh": 45.0,
         "tc_a": 0.5,          # response time tc = tc_a * A^tc_b hours (A in km2)
         "tc_b": 0.38,
         "tc_max_h": 24.0,

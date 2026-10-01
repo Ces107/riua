@@ -663,86 +663,86 @@
   "deployed": {
    "cell": {
     "2": {
-     "hits": 11166,
-     "misses": 15288,
-     "false_alarms": 8803,
-     "correct_negatives": 193681,
-     "POD": 0.42,
-     "FAR": 0.44,
-     "CSI": 0.32
+     "hits": 16715,
+     "misses": 9739,
+     "false_alarms": 21326,
+     "correct_negatives": 181158,
+     "POD": 0.63,
+     "FAR": 0.56,
+     "CSI": 0.35
     },
     "3": {
-     "hits": 3284,
-     "misses": 9005,
-     "false_alarms": 3626,
-     "correct_negatives": 213023,
-     "POD": 0.27,
-     "FAR": 0.52,
-     "CSI": 0.21
+     "hits": 6293,
+     "misses": 5996,
+     "false_alarms": 10826,
+     "correct_negatives": 205823,
+     "POD": 0.51,
+     "FAR": 0.63,
+     "CSI": 0.27
     },
     "4": {
-     "hits": 706,
-     "misses": 2998,
-     "false_alarms": 268,
-     "correct_negatives": 224966,
-     "POD": 0.19,
-     "FAR": 0.28,
-     "CSI": 0.18
+     "hits": 1530,
+     "misses": 2174,
+     "false_alarms": 2821,
+     "correct_negatives": 222413,
+     "POD": 0.41,
+     "FAR": 0.65,
+     "CSI": 0.23
     },
     "5": {
-     "hits": 12,
-     "misses": 681,
-     "false_alarms": 14,
-     "correct_negatives": 228231,
-     "POD": 0.02,
-     "FAR": 0.54,
-     "CSI": 0.02
+     "hits": 284,
+     "misses": 409,
+     "false_alarms": 584,
+     "correct_negatives": 227661,
+     "POD": 0.41,
+     "FAR": 0.67,
+     "CSI": 0.22
     }
    },
    "zone_day": {
     "2": {
-     "hits": 124,
-     "misses": 84,
-     "false_alarms": 17,
-     "correct_negatives": 149,
-     "POD": 0.6,
-     "FAR": 0.12,
-     "CSI": 0.55
+     "hits": 167,
+     "misses": 41,
+     "false_alarms": 68,
+     "correct_negatives": 98,
+     "POD": 0.8,
+     "FAR": 0.29,
+     "CSI": 0.61
     },
     "3": {
-     "hits": 61,
-     "misses": 75,
-     "false_alarms": 14,
-     "correct_negatives": 224,
-     "POD": 0.45,
-     "FAR": 0.19,
-     "CSI": 0.41
+     "hits": 94,
+     "misses": 42,
+     "false_alarms": 40,
+     "correct_negatives": 198,
+     "POD": 0.69,
+     "FAR": 0.3,
+     "CSI": 0.53
     },
     "4": {
-     "hits": 8,
-     "misses": 55,
-     "false_alarms": 8,
-     "correct_negatives": 303,
-     "POD": 0.13,
-     "FAR": 0.5,
-     "CSI": 0.11
+     "hits": 29,
+     "misses": 34,
+     "false_alarms": 23,
+     "correct_negatives": 288,
+     "POD": 0.46,
+     "FAR": 0.44,
+     "CSI": 0.34
     },
     "5": {
-     "hits": 3,
-     "misses": 10,
-     "false_alarms": 0,
-     "correct_negatives": 361,
-     "POD": 0.23,
-     "FAR": 0.0,
-     "CSI": 0.23
+     "hits": 7,
+     "misses": 6,
+     "false_alarms": 8,
+     "correct_negatives": 353,
+     "POD": 0.54,
+     "FAR": 0.53,
+     "CSI": 0.33
     }
    }
   },
   "deployed_tau": {
-   "2": 0.4,
-   "3": 0.4,
-   "4": 0.4,
-   "5": 0.4
+   "2": 0.2,
+   "3": 0.2,
+   "4": 0.2,
+   "5": 0.25
   }
  },
  "long": {
@@ -1284,22 +1284,22 @@
   "deployed": {
    "cell": {
     "2": {
-     "hits": 2560,
-     "misses": 8286,
-     "false_alarms": 1684,
-     "correct_negatives": 21912,
-     "POD": 0.24,
-     "FAR": 0.4,
-     "CSI": 0.2
+     "hits": 4373,
+     "misses": 6473,
+     "false_alarms": 4241,
+     "correct_negatives": 19355,
+     "POD": 0.4,
+     "FAR": 0.49,
+     "CSI": 0.29
     },
     "3": {
-     "hits": 1156,
-     "misses": 4646,
-     "false_alarms": 1155,
-     "correct_negatives": 27485,
-     "POD": 0.2,
-     "FAR": 0.5,
-     "CSI": 0.17
+     "hits": 1815,
+     "misses": 3987,
+     "false_alarms": 2397,
+     "correct_negatives": 26243,
+     "POD": 0.31,
+     "FAR": 0.57,
+     "CSI": 0.22
     },
     "4": {
      "hits": 309,
@@ -1322,22 +1322,22 @@
    },
    "zone_day": {
     "2": {
-     "hits": 42,
-     "misses": 80,
-     "false_alarms": 6,
-     "correct_negatives": 70,
-     "POD": 0.34,
-     "FAR": 0.12,
-     "CSI": 0.33
+     "hits": 71,
+     "misses": 51,
+     "false_alarms": 20,
+     "correct_negatives": 56,
+     "POD": 0.58,
+     "FAR": 0.22,
+     "CSI": 0.5
     },
     "3": {
-     "hits": 14,
-     "misses": 72,
-     "false_alarms": 4,
-     "correct_negatives": 108,
-     "POD": 0.16,
-     "FAR": 0.22,
-     "CSI": 0.16
+     "hits": 34,
+     "misses": 52,
+     "false_alarms": 15,
+     "correct_negatives": 97,
+     "POD": 0.4,
+     "FAR": 0.31,
+     "CSI": 0.34
     },
     "4": {
      "hits": 8,
@@ -1360,8 +1360,8 @@
    }
   },
   "deployed_tau": {
-   "2": 0.4,
-   "3": 0.4,
+   "2": 0.25,
+   "3": 0.25,
    "4": 0.4,
    "5": 0.4
   }
@@ -2011,5 +2011,5 @@
    }
   ]
  },
- "policy": "floor40"
+ "policy": "service"
 }
