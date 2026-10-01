@@ -49,6 +49,9 @@ jobs:
           key: riua-state-${{ github.run_id }}
           restore-keys: riua-state-
 
+      - name: Channel capacities
+        run: python geo/hydro/build_capacity.py
+
       - name: Production cycle
         working-directory: backend
         env:

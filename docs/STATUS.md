@@ -14,9 +14,16 @@ All sources OK: radar OPERA+AEMET (13 frames), 413 gauges, AROME-HD/AROME/ICON-E
 ECMWF ENS 50 members, pysteps STEPS 20 members, 43 AEMET warnings. Levels 4–5 over Castellón coincide with the
 AEMET red warnings in force.
 
+## Method in use (2026-10-01 13:30)
+- Probabilities from the scenarios (log-normal dressing, sigma 0.25/0.30/0.35); the EMOS gamma path stays in
+  the code and switches on only when params.json carries a fitted `calibration`.
+- tau never below 40 % (owner's decision): now 60/55/50/45, 48 h 55/50/45/40, days 2-7 50/45/40/40.
+- Neighbourhood max 6 km (now) / 12 km (48 h).
+- Control points: capacity from geo/hydro/capacity.json (LiDAR section if plausible and not low confidence,
+  else published channel capacity); without it, level from unit discharge vs the Gaume envelope.
+
 ## Not done / known gaps
-- Calibration (EMOS coefficients) and tau are untuned defaults: the page says "En pruebas". Hindcast run +
-  tuning not done (`hindcast/run.py` missing; truth build stopped for memory).
-- Channel sections: 25 of 60 control points have capacity/rating; the rest show discharge only.
-- MetPy ingredients module and ERA5 climate/EFI were cut off mid-way (drivers block present but unreviewed).
+- Hindcast + tuning not run: levels are uncalibrated (page says "No oficial y en pruebas").
+- Sections agent (h2) resumed to finish the 28 missing channel sections; capacity.json is rebuilt each run.
+- MetPy ingredients and ERA5 climate/EFI unfinished (not shown on the page).
 - README not written.
