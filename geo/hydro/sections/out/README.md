@@ -1,6 +1,8 @@
 # Riuà — channel capacity and rating curves at the control points (`h2-sections`)
 
-For every control point of `geo/hydro/control_points_seed.json` this folder gives the hydraulic
+For every control point of `geo/hydro/catchments/out/control_points.json` (60 points, final list of
+h1-catchments; the first 51 sections were located from the seed and kept where the snapped point is
+within ~900 m; coves-alcala and gorgos-xabia were relocated to the snapped point) this folder gives the hydraulic
 side of the forecast: **how much water the channel carries before it overflows** (`q_bankfull`,
 with a low/high range), and **how high the water stands for a given discharge** (rating table and
 `h_over_bank(Q)`), from a 1 m LiDAR terrain model and Manning's equation, cross-checked against
@@ -85,8 +87,9 @@ Pipeline (`py -3.11`, in this order): `fetch_osm.py` → `locate.py` → `fetch_
    reach when one exists, with `ratio_dtm_to_published`. `capacity_recommended` is what the forecast
    should use: the DTM value when `confidence` is high/medium; when it is `low`, the published capacity
    of the channel as built; else, as a clearly labelled **proxy**, the CAUMAX T5–T10 natural-regime flow;
-   else the DTM value flagged low. Gorge-confined points have no overflow threshold (value `null`): use
-   the rating.
+   else the DTM value flagged low. Gorge-confined points (`valley_confined: true`: set by the analyst, or
+   automatically when bankfull depth > 8 m and capacity > 2 × CAUMAX T500) have no overflow threshold
+   (`capacity_recommended.value_m3s = null`): use the rating. CAUMAX is not used for basins < 50 km².
 
 ## Fields of `sections.json` → `points[id]`
 

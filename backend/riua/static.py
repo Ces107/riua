@@ -148,11 +148,13 @@ def hydro_net():
     pidx = np.array([remap[int(x)] for x in ta["point_idx"][sel]], int)
     capf = GEO / "hydro" / "capacity.json"
     caps = json.loads(capf.read_text(encoding="utf-8")) if capf.exists() else {}
-    qb, rq, rh, hb = [], [], [], []
+    qb, rq, rh, hb, qT = [], [], [], [], []
     for i in ids:
-        c = caps.get(i)
-        qb.append(float(c["q"]) if c else np.nan)
-        s = secs.get(i, {}) if (c and c.get("rating")) else {}
+        c = caps.get(i) or {}
+        qb.append(float(c["q"]) if c.get("q") else np.nan)
+        t = c.get("qT") or {}
+        qT.append([float(t.get(f"T{T}", np.nan)) for T in (2, 5, 10, 25, 100, 500)])
+        s = secs.get(i, {}) if c.get("rating") else {}
         rt = s.get("rating") or {}
         q_tab, h_tab = rt.get("q_m3s"), rt.get("h_m")
         if q_tab and h_tab and len(q_tab) > 1:
@@ -162,5 +164,5 @@ def hydro_net():
         hb.append(float(s["bankfull_depth_m"]) if s.get("bankfull_depth_m") else np.nan)
     net = HydroNet.build(ids, [order[i].get("area_unregulated_km2") or order[i]["area_km2"] for i in ids],
                          [order[i].get("t_longest_unregulated_h") or order[i]["tc_h"] for i in ids], pidx, ta["cell"][sel].astype(int),
-                         ta["lag_h"][sel].astype(int), ta["area_km2"][sel].astype(float), qb, rq, rh, hb)
+                         ta["lag_h"][sel].astype(int), ta["area_km2"][sel].astype(float), qb, rq, rh, hb, qT)
     return net, [dict(order[i], section=secs.get(i), capacity=caps.get(i)) for i in ids]

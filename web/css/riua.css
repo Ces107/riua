@@ -71,7 +71,7 @@ button.link { background: none; border: 0; padding: 0; min-height: 0; text-decor
 .msg:empty { display: none; }
 
 .mapwrap { position: relative; }
-#map { height: 58vh; height: 58svh; min-height: 300px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: var(--paper); z-index: 0; }
+#map { height: 46vh; height: 46svh; min-height: 260px; max-height: 420px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: var(--paper); z-index: 0; }
 .legend { position: absolute; left: 8px; bottom: 8px; z-index: 500; display: flex; list-style: none; margin: 0; padding: 0; background: var(--paper); border: 1px solid var(--ink); font: .74rem/1 var(--mono); pointer-events: none; }
 .legend li { display: flex; align-items: center; gap: .3rem; padding: .3rem .45rem; }
 .legend li + li { border-left: 1px solid var(--rule); }
@@ -190,11 +190,10 @@ main:not(.app) { padding: 0 var(--g); }
 
 @media (min-width: 980px) {
   :root { --g: 18px; }
-  .app { grid-template-columns: minmax(0, 1fr) 24rem; height: calc(100vh - var(--top-h) - var(--bar-h)); }
-  .mapcol { min-height: 0; border-right: 1px solid var(--ink); }
-  .mapwrap { flex: 1 1 auto; min-height: 0; }
-  #map { height: 100%; min-height: 0; border-bottom: 0; }
-  .side { overflow-y: auto; min-height: 0; }
+  .app { grid-template-columns: minmax(0, 1fr) 24rem; align-items: start; max-width: 1280px; margin: 0 auto; }
+  .mapcol { position: sticky; top: 0; border-right: 1px solid var(--rule); }
+  #map { height: min(520px, calc(100vh - 11rem)); min-height: 340px; }
+  .top, .wide, .foot { max-width: 1280px; margin-left: auto; margin-right: auto; }
   .headline { font-size: 1.15rem; }
 }
 @media (max-width: 620px) {

@@ -54,13 +54,14 @@ class HydroNet:
     rating_q: list[np.ndarray]       # per point, discharge table (m3/s), ascending
     rating_h: list[np.ndarray]       # per point, depth above thalweg (m)
     h_bank: np.ndarray               # (P,) bankfull depth above thalweg (m), NaN if unknown
+    qT: np.ndarray | None = None     # (P, 6) natural flood peaks for T = 2, 5, 10, 25, 100, 500 years (CAUMAX)
 
     @property
     def n(self) -> int:
         return len(self.ids)
 
     @classmethod
-    def build(cls, ids, area, tc_h, point_idx, cell, lag_h, area_km2, q_bankfull, rating_q, rating_h, h_bank):
+    def build(cls, ids, area, tc_h, point_idx, cell, lag_h, area_km2, q_bankfull, rating_q, rating_h, h_bank, qT=None):
         P, n = len(ids), grid.NY * grid.NX
         kmax = int(lag_h.max()) if len(lag_h) else 0
         lags = []
@@ -68,7 +69,8 @@ class HydroNet:
             s = lag_h == k
             lags.append(sparse.csr_matrix((area_km2[s].astype(np.float32), (point_idx[s], cell[s])), shape=(P, n)))
         return cls(list(ids), np.asarray(area, float), np.asarray(tc_h, float), lags,
-                   np.asarray(q_bankfull, float), list(rating_q), list(rating_h), np.asarray(h_bank, float))
+                   np.asarray(q_bankfull, float), list(rating_q), list(rating_h), np.asarray(h_bank, float),
+                   None if qT is None else np.asarray(qT, float))
 
 
 def runoff_coefficient(w_mm: np.ndarray, p0: float) -> np.ndarray:
@@ -130,6 +132,18 @@ def level_thresholds(net_: HydroNet, hp: dict) -> np.ndarray:
     no_cap = ~np.isfinite(qb)
     for k, frac in enumerate(hp["env_fractions"]):
         thr[k, no_cap] = frac * env[no_cap]
+    # better, when the official flood quantiles exist: levels 2..5 at the T-year floods of hp["rp_levels"]
+    if net_.qT is not None:
+        col = {2: 0, 5: 1, 10: 2, 25: 3, 100: 4, 500: 5}
+        have = no_cap & np.all(np.isfinite(net_.qT), axis=1)
+        for k, T in enumerate(hp["rp_levels"]):
+            thr[k, have] = net_.qT[have, col[int(T)]]
+        # with a capacity: a big flood is dangerous even inside a large channel (fords, bridges,
+        # riverside roads), so levels 2 and 3 also start at the 2- and 5-year floods; 4 and 5
+        # stay tied to the channel overflowing
+        both = ~no_cap & np.all(np.isfinite(net_.qT), axis=1)
+        for k in (0, 1):
+            thr[k, both] = np.minimum(thr[k, both], net_.qT[both, col[int(hp["rp_levels"][k])]])
     for b in range(net_.n):
         rq, rh = net_.rating_q[b], net_.rating_h[b]
         if rq is not None and len(rq) > 1 and np.isfinite(net_.h_bank[b]):
@@ -149,6 +163,7 @@ class HydroProduct:
     h_over: np.ndarray       # (2, F, P) median / p90 height above bank (m, negative = below)
     p_overflow: np.ndarray   # (F, P) plain probability of exceeding capacity (= prob[2])
     valid: np.ndarray
+    rp: np.ndarray | None = None   # (2, F, P) return period (years) of the median / p90 peak; 1 = below T2
 
 
 def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, horizon: str,
@@ -209,4 +224,27 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
             if use.any():
                 qpk[:, f] = weighted_quantile(qp[use, f], _bw(wf[use, f], (P,)), (0.5, 0.9))
     h_over = stage(qpk, net_) - net_.h_bank[None, None, :].astype(np.float32)
-    return HydroProduct(t_axis, qser, prob, level, qpk, h_over, prob[2], ok)
+    return HydroProduct(t_axis, qser, prob, level, qpk, h_over, prob[2], ok, return_period(qpk, net_))
+
+
+RP_T = np.array([2.0, 5.0, 10.0, 25.0, 100.0, 500.0])
+
+
+def return_period(q: np.ndarray, net_: HydroNet) -> np.ndarray | None:
+    """Return period (years) of peaks q (..., P), interpolated log-log between the CAUMAX quantiles.
+    1 = below the 2-year flood; values above T500 are extrapolated and capped at 1000."""
+    if net_.qT is None:
+        return None
+    out = np.full(q.shape, np.nan, np.float32)
+    lt = np.log(RP_T)
+    for b in range(net_.n):
+        qt = net_.qT[b]
+        if not np.all(np.isfinite(qt)) or qt[0] <= 0:
+            continue
+        lq = np.log(np.maximum(qt, 1e-3))
+        x = np.log(np.maximum(q[..., b], 1e-3))
+        t = np.interp(x, lq, lt, left=-np.inf, right=np.nan)
+        slope = (lt[-1] - lt[-2]) / max(lq[-1] - lq[-2], 1e-6)
+        t = np.where(np.isnan(t), lt[-1] + slope * (x - lq[-1]), t)      # beyond T500
+        out[..., b] = np.where(q[..., b] < qt[0], 1.0, np.minimum(np.exp(t), 1000.0))
+    return out

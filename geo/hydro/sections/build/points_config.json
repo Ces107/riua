@@ -46,7 +46,7 @@
  "monnegre-campello": {"name_re": "Montnegre|Monnegre|Riu Sec|R.o Seco", "snap_w": 60},
  "juncaret-alacant": {"name_re": "Juncaret|Org.gia|Orgegia", "lining": "concrete", "note": "straight rectangular lined channel (Alicante anti-flood works after 1997), ~20 m wide and 3.2 m deep in the DTM, service roads on both banks; lining judged from the orthophoto; no published design flow was found"},
  "ovejas-alacant": {"name_re": "Ovejas|Ovelles", "offset_m": 350, "dx_sec": 50, "lining": "concrete", "confidence": "low", "confidence_reason": "final canalised reach at San Gabriel: the ICV DTM carries a flat 0.00 m water mask on the channel bed, so the real bed level (and depth) is unknown; the natural ravine 300-900 m upstream is 7-12 m deep and carries 1500-4000 m3/s by the same method", "note": "published design flow of the final canalisation 730 m3/s is used as capacity"},
- "vinalopo-elda": {"name_re": "Vinalop."},
+ "vinalopo-elda": {"name_re": "Vinalop.", "confined": true, "note": "Vinalopó between Elda and Petrer runs 7 m below the town in a 150 m wide valley (parks, paths); bankfull capacity ~2150 m3/s is 5x the CAUMAX T500 (448): no overflow threshold, use the rating"},
  "vinalopo-elx": {"name_re": "Vinalop."},
  "abanilla-benferri": {"name_re": "A.?banilla|Benferri", "offset_m": 400, "dx_sec": 100, "note": "rambla incised 7-10 m at Benferri (8 m drop structure 600 m upstream of the section); it carries far more here than further down, where it reaches the Vega Baja plain and loses its channel (projected encauzamiento A-7 to Segura: 170 m3/s)"},
  "segura-orihuela": {"name_re": "Segura", "perennial": true, "snap_w": 60, "note": "walled urban channel ~24 m wide, 5-5.5 m above the water surface seen by the LiDAR; weirs in the city (3 m drop 350 m upstream of the section) make the local slope uncertain"},
@@ -54,10 +54,10 @@
  "poyo-cheste": {"name_re": "Barranco de Chiva|Barranc de Xiva|Rambla de Poio|Rambla de Poyo|Rambla del Poyo|Barranco Grande"},
  "horteta-torrent": {"name_re": "Horteta"},
  "magro-real": {"name_re": "Magro|Magre"},
- "verd-alzira": {"name_re": "Riu Verd|Ulls"},
- "casella-alzira": {"name_re": "Casella"},
- "beniopa-gandia": {"name_re": "Beniopa|Sant Nicolau"},
- "chinchilla-orpesa": {"name_re": "Xinxilla|Chinchilla"},
+ "verd-alzira": {"name_re": "Riu Verd|Ulls", "caumax_reject": "nearest CAUMAX river cell is the Júcar (T10 1018 m3/s), not the Riu Verd"},
+ "casella-alzira": {"name_re": "Casella", "confidence": "low", "confidence_reason": "small channelised ravine through Alzira: capacity varies 20-370 m3/s between sections 50-125 m apart (embankments, culverts, irregular lining); basin < 50 km2, no CAUMAX value, no published capacity"},
+ "beniopa-gandia": {"name_re": "Beniopa|Sant Nicolau", "lining": "concrete", "note": "rectangular lined canal ~10 m wide and 5-6 m deep through the west of Gandia (orthophoto), partly covered downstream; left 'bank' is the street level, the hill rises behind it"},
+ "chinchilla-orpesa": {"name_re": "Xinxilla|Chinchilla", "offset_m": 125, "confidence": "medium", "confidence_reason": "small incised channel (20-35 m wide, ~4 m deep) at the south edge of Orpesa; one section 125 m upstream crosses a low terrace and carries twice as much; basin < 50 km2 so no CAUMAX value"},
  "aiguaoliva-vinaros": {"name_re": "Aiguadoliva|Aiguaoliva|Agua Oliva"},
  "tarafa-aspe": {"name_re": "Tarafa"}
 }

@@ -5,7 +5,7 @@ import { AEMET_URL, HORIZONS, LEVEL } from './config.js';
 import { cellAt, cellCentre, cellFrame, mmOrNull } from './data.js';
 import { basinAt, cellBasin, cellZone, distKm, downstreamChain, geo, nearest, zoneAt } from './geo.js';
 import { auditHtml, cellExport, thresholdsFor } from './auditview.js';
-import { pointRows } from './points.js';
+import { pointRows, rpTxt } from './points.js';
 import { dayTime, esc, frameLabel, num, parts, pct } from './time.js';
 
 export const lv = (L) => `<span class="lv lv${L}">${L === 0 ? '–' : L}</span>`;
@@ -97,7 +97,7 @@ function summary(snap) {
       if (r.level < 2 || seen.has(r.pt.id)) continue;
       seen.add(r.pt.id);
       prow += `<li><button type="button" data-pt="${esc(r.pt.id)}">${lv(r.level)}<span class="t">${esc(r.pt.stream)}<small>${esc(r.pt.town)}</small></span>`
-        + `<span class="r">${r.pOver != null && r.cap != null ? pct(r.pOver) : ''}${r.tPeak ? `<br>${esc(short(r.tPeak))}` : ''}</span></button></li>`;
+        + `<span class="r">${r.rp[0] != null && r.rp[0] >= 2 ? rpTxt(r.rp[0]) : r.cap != null && r.pOver != null ? pct(r.pOver) : ''}${r.tPeak ? `<br>${esc(short(r.tPeak))}` : ''}</span></button></li>`;
     }
   }
   const warns = activeWarnings(snap);
@@ -179,7 +179,7 @@ function ravineRow(ctx, st) {
   if (!best) best = rows.map((r) => ({ r, d: distKm(ctx.lat, ctx.lon, r.pt.lat, r.pt.lon) })).filter((x) => x.d <= 12).sort((a, b) => a.d - b.d).map((x) => x.r)[0];
   if (!best) return '';
   return `<li><button type="button" data-pt="${esc(best.pt.id)}">${lv(best.level)}<span class="t">${esc(best.pt.stream)}<small>${esc(best.pt.town)}</small></span>`
-    + `<span class="r">${best.cap != null && best.pOver != null ? `desborde ${pct(best.pOver)}` : best.q[0] != null ? `${num(best.q[0])} m³/s` : ''}</span></button></li>`;
+    + `<span class="r">${best.q[0] != null ? `${num(best.q[0])} m³/s` : ''}${best.rp[0] != null ? `<br>${rpTxt(best.rp[0])}` : ''}</span></button></li>`;
 }
 
 function zoneWarnings(ctx) {

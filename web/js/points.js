@@ -39,9 +39,11 @@ export function pointRows(h, fSel) {
     }
     const two = (arr) => (arr && arr[0] && arr[0][f] ? [arr[0][f][i], arr[1][f][i]] : [null, null]);
     return { pt, i, f, level: pp.level[f][i] || 0, pOver: pp.p && pp.p[2] ? pp.p[2][f][i] : null, q: two(pp.qpeak), hover: two(pp.hover),
-      cap: capacity(pp, i), tPeak: qMax > 0 ? tPeak : null };
+      cap: capacity(pp, i), tPeak: qMax > 0 ? tPeak : null, rp: two(pp.rp) };
   }).sort((x, y) => y.level - x.level || (y.pOver ?? 0) - (x.pOver ?? 0) || (x.pt.stream || '').localeCompare(y.pt.stream || '', 'es'));
 }
+
+export const rpTxt = (t) => (t == null ? '—' : t < 2 ? '<2 años' : t >= 1000 ? '>500 años' : `${num(t)} años`);
 
 const signed = (v) => `${v >= 0 ? '+' : '−'}${num(Math.abs(v), 1)}`;
 
@@ -51,12 +53,12 @@ function row(r, open, snap, h) {
   const hgt = r.hover[0] == null ? '' : r.hover[0] >= 0 ? `${signed(r.hover[0])} m` : '';
   let out = `<tr class="${open ? 'open' : ''}"><td><span class="lv lv${r.level}">${r.level || '–'}</span></td>
 <th class="wrap"><button type="button" class="link" data-pt="${esc(r.pt.id)}" aria-expanded="${open}">${esc(r.pt.stream || r.pt.id)}</button><span class="town">${esc(r.pt.town || '')}</span></th>
-<td>${over}</td><td>${r.q[0] == null ? '—' : num(r.q[0])}</td><td>${cap}</td><td>${hgt}</td><td>${r.tPeak ? esc(dayTime(r.tPeak).replace(/:00$/, ' h')) : ''}</td></tr>`;
-  if (open) out += `<tr class="chart-row"><td colspan="7">${hydrograph(snap, h, r)}</td></tr>`;
+<td>${over}</td><td>${r.q[0] == null ? '—' : num(r.q[0])}</td><td>${cap}</td><td>${rpTxt(r.rp[0])}</td><td>${hgt}</td><td>${r.tPeak ? esc(dayTime(r.tPeak).replace(/:00$/, ' h')) : ''}</td></tr>`;
+  if (open) out += `<tr class="chart-row"><td colspan="8">${hydrograph(snap, h, r)}</td></tr>`;
   return out;
 }
 
-const HEAD = '<thead><tr><th></th><th class="wrap">Cauce</th><th title="probabilidad de desbordar">Desborde</th><th title="caudal punta, escenario central">Punta m³/s</th><th title="capacidad del cauce">Cauce m³/s</th><th title="altura del agua sobre el borde">Sobre borde</th><th>Punta</th></tr></thead>';
+const HEAD = '<thead><tr><th></th><th class="wrap">Cauce</th><th title="probabilidad de desbordar">Desborde</th><th title="caudal punta, escenario central">Punta m³/s</th><th title="capacidad del cauce">Cauce m³/s</th><th title="periodo de retorno de la punta central (CAUMAX, CEDEX)">Retorno</th><th title="altura del agua sobre el borde">Sobre borde</th><th>Punta</th></tr></thead>';
 
 export function renderPoints(root, snap, st) {
   const h = snap && snap.hz[st.hz];

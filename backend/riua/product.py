@@ -404,7 +404,8 @@ def pack_horizon(hz: str, o: dict, mask: np.ndarray, params: dict) -> tuple[dict
     if "points" in o:
         hp = o["points"]
         blk["points"] = {"level": S.r(hp.level, 0), "p": S.r(hp.prob, 3), "qpeak": S.r(hp.q_peak, 0),
-                         "hover": S.r(hp.h_over, 2), "t": [S.iso(t) for t in hp.t_end], "q": S.r(hp.q_series, 0)}
+                         "hover": S.r(hp.h_over, 2), "t": [S.iso(t) for t in hp.t_end], "q": S.r(hp.q_series, 0),
+                         "rp": S.r(hp.rp, 0) if hp.rp is not None else None}
     # audit binary: per-member amounts and the two marginal probabilities
     M = 0 if pred.a1 is None else pred.a1.shape[0]
     if M:

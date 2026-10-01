@@ -20,6 +20,7 @@ pub = json.loads((H / "sections" / "out" / "published_flows.json").read_text(enc
 cps = json.loads((H / "catchments" / "out" / "control_points.json").read_text(encoding="utf-8"))
 cps = cps["points"] if isinstance(cps, dict) else cps
 
+cm = json.loads((H / "caumax_points.json").read_text(encoding="utf-8")) if (H / "caumax_points.json").exists() else {}
 out, rejected = {}, {}
 for p in cps:
     i = p["id"]
@@ -27,22 +28,31 @@ for p in cps:
     env = 100.0 * max(area, 1.0) ** -0.4 * area          # m3/s, envelope peak for that area
     s = secs.get(i) or {}
     rec = (s.get("capacity_recommended") or {}).get("value_m3s") or s.get("q_bankfull")
-    if rec and float(rec) <= env and s.get("confidence") != "low":
+    qt = {k: v for k, v in (cm.get(i) or {}).items() if k.startswith("T")}
+    lo = 0.5 * qt["T2"] if qt else 0.0
+    hi = env                    # engineered channels may exceed T500 (new Turia channel: 5000 m3/s)
+    if rec and lo <= float(rec) <= hi and s.get("confidence") != "low" and not s.get("valley_confined"):
         out[i] = {"q": round(float(rec), 1), "source": "sección LiDAR + Manning", "kind": "section",
                   "confidence": s.get("confidence"), "rating": True}
         continue
     if rec:
-        rejected[i] = f"section {float(rec):.0f} m3/s vs envelope {env:.0f} (confidence {s.get('confidence')})"
+        rejected[i] = f"section {float(rec):.0f} m3/s vs plausible {lo:.0f}-{hi:.0f} (confidence {s.get('confidence')}{', confined' if s.get('valley_confined') else ''})"
     entries = [e for e in pub.get(i, []) if isinstance(e, dict) and e.get("value_m3s")]
-    cap = [e for e in entries if e["quantity"] == "channel_capacity" and e["value_m3s"] <= env]
+    cap = [e for e in entries if e["quantity"] == "channel_capacity" and lo <= e["value_m3s"] <= hi]
     if cap:
         e = min(cap, key=lambda e: e["value_m3s"])
         out[i] = {"q": float(e["value_m3s"]), "source": "capacidad publicada", "kind": "published",
                   "url": e.get("source_url"), "rating": False}
+for i, v in cm.items():
+    qt = {k: x for k, x in v.items() if k.startswith("T")}
+    if qt:
+        out.setdefault(i, {"q": None, "source": None, "kind": None, "rating": False})
+        out[i]["qT"] = qt
+        out[i]["qT_how"] = v.get("how")
 (H / "capacity.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
 kinds = {}
 for v in out.values():
     kinds[v["kind"]] = kinds.get(v["kind"], 0) + 1
-print(f"{len(out)} of {len(cps)} points with capacity: {kinds}")
+print(f"capacity: {kinds}; with return-period flows: {sum(1 for v in out.values() if v.get('qT'))} of {len(cps)}")
 print("rejected sections:", json.dumps(rejected, indent=1, ensure_ascii=False))
-print("level by unit discharge:", len(cps) - len(out))
+print("level by return period (no capacity):", sum(1 for v in out.values() if v.get("q") is None))

@@ -270,7 +270,6 @@ function wire() {
   const top = document.querySelector('.top');
   const fit = () => {
     document.documentElement.style.setProperty('--bar-h', `${bar.offsetHeight}px`);
-    document.documentElement.style.setProperty('--top-h', `${top.offsetHeight}px`);
     if (mapApi && mapApi.invalidate) mapApi.invalidate();
   };
   if (window.ResizeObserver) { new ResizeObserver(fit).observe(bar); new ResizeObserver(fit).observe(top); }

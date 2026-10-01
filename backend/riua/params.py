@@ -82,6 +82,9 @@ DEFAULTS: dict = {
         # envelope Q = env_c * A^(1+env_e) (Gaume et al. 2009, unit q = 100 A^-0.4).
         # 2024 Poyo at the A-3 gauge: 2283 m3/s on 184 km2, i.e. 1.0 x the envelope.
         "env_c": 100.0, "env_e": -0.4, "env_fractions": [0.08, 0.18, 0.35, 0.6],
+        # points without a usable capacity but with CAUMAX flood quantiles (all 60 today):
+        # level 2 at the 2-year flood, 3 at 5 years, 4 at 25 years, 5 at 100 years (EFAS-like)
+        "rp_levels": [2, 5, 25, 100],
         "sigma": {"now": 0.4, "mid": 0.5, "long": 0.6},
     },
 }

@@ -80,7 +80,14 @@ export function createMap(el, getScene, handlers) {
     zoomSnap: 0.25, zoomDelta: 0.5, minZoom: 6.5, maxZoom: 15, wheelPxPerZoomLevel: 90,
     maxBounds: [[36.6, -4.2], [42.0, 2.6]], maxBoundsViscosity: 0.8,
     attributionControl: false, zoomControl: false, fadeAnimation: false, markerZoomAnimation: false,
+    // the page must scroll: the wheel only zooms with Ctrl, and on touch one finger scrolls the page
+    scrollWheelZoom: false, dragging: !L.Browser.mobile, touchZoom: true, tap: false,
   });
+  el.addEventListener('wheel', (e) => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    map.setZoomAround(map.mouseEventToLatLng(e), map.getZoom() + (e.deltaY < 0 ? 0.5 : -0.5), { animate: false });
+  }, { passive: false });
   L.control.zoom({ position: 'topright', zoomInTitle: 'Acercar', zoomOutTitle: 'Alejar' }).addTo(map);
   L.control.attribution({ position: 'bottomright', prefix: '<a href="https://leafletjs.com">Leaflet</a>' }).addTo(map);
   L.control.scale({ position: 'topleft', imperial: false, maxWidth: 110 }).addTo(map);

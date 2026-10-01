@@ -365,7 +365,15 @@ def run_point(p, cfg, anchor):
     qs3 = [r["q_bf"] if r else None for r in res]
     covered_here = bool(th["covered"][sec["i"]])
     scan_c = [c - c0 for c in scan_c]
-    cm = caumax(sec["x"][main["i0"]], sec["y"][main["i0"]])
+    # CAUMAX only covers basins >= 50 km2: below that the nearest river cell belongs to another stream
+    area = p.get("area_km2")
+    if area is not None and area < 50:
+        cm = None
+    else:
+        cm = caumax(sec["x"][main["i0"]], sec["y"][main["i0"]], float(cfg.get("caumax_radius", 1000.0)))
+    if cm is not None and "caumax_reject" in cfg:
+        cm = None
+        notes.append("CAUMAX cell rejected: " + cfg["caumax_reject"])
     out = {
         "id": pid, "stream": p["stream"], "town": p["town"],
         "start_source": anchor["start_source"],

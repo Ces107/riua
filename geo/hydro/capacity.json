@@ -4,146 +4,941 @@
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "medium",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 15.8,
+   "T5": 33.5,
+   "T10": 46.5,
+   "T25": 71.7,
+   "T100": 467.2,
+   "T500": 1198.8
+  },
+  "qT_how": "caumax"
+ },
+ "poyo-cheste": {
+  "q": 893.8,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 39.0,
+   "T5": 81.9,
+   "T10": 110.9,
+   "T25": 168.8,
+   "T100": 856.0,
+   "T500": 2130.4
+  },
+  "qT_how": "caumax"
  },
  "poyo-torrent": {
   "q": 2465.9,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "high",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 76.6,
+   "T5": 156.7,
+   "T10": 209.2,
+   "T25": 319.6,
+   "T100": 1303.4,
+   "T500": 3121.4
+  },
+  "qT_how": "caumax"
  },
  "poyo-paiporta": {
   "q": 1136.8,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "high",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 77.3,
+   "T5": 157.1,
+   "T10": 210.3,
+   "T25": 321.0,
+   "T100": 1293.6,
+   "T500": 3091.2
+  },
+  "qT_how": "caumax"
  },
  "poyo-catarroja": {
   "q": 830.3,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "high",
-  "rating": true
- },
- "saleta-aldaia": {
-  "q": 7.0,
-  "source": "capacidad publicada",
-  "kind": "published",
-  "url": "https://www.chj.es/es-es/medioambiente/GestionRiesgosInundacion/Documents/PGRI/SEGUNDO%20CICLO/Anejo%203_Just_MedEst_CHJ.pdf",
-  "rating": false
+  "rating": true,
+  "qT": {
+   "T2": 77.7,
+   "T5": 158.8,
+   "T10": 212.3,
+   "T25": 323.6,
+   "T100": 1304.9,
+   "T500": 3117.2
+  },
+  "qT_how": "caumax"
  },
  "picassent-beniparrell": {
   "q": 147.0,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "high",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 29.6,
+   "T5": 64.0,
+   "T10": 87.8,
+   "T25": 135.6,
+   "T100": 755.2,
+   "T500": 1860.8
+  },
+  "qT_how": "caumax"
  },
  "carraixet-betera": {
   "q": 610.4,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "medium",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 11.2,
+   "T5": 30.5,
+   "T10": 46.7,
+   "T25": 85.3,
+   "T100": 841.2,
+   "T500": 1808.3
+  },
+  "qT_how": "caumax"
  },
  "carraixet-alfara": {
   "q": 1477.0,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "high",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 18.7,
+   "T5": 49.3,
+   "T10": 73.9,
+   "T25": 134.1,
+   "T100": 1131.7,
+   "T500": 2387.7
+  },
+  "qT_how": "caumax"
+ },
+ "turia-ribarroja": {
+  "q": 1818.9,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 69.7,
+   "T5": 128.6,
+   "T10": 164.3,
+   "T25": 243.4,
+   "T100": 682.4,
+   "T500": 1607.2
+  },
+  "qT_how": "caumax + presas"
  },
  "turia-nuevo-cauce": {
   "q": 5944.7,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "high",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 81.5,
+   "T5": 150.5,
+   "T10": 192.9,
+   "T25": 286.0,
+   "T100": 791.1,
+   "T500": 1852.9
+  },
+  "qT_how": "caumax + presas"
  },
  "magro-utiel": {
-  "q": 75.0,
-  "source": "capacidad publicada",
-  "kind": "published",
-  "url": "https://www.miteco.gob.es/content/dam/miteco/es/agua/participacion-publica/inundaciones/Propuesta%20plan%20resiliencia%20DANA%20CV%20consulta%20p%C3%BAblica.pdf",
-  "rating": false
+  "q": 96.6,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 16.4,
+   "T5": 36.6,
+   "T10": 52.1,
+   "T25": 75.2,
+   "T100": 121.5,
+   "T500": 192.8
+  },
+  "qT_how": "caumax"
+ },
+ "magro-requena": {
+  "q": 535.6,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 22.4,
+   "T5": 51.6,
+   "T10": 75.0,
+   "T25": 110.1,
+   "T100": 177.4,
+   "T500": 282.6
+  },
+  "qT_how": "caumax"
  },
  "magro-carlet": {
   "q": 1222.5,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "medium",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 42.9,
+   "T5": 84.4,
+   "T10": 124.7,
+   "T25": 186.6,
+   "T100": 712.4,
+   "T500": 1695.4
+  },
+  "qT_how": "caumax + presas"
  },
  "magro-algemesi": {
   "q": 598.0,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "high",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 44.2,
+   "T5": 87.0,
+   "T10": 128.1,
+   "T25": 191.8,
+   "T100": 723.4,
+   "T500": 1718.7
+  },
+  "qT_how": "caumax + presas"
+ },
+ "verd-alzira": {
+  "q": 149.1,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 62.6,
+   "T5": 137.1,
+   "T10": 185.7,
+   "T25": 288.3,
+   "T100": 1381.2,
+   "T500": 3258.0
+  },
+  "qT_how": "caumax"
  },
  "jucar-alzira": {
   "q": 500.0,
   "source": "capacidad publicada",
   "kind": "published",
   "url": "https://www.chj.es/es-es/ciudadano/participacion_publica/Documents/Jornada%20Gesti%C3%B3n%20Riesgo%20Inundaci%C3%B3n%20Ribera%20del%20J%C3%BAcar/2.%20An%C3%A1lisis%20y%20modelos%20hidr%C3%A1ulicos_1.pdf",
-  "rating": false
+  "rating": false,
+  "qT": {
+   "T2": 65.1,
+   "T5": 111.5,
+   "T10": 147.0,
+   "T25": 215.0,
+   "T100": 758.3,
+   "T500": 1568.7
+  },
+  "qT_how": "caumax + presas"
  },
  "jucar-sueca": {
   "q": 485.0,
   "source": "capacidad publicada",
   "kind": "published",
   "url": "https://www.chj.es/es-es/ciudadano/participacion_publica/Documents/Jornada%20Gesti%C3%B3n%20Riesgo%20Inundaci%C3%B3n%20Ribera%20del%20J%C3%BAcar/2.%20An%C3%A1lisis%20y%20modelos%20hidr%C3%A1ulicos_1.pdf",
-  "rating": false
+  "rating": false,
+  "qT": {
+   "T2": 102.4,
+   "T5": 175.5,
+   "T10": 232.3,
+   "T25": 344.5,
+   "T100": 1271.0,
+   "T500": 2503.4
+  },
+  "qT_how": "caumax + presas"
  },
  "albaida-manuel": {
   "q": 1825.7,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "medium",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 170.4,
+   "T5": 375.1,
+   "T10": 521.0,
+   "T25": 741.1,
+   "T100": 1451.9,
+   "T500": 3335.7
+  },
+  "qT_how": "caumax + presas"
  },
  "barxeta-carcaixent": {
   "q": 264.8,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "medium",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 30.8,
+   "T5": 74.3,
+   "T10": 102.9,
+   "T25": 163.4,
+   "T100": 1003.4,
+   "T500": 2345.3
+  },
+  "qT_how": "caumax"
  },
  "vaca-tavernes": {
   "q": 182.5,
   "source": "sección LiDAR + Manning",
   "kind": "section",
   "confidence": "medium",
-  "rating": true
+  "rating": true,
+  "qT": {
+   "T2": 23.5,
+   "T5": 57.9,
+   "T10": 81.4,
+   "T25": 130.4,
+   "T100": 845.4,
+   "T500": 1982.1
+  },
+  "qT_how": "caumax"
+ },
+ "serpis-gandia": {
+  "q": 2405.8,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 90.1,
+   "T5": 199.8,
+   "T10": 278.4,
+   "T25": 413.0,
+   "T100": 1191.1,
+   "T500": 2865.0
+  },
+  "qT_how": "caumax + presas"
+ },
+ "vernissa-real": {
+  "q": 1150.7,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 43.7,
+   "T5": 103.4,
+   "T10": 143.1,
+   "T25": 227.6,
+   "T100": 1246.5,
+   "T500": 2855.9
+  },
+  "qT_how": "caumax"
+ },
+ "beniopa-gandia": {
+  "q": 711.4,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 17.3,
+   "T5": 38.4,
+   "T10": 53.5,
+   "T25": 79.3,
+   "T100": 228.7,
+   "T500": 550.2
+  },
+  "qT_how": "escalado desde serpis-gandia (vecino)"
+ },
+ "gallinera-oliva": {
+  "q": 144.4,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 20.9,
+   "T5": 51.8,
+   "T10": 72.6,
+   "T25": 116.2,
+   "T100": 766.5,
+   "T500": 1797.2
+  },
+  "qT_how": "caumax"
+ },
+ "palancia-sagunt": {
+  "q": 1864.9,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 125.7,
+   "T5": 245.3,
+   "T10": 331.8,
+   "T25": 478.6,
+   "T100": 1721.4,
+   "T500": 4107.4
+  },
+  "qT_how": "caumax"
+ },
+ "belcaire-vall": {
+  "q": 302.5,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 26.4,
+   "T5": 59.8,
+   "T10": 82.1,
+   "T25": 128.8,
+   "T100": 773.7,
+   "T500": 1886.2
+  },
+  "qT_how": "caumax"
  },
  "sec-borriana": {
-  "q": 350.0,
-  "source": "capacidad publicada",
-  "kind": "published",
-  "url": "https://www.burriana.es/ayuninf/urbanismo/SG/2019-PROYECTO-MODIFICADO/DOC-08-ANEXO-ESTUDIO-INUNDABILIDAD/ESTUDIO-INUNDABILIDAD.pdf",
-  "rating": false
+  "q": 144.8,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 53.1,
+   "T5": 113.1,
+   "T10": 153.5,
+   "T25": 238.1,
+   "T100": 1139.2,
+   "T500": 2729.0
+  },
+  "qT_how": "caumax"
+ },
+ "millars-vilareal": {
+  "q": 6900.5,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 234.8,
+   "T5": 422.7,
+   "T10": 532.3,
+   "T25": 782.8,
+   "T100": 1845.5,
+   "T500": 4230.3
+  },
+  "qT_how": "caumax + presas"
  },
  "viuda-almassora": {
   "q": 597.0,
   "source": "capacidad publicada",
   "kind": "published",
   "url": "https://www.iagua.es/data/infraestructuras/embalses/maria-cristina",
-  "rating": false
+  "rating": false,
+  "qT": {
+   "T2": 233.6,
+   "T5": 460.3,
+   "T10": 597.5,
+   "T25": 903.8,
+   "T100": 2778.9,
+   "T500": 6349.3
+  },
+  "qT_how": "caumax"
  },
  "sec-castello": {
-  "q": 280.0,
-  "source": "capacidad publicada",
-  "kind": "published",
-  "url": "https://www.chj.es/es-es/medioambiente/GestionRiesgosInundacion/Documents/PGRI/SEGUNDO%20CICLO/Anejo%203_Just_MedEst_CHJ.pdf",
-  "rating": false
+  "q": 578.1,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 17.9,
+   "T5": 39.8,
+   "T10": 54.7,
+   "T25": 84.5,
+   "T100": 546.6,
+   "T500": 1381.5
+  },
+  "qT_how": "caumax"
+ },
+ "chinchilla-orpesa": {
+  "q": 226.7,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 14.6,
+   "T5": 30.9,
+   "T10": 41.0,
+   "T25": 63.0,
+   "T100": 249.7,
+   "T500": 576.2
+  },
+  "qT_how": "escalado desde coves-alcala (vecino)"
+ },
+ "coves-alcala": {
+  "q": 275.6,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 105.3,
+   "T5": 222.5,
+   "T10": 295.3,
+   "T25": 453.8,
+   "T100": 1799.6,
+   "T500": 4153.6
+  },
+  "qT_how": "caumax"
+ },
+ "cervera-benicarlo": {
+  "q": 1278.1,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 78.3,
+   "T5": 166.6,
+   "T10": 222.8,
+   "T25": 341.3,
+   "T100": 1464.5,
+   "T500": 3425.8
+  },
+  "qT_how": "caumax"
+ },
+ "cervol-vinaros": {
+  "q": 995.5,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 79.4,
+   "T5": 164.7,
+   "T10": 217.7,
+   "T25": 331.4,
+   "T100": 1377.5,
+   "T500": 3255.1
+  },
+  "qT_how": "caumax"
+ },
+ "girona-verger": {
+  "q": 268.7,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 33.7,
+   "T5": 81.2,
+   "T10": 112.9,
+   "T25": 180.3,
+   "T100": 1069.9,
+   "T500": 2465.8
+  },
+  "qT_how": "caumax"
+ },
+ "gorgos-xabia": {
+  "q": 168.3,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 68.5,
+   "T5": 155.6,
+   "T10": 212.7,
+   "T25": 334.1,
+   "T100": 1602.1,
+   "T500": 3660.9
+  },
+  "qT_how": "caumax"
+ },
+ "algar-altea": {
+  "q": 1008.2,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 30.2,
+   "T5": 62.1,
+   "T10": 85.8,
+   "T25": 127.4,
+   "T100": 694.3,
+   "T500": 1646.0
+  },
+  "qT_how": "caumax + presas"
+ },
+ "monnegre-campello": {
+  "q": 4001.4,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 25.9,
+   "T5": 64.8,
+   "T10": 95.8,
+   "T25": 172.6,
+   "T100": 1067.4,
+   "T500": 2279.4
+  },
+  "qT_how": "caumax"
+ },
+ "juncaret-alacant": {
+  "q": 764.3,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 6.9,
+   "T5": 18.1,
+   "T10": 27.6,
+   "T25": 46.6,
+   "T100": 230.2,
+   "T500": 493.1
+  },
+  "qT_how": "caumax"
+ },
+ "tarafa-aspe": {
+  "q": 634.8,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 5.3,
+   "T5": 9.5,
+   "T10": 13.7,
+   "T25": 18.9,
+   "T100": 34.7,
+   "T500": 67.3
+  },
+  "qT_how": "caumax"
+ },
+ "abanilla-benferri": {
+  "q": 557.2,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "high",
+  "rating": true,
+  "qT": {
+   "T2": 21.2,
+   "T5": 49.2,
+   "T10": 72.4,
+   "T25": 129.3,
+   "T100": 770.2,
+   "T500": 1650.5
+  },
+  "qT_how": "caumax"
  },
  "segura-orihuela": {
-  "q": 350.0,
-  "source": "capacidad publicada",
-  "kind": "published",
-  "url": "https://www.miteco.gob.es/content/dam/miteco/es/agua/temas/gestion-de-los-riesgos-de-inundacion/informe_seguimiento_pgri_segura-2019_tcm30-511310.pdf",
-  "rating": false
+  "q": 286.1,
+  "source": "sección LiDAR + Manning",
+  "kind": "section",
+  "confidence": "medium",
+  "rating": true,
+  "qT": {
+   "T2": 146.9,
+   "T5": 252.3,
+   "T10": 347.2,
+   "T25": 529.5,
+   "T100": 2267.4,
+   "T500": 4562.8
+  },
+  "qT_how": "caumax + presas"
+ },
+ "poyo-ribarroja": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 45.2,
+   "T5": 94.3,
+   "T10": 127.6,
+   "T25": 194.4,
+   "T100": 942.5,
+   "T500": 2324.9
+  },
+  "qT_how": "caumax"
+ },
+ "horteta-torrent": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 28.0,
+   "T5": 60.1,
+   "T10": 83.9,
+   "T25": 129.4,
+   "T100": 749.7,
+   "T500": 1857.8
+  },
+  "qT_how": "caumax"
+ },
+ "saleta-aldaia": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 19.7,
+   "T5": 42.4,
+   "T10": 59.2,
+   "T25": 91.4,
+   "T100": 529.3,
+   "T500": 1311.6
+  },
+  "qT_how": "caumax (4 km)"
+ },
+ "castellarda-lliria": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 82.2,
+   "T5": 161.4,
+   "T10": 212.3,
+   "T25": 318.9,
+   "T100": 1259.1,
+   "T500": 3083.6
+  },
+  "qT_how": "caumax"
+ },
+ "bunol-bunol": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 27.2,
+   "T5": 56.4,
+   "T10": 76.6,
+   "T25": 116.8,
+   "T100": 647.7,
+   "T500": 1654.0
+  },
+  "qT_how": "caumax"
+ },
+ "magro-real": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 30.8,
+   "T5": 59.9,
+   "T10": 88.2,
+   "T25": 132.0,
+   "T100": 524.9,
+   "T500": 1258.4
+  },
+  "qT_how": "caumax + presas"
+ },
+ "sellent-carcer": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 30.6,
+   "T5": 86.9,
+   "T10": 128.4,
+   "T25": 202.4,
+   "T100": 1238.3,
+   "T500": 3036.5
+  },
+  "qT_how": "caumax"
+ },
+ "canyoles-canals": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 97.9,
+   "T5": 244.4,
+   "T10": 350.5,
+   "T25": 529.0,
+   "T100": 1213.5,
+   "T500": 2935.9
+  },
+  "qT_how": "caumax"
+ },
+ "clariano-ontinyent": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 55.2,
+   "T5": 132.4,
+   "T10": 190.6,
+   "T25": 272.8,
+   "T100": 832.5,
+   "T500": 2034.1
+  },
+  "qT_how": "caumax"
+ },
+ "casella-alzira": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 16.9,
+   "T5": 40.0,
+   "T10": 55.8,
+   "T25": 88.5,
+   "T100": 539.0,
+   "T500": 1260.1
+  },
+  "qT_how": "caumax (4 km)"
+ },
+ "serpis-alcoi": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 39.8,
+   "T5": 82.6,
+   "T10": 112.5,
+   "T25": 172.2,
+   "T100": 870.2,
+   "T500": 2158.6
+  },
+  "qT_how": "caumax"
+ },
+ "aiguaoliva-vinaros": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 24.8,
+   "T5": 56.3,
+   "T10": 77.2,
+   "T25": 121.1,
+   "T100": 716.1,
+   "T500": 1737.2
+  },
+  "qT_how": "caumax"
+ },
+ "senia-vinaros": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 50.6,
+   "T5": 110.8,
+   "T10": 156.6,
+   "T25": 236.1,
+   "T100": 1013.5,
+   "T500": 2386.4
+  },
+  "qT_how": "caumax + presas"
+ },
+ "amadorio-vila": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 2.4,
+   "T5": 5.9,
+   "T10": 8.6,
+   "T25": 14.5,
+   "T100": 82.3,
+   "T500": 178.1
+  },
+  "qT_how": "caumax + presas"
+ },
+ "ovejas-alacant": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 14.6,
+   "T5": 36.0,
+   "T10": 52.5,
+   "T25": 90.4,
+   "T100": 497.7,
+   "T500": 1071.2
+  },
+  "qT_how": "caumax"
+ },
+ "vinalopo-elda": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 48.3,
+   "T5": 86.0,
+   "T10": 123.8,
+   "T25": 175.2,
+   "T100": 287.4,
+   "T500": 469.9
+  },
+  "qT_how": "caumax"
+ },
+ "vinalopo-elx": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 57.2,
+   "T5": 100.9,
+   "T10": 143.6,
+   "T25": 202.9,
+   "T100": 327.7,
+   "T500": 536.8
+  },
+  "qT_how": "caumax"
+ },
+ "seco-pilar": {
+  "q": null,
+  "source": null,
+  "kind": null,
+  "rating": false,
+  "qT": {
+   "T2": 3.6,
+   "T5": 9.6,
+   "T10": 14.4,
+   "T25": 24.0,
+   "T100": 112.7,
+   "T500": 241.6
+  },
+  "qT_how": "caumax (4 km)"
  }
 }
