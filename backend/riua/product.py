@@ -77,7 +77,7 @@ class Obs:
 
 
 def load_obs_state(state: Path) -> Obs:
-    f = state / "obs.npz"
+    f = state / "obs_raw.npz"        # RAW radar accumulations: the gauge correction is never stored
     if f.exists():
         z = np.load(f)
         return Obs(z["t_end"], z["o_max"].astype(np.float32), z["o_mean"].astype(np.float32))
@@ -87,7 +87,7 @@ def load_obs_state(state: Path) -> Obs:
 
 def save_obs_state(state: Path, obs: Obs, keep_h: int = 96) -> None:
     state.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(state / "obs.npz", t_end=obs.t_end[-keep_h:], o_max=obs.o_max[-keep_h:].astype(np.float16),
+    np.savez_compressed(state / "obs_raw.npz", t_end=obs.t_end[-keep_h:], o_max=obs.o_max[-keep_h:].astype(np.float16),
                         o_mean=obs.o_mean[-keep_h:].astype(np.float16))
 
 
@@ -150,14 +150,22 @@ def update_obs(state: Path, now: datetime, backfill_h: int = 14) -> tuple[Obs, l
             obs.partial_max = NC.to_analysis_max(np.nan_to_num(acc, nan=0.0))
             obs.partial_mean = np.nan_to_num(NC.to_analysis_mean(acc), nan=0.0)
             obs.partial_min = (sub[-1][0] - a).total_seconds() / 60.0
+    # The state keeps the RAW radar fields. Everything below works on a copy: correcting the stored
+    # fields would correct them again on every cycle (it did: 953 mm/h near Millares on 2026-10-01).
+    save_obs_state(state, obs)
+    obs = Obs(obs.t_end, obs.o_max.copy(), obs.o_mean.copy(),
+              None if obs.partial_max is None else obs.partial_max.copy(),
+              None if obs.partial_mean is None else obs.partial_mean.copy(), obs.partial_min)
+    np.minimum(obs.o_max, HARD_CAP_1H, out=obs.o_max)
+    np.minimum(obs.o_mean, HARD_CAP_1H, out=obs.o_mean)
     # gauges: correct the last 12 h with the 12-h gauge totals (radar pattern, gauge amount)
     gl = []
     try:
         gl = G.fetch_rain_gauges()
         rep["gauges"] = {"ok": True, "n": len(gl), "sources": sorted({g["source"] for g in gl})}
         k12 = obs.t_end > np.datetime64(hnow, "h") - np.timedelta64(12, "h")
-        if k12.sum() >= 10:
-            use = [g for g in gl if g.get("p_12h") is not None and g.get("lat") is not None]
+        use = [g for g in gl if g.get("p_12h") is not None and g.get("lat") is not None]
+        if k12.sum() >= 10 and use:
             raw = obs.o_mean[k12].sum(axis=0)
             fac, info = gauge_factor(raw, use)
             rep["gauges"]["merge"] = info
@@ -166,11 +174,41 @@ def update_obs(state: Path, now: datetime, backfill_h: int = 14) -> tuple[Obs, l
                 obs.o_max[k12] *= fac
                 if obs.partial_mean is not None:
                     obs.partial_mean *= fac; obs.partial_max *= fac
+        if use:
+            # ceiling: no cell may show more in 12 h than 1.5 x the largest gauge within ~20 km plus 10 mm
+            ceil = gauge_ceiling(use)
+            for arr in (obs.o_mean, obs.o_max):
+                tot = arr[k12].sum(axis=0)
+                scale = np.where(tot > ceil, ceil / np.maximum(tot, 1e-6), 1.0).astype(np.float32)
+                arr[k12] *= scale
+                if arr is obs.o_max and obs.partial_max is not None:
+                    obs.partial_max *= scale
+                if arr is obs.o_mean and obs.partial_mean is not None:
+                    obs.partial_mean *= scale
+            rep["gauges"]["ceiling_cells"] = int((scale < 0.999).sum())
     except Exception as e:
         rep["gauges"] = {"ok": False, "error": f"{type(e).__name__}: {e}"[:200]}
     obs.info = rep
-    save_obs_state(state, obs)
     return obs, rates, {"report": rep, "gauges": gl}
+
+
+HARD_CAP_1H = 200.0     # mm in one hour: above the Spanish record (184.6 mm, Turís, 2024); beyond it is hail or clutter
+
+
+def gauge_ceiling(gauges: list[dict], radius_cells: int = 4) -> np.ndarray:
+    """(NY, NX) upper bound for the 12-h analysis: 1.5 x the largest 12-h gauge total within
+    ~20 km, plus 10 mm; no bound where there is no gauge within that distance."""
+    from scipy import ndimage
+    g = np.zeros((grid.NY, grid.NX), np.float32)
+    has = np.zeros((grid.NY, grid.NX), np.float32)
+    for x in gauges:
+        c = grid.cell_of(x["lat"], x["lon"])
+        if c:
+            g[c] = max(g[c], float(x["p_12h"])); has[c] = 1.0
+    size = 2 * radius_cells + 1
+    near = ndimage.maximum_filter(g, size=size)
+    cover = ndimage.maximum_filter(has, size=size) > 0
+    return np.where(cover, 1.5 * near + 10.0, np.inf).astype(np.float32)
 
 
 def gauge_factor(raw12: np.ndarray, gauges: list[dict]):
@@ -207,7 +245,8 @@ def with_past(m: risk.Member, obs: Obs, hnow: datetime) -> risk.Member:
     t = np.concatenate([obs.t_end[past], m.t_end[fut]])
     p = np.concatenate([obs.o_max[past], m.p[fut]]).astype(np.float32)
     area = np.concatenate([obs.o_mean[past], m.area[fut]]).astype(np.float32)
-    return risk.Member(m.name, m.family, m.model, m.run, t, p, m.native_step_h, m.weight, area, m.meta)
+    return risk.Member(m.name, m.family, m.model, m.run, t, p, m.native_step_h, m.weight, area,
+                       {**m.meta, "obs_until": h})
 
 
 # --------------------------------------------------------------------------------- now members

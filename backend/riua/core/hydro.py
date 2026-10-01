@@ -191,7 +191,8 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
         variants = [(0, 0, 0.4), (dj, 0, 0.15), (-dj, 0, 0.15), (0, di, 0.15), (0, -di, 0.15)] \
             if m.family in ("cp", "radar") and (dj or di) else [(0, 0, 1.0)]
         for sj, si, share in variants:
-            p = np.nan_to_num(grid.shift(m.area, sj, si), nan=0.0).reshape(len(m.t_end), -1) * fam["s12h"]
+            p = np.nan_to_num(grid.shift(m.area, sj, si), nan=0.0).reshape(len(m.t_end), -1)
+            p = p * np.where(m.observed(), 1.0, fam["s12h"])[:, None]      # measured rain is not rescaled
             q = route(net_rain(p, hp["p0_mm"], hp["wet_memory_h"]), net_, hp["clark_k"])      # (Tm, P)
             # onto the common axis
             pos = np.searchsorted(t_axis, m.t_end)

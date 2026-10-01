@@ -57,6 +57,12 @@ class Member:
     def area(self) -> np.ndarray:
         return self.p if self.p_area is None else self.p_area
 
+    def observed(self) -> np.ndarray:
+        """(T,) bool: hours that are measured rain, not forecast. The forecast-error terms
+        (family factor, bias, spread) must not touch them."""
+        u = self.meta.get("obs_until")
+        return self.t_end <= u if u is not None else np.zeros(len(self.t_end), bool)
+
 
 @dataclass
 class Thresholds:
@@ -145,6 +151,7 @@ class Predictors:
     a1: np.ndarray | None = None    # (M, F, NY, NX) per-member neighbourhood amounts (NaN = not usable)
     a12: np.ndarray | None = None
     w: np.ndarray | None = None     # (M, F) normalised weights
+    obs12: np.ndarray | None = None  # (M, F, NY, NX) share of the scaled 12-h amount that is already measured
 
 
 def predictors(members: list[Member], frames, params: dict, horizon: str, now: datetime,
@@ -155,7 +162,7 @@ def predictors(members: list[Member], frames, params: dict, horizon: str, now: d
     """
     F = len(frames)
     radius = params["radius_km"][horizon]
-    A1, A12, W, audit = [], [], [], []
+    A1, A12, W, PHI, audit = [], [], [], [], []
     for m in members:
         w = member_weight(m, params, horizon, now)
         if w <= 0:
@@ -164,19 +171,38 @@ def predictors(members: list[Member], frames, params: dict, horizon: str, now: d
         a1, a12, valid = frame_amounts(m.p, m.t_end, frames)
         if not valid.any():
             continue
+        # 12-h windows that reach back into measured hours: the family factor applies to the
+        # forecast part only, so the measured part is stored divided by it (s12 * a12 = obs + s12 * fc)
+        obs = m.observed()
+        a12o = None
+        if obs.any():
+            s12 = float(fam["s12h"])
+            scale = np.where(obs, 1.0 / s12, 1.0).astype(np.float32)[:, None, None]
+            a12 = frame_amounts(m.p * scale, m.t_end, frames)[1]
+            a12o = frame_amounts(m.p * obs[:, None, None], m.t_end, frames)[1]
         if sample_mask is not None and fam.get("sampled", False):
             a1 = np.where(sample_mask, a1, -1.0)
             a12 = np.where(sample_mask, a12, -1.0)
+            if a12o is not None:
+                a12o = np.where(sample_mask, a12o, -1.0)
         r = radius if fam.get("neigh") else (params.get("lattice_fill_km", 8.0) if (sample_mask is not None and fam.get("sampled")) else 0.0)
         if r > 0:
             a1 = grid.neighbourhood_max(a1, r)
             a12 = grid.neighbourhood_max(a12, r)
+            if a12o is not None:
+                a12o = grid.neighbourhood_max(a12o, r)
         a1 = np.where(a1 < 0, np.nan, a1)
         a12 = np.where(a12 < 0, np.nan, a12)
         if m.native_step_h > 1:
             a1 = np.full_like(a1, np.nan)       # no information on hourly intensity
         a1[~valid] = np.nan
         a12[~valid] = np.nan
+        if a12o is None:
+            PHI.append(np.zeros_like(a12))
+        else:
+            with np.errstate(invalid="ignore", divide="ignore"):
+                phi = np.maximum(a12o, 0.0) / (float(fam["s12h"]) * a12)
+            PHI.append(np.clip(np.nan_to_num(phi, nan=0.0, posinf=0.0), 0.0, 1.0).astype(np.float32))
         A1.append(a1); A12.append(a12); W.append(w * valid)
         audit.append({"name": m.name, "family": m.family, "model": m.model,
                       "run": m.run.strftime("%Y-%m-%dT%H:%MZ"), "step_h": m.native_step_h,
@@ -196,7 +222,8 @@ def predictors(members: list[Member], frames, params: dict, horizon: str, now: d
     for k, row in enumerate(audit):
         row["w"] = [round(float(x), 4) for x in (ws[k] / tot[0])]
     return Predictors(m1, q1, m12, q12, valid, has_1h, audit,
-                      a1s if keep_members else None, a12s if keep_members else None, ws / tot)
+                      a1s if keep_members else None, a12s if keep_members else None, ws / tot,
+                      np.stack(PHI) if keep_members else None)
 
 
 @dataclass
@@ -256,6 +283,8 @@ def dressed_probabilities(pred: Predictors, thr: Thresholds, params: dict, horiz
     For scenario m with weight w_m, family factors s1h, s12h and amounts a1, a12:
         r_L = max(s1h * a1 / T1h_L, s12h * a12 / T12h_L)       (a1 ignored when unknown)
         P(>= L) = sum_m w_m * Phi(ln(bias * r_L) / sigma) / sum_m w_m
+    Where a share phi of the 12-h amount is rain already measured, bias and sigma act on the
+    forecast share only: bias -> phi + (1 - phi) * bias, sigma -> max(sigma * (1 - phi), sigma_obs).
     Returns prob, p1, p12 (4, F, NY, NX) and the scaled amounts' weighted median and
     90th percentile e1, e12 (2, F, NY, NX).
     """
@@ -275,13 +304,19 @@ def dressed_probabilities(pred: Predictors, thr: Thresholds, params: dict, horiz
                 continue
             ok12 = np.isfinite(A12[m, f])
             ok1 = np.isfinite(A1[m, f])
+            if pred.obs12 is not None:
+                ph = pred.obs12[m, f]
+                b12 = ph + (1.0 - ph) * bias
+                sg12 = np.maximum(sigma * (1.0 - ph), min(sigma, params.get("sigma_obs", 0.15)))
+            else:
+                b12, sg12 = bias, sigma
             for k in range(4):
                 r12 = np.where(ok12, A12[m, f] / thr.t12h[k], 0.0)
                 r1 = np.where(ok1, A1[m, f] / thr.t1h[k], 0.0)
-                pa, pb = dress(r1, sigma, bias), dress(r12, sigma, bias)
-                num1[k, f] += w * np.where(ok1, pa, 0.0)
-                num12[k, f] += w * np.where(ok12, pb, 0.0)
-                num[k, f] += w * np.where(ok12 | ok1, dress(np.maximum(r1, r12), sigma, bias), 0.0)
+                pa, pb = np.where(ok1, dress(r1, sigma, bias), 0.0), np.where(ok12, dress(r12, sg12, b12), 0.0)
+                num1[k, f] += w * pa
+                num12[k, f] += w * pb
+                num[k, f] += w * np.maximum(pa, pb)
             den[f] += w * (ok12 | ok1)
             den1[f] += w * ok1
     d = np.maximum(den, 1e-12)[None]
@@ -301,7 +336,7 @@ def dressed_probabilities(pred: Predictors, thr: Thresholds, params: dict, horiz
     return prob, p1, p12, e1, e12
 
 
-def dress(ratio: np.ndarray, sigma: float, bias: float = 1.0) -> np.ndarray:
+def dress(ratio: np.ndarray, sigma, bias=1.0) -> np.ndarray:
     """Probability that the truth reaches the threshold given a scenario at `ratio` of it
     (log-normal error around the scenario; used for catchment and discharge scenarios)."""
     with np.errstate(divide="ignore"):

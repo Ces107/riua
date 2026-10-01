@@ -76,7 +76,8 @@ def _rolling(cs: np.ndarray, d: int) -> np.ndarray:
     return cs[idx] - cs[np.maximum(idx - d, 0)]
 
 
-def member_basin_ratios(p: np.ndarray, t_end: np.ndarray, frames, bs: BasinSet, params: dict, fam: dict):
+def member_basin_ratios(p: np.ndarray, t_end: np.ndarray, frames, bs: BasinSet, params: dict, fam: dict,
+                        obs: np.ndarray | None = None, bias: float = 1.0):
     """One scenario -> hazard ratios (4, F, B), plus diagnostics per frame.
 
     Returns ratio, own12 (F,B) largest 12-h mean rain over the unit, up_best (F,B) the
@@ -89,6 +90,10 @@ def member_basin_ratios(p: np.ndarray, t_end: np.ndarray, frames, bs: BasinSet, 
     up = own @ bs.U.T                        # (T, B) mean over unit + upstream
     cs_own = np.concatenate([np.zeros((1, bs.n)), np.cumsum(own, axis=0)])
     cs_up = np.concatenate([np.zeros((1, bs.n)), np.cumsum(up, axis=0)])
+    # measured hours (o) and forecast hours (f) apart: family factor and bias act on the forecast only
+    o = (np.zeros(T, bool) if obs is None else obs)[:, None]
+    cum = lambda a: np.concatenate([np.zeros((1, bs.n)), np.cumsum(a, axis=0)])
+    cs_own_o, cs_own_f, cs_up_o, cs_up_f = cum(own * o), cum(own * ~o), cum(up * o), cum(up * ~o)
     tc = response_time_h(bs.up_area, hp)
     k_own, k_up = arf(bs.area), arf(bs.up_area)
     red1, red12 = bs.t1h[2], bs.t12h[2]
@@ -103,11 +108,13 @@ def member_basin_ratios(p: np.ndarray, t_end: np.ndarray, frames, bs: BasinSet, 
             continue  # coarse/long-step scenarios are judged on 12 h only
         s = fam["s12h"] if d >= 6 else fam["s1h"] if d == 1 else 0.5 * (fam["s1h"] + fam["s12h"])
         thr = duration_thresholds(lvl1, lvl12, float(d))          # (4, B)
-        r_own = np.maximum(r_own, s * _rolling(cs_own, d)[None] / (thr * k_own)[:, None, :])
-        r_up = np.maximum(r_up, s * _rolling(cs_up, d)[None] / (thr * k_up)[:, None, :])
+        r_own = np.maximum(r_own, (_rolling(cs_own_o, d) + s * bias * _rolling(cs_own_f, d))[None] / (thr * k_own)[:, None, :])
+        r_up = np.maximum(r_up, (_rolling(cs_up_o, d) + s * bias * _rolling(cs_up_f, d))[None] / (thr * k_up)[:, None, :])
 
     # unit peak discharge from the upstream-scope rain: losses on the trailing 24 h total
-    e = runoff_mm(fam["s12h"] * _rolling(cs_up, 24), hp["p0_mm"])   # (T, B) cumulative runoff of the event so far
+    wet_o, wet_f = _rolling(cs_up_o, 24), fam["s12h"] * _rolling(cs_up_f, 24)
+    e = runoff_mm(wet_o + wet_f, hp["p0_mm"])   # (T, B) cumulative runoff of the event so far
+    share_f = wet_f / np.maximum(wet_o + wet_f, 1e-9)
     tci = np.maximum(np.rint(tc).astype(int), 1)
     q = np.zeros((T, bs.n))
     for lag in np.unique(tci):
@@ -117,7 +124,7 @@ def member_basin_ratios(p: np.ndarray, t_end: np.ndarray, frames, bs: BasinSet, 
             prev[lag:] = e[:-lag][:, g]
         q[:, g] = np.maximum(e[:, g] - prev, 0.0) / lag * 0.278     # mm/h -> m3/s/km2
     q_env = ex["envelope_c"] * np.maximum(bs.up_area, 1.0) ** ex["envelope_exp"]
-    r_q = q / (ex["envelope_fraction"] * q_env)
+    r_q = q / (ex["envelope_fraction"] * q_env) * (1.0 + (bias - 1.0) * share_f)
 
     F = len(frames)
     ratio = np.zeros((4, F, bs.n), np.float32)
@@ -185,11 +192,11 @@ def basin_product(members: list[Member], frames, bs: BasinSet, params: dict, hor
             variants = [(0, 0, 1.0)]
         for sj, si, share in variants:
             ratio, own12, up12, q, su, valid = member_basin_ratios(
-                grid.shift(m.area, sj, si), m.t_end, frames, bs, params, fam)
+                grid.shift(m.area, sj, si), m.t_end, frames, bs, params, fam, obs=m.observed(), bias=bias)
             if not valid.any():
                 break
             wv = w * share * valid
-            psum += wv[None, :, None] * dress(ratio, sigma, bias)
+            psum += wv[None, :, None] * dress(ratio, sigma)      # the bias is already inside the ratio
             wsum += wv
             O.append(own12); Uu.append(up12); Q.append(q); S.append(su); Ws.append(wv)
     ok = wsum > 0
