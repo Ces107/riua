@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Validación — riuà</title>
+<meta name="description" content="Qué habría dicho riuà en episodios pasados y cuánto acierta: la validación con predicciones que estaban disponibles entonces.">
+<meta name="theme-color" content="#f3efe6">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/riua.css">
+</head>
+<body>
+<header class="mast">
+  <p class="name"><a href="./">riuà</a></p>
+  <p class="def"><i>riuà</i> (val.) f. Crecida súbita de un río o barranco.</p>
+</header>
+
+<main>
+  <a class="back" href="./">← Volver al mapa</a>
+  <article class="page">
+    <h1 class="title">Validación</h1>
+    <p><b>Estado: pendiente.</b> Riuà está en fase de pruebas. La validación con predicciones archivadas (las que estaban disponibles antes de cada episodio) aún no se ha completado, y los coeficientes de calibración y los umbrales de probabilidad τ son valores iniciales razonados, no ajustados. Hasta que esta página muestre resultados, trata los niveles como orientativos y sigue siempre a AEMET y al 112.</p>
+
+    <h2>Lo que ya está comprobado</h2>
+    <table>
+      <tr><th>Pieza</th><th>Comprobación</th><th>Resultado</th></tr>
+      <tr><td>Lluvia observada (radar + pluviómetros), 29-oct-2024</td><td>167 pluviómetros apartados del ajuste</td><td class="n">correlación 0,96 · error medio 11,7 mm (radar solo: 0,62 · 38,1 mm)</td></tr>
+      <tr><td>Máximo estimado ese día</td><td>frente a Turís (AVAMET 640,8 mm)</td><td class="n">663 mm en la celda de Turís</td></tr>
+      <tr><td>Cuencas de los barrancos</td><td>áreas frente a las oficiales CEDEX/CHJ</td><td class="n">52 de 53 dentro de ±10 % · Poyo en Paiporta 356 km² (oficial 351)</td></tr>
+      <tr><td>Fórmula de probabilidad (CRPS de la gamma censurada)</td><td>frente a Monte Carlo</td><td class="n">diferencia &lt; 0,5 %</td></tr>
+    </table>
+
+    <h2>Plan de validación</h2>
+    <p>Episodios: 29-oct-2024 (DANA, Poyo), 13-nov-2024, 28/29-sep-2025, 9–13-oct-2025 (DANA Alice), 28-dic-2025, y días nulos (aviso rojo sin lluvia: 3-nov-2024, 14-dic-2025) y secos. Verdad: análisis radar-pluviómetros de 1 km. Para cada horizonte y nivel: aciertos, fallos, falsas alarmas, POD, FAR, CSI y fiabilidad de las probabilidades. Los umbrales se ajustarán con esos resultados.</p>
+    <p>Limitación conocida: no existe archivo gratuito de modelos de convección explícita con más de un día de antelación para 2024, ni de radar AEMET; el horizonte de 2 a 7 días se validará con el conjunto ECMWF.</p>
+  </article>
+</main>
+
+<footer class="foot">
+  <nav aria-label="Más información">
+    <a href="./">Mapa</a> · <a href="metodo.html">Método</a> · <a href="validacion.html" aria-current="page">Validación</a> · <a href="fuentes.html">Fuentes de datos</a>
+  </nav>
+</footer>
+
+<aside class="bar-fixed" aria-label="Aviso legal">
+  <p class="disclaimer">Herramienta no oficial. Las fuentes oficiales son <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos">AEMET</a> y el
+  <a href="https://www.112cv.gva.es/">112 Comunitat Valenciana</a>. Ante una emergencia, sigue sus indicaciones.</p>
+</aside>
+</body>
+</html>

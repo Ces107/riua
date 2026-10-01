@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Método — riuà</title>
+<meta name="description" content="Cómo calcula riuà el riesgo de lluvia extrema y de riada: escenarios, calibración, probabilidades y niveles.">
+<meta name="theme-color" content="#f3efe6">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/riua.css">
+</head>
+<body>
+<header class="mast">
+  <p class="name"><a href="./">riuà</a></p>
+  <p class="def"><i>riuà</i> (val.) f. Crecida súbita de un río o barranco.</p>
+</header>
+
+<main>
+  <a class="back" href="./">← Volver al mapa</a>
+  <article class="page">
+    <h1 class="title">Método</h1>
+    <p>Riuà estima, para cada celda de 0,05° (unos 4 × 5 km), cada cuenca y cada barranco vigilado, la probabilidad de que la lluvia alcance los umbrales de aviso de AEMET, y de ahí un nivel de 1 a 5. Todo el cálculo de cada celda se puede ver en el mapa: toca una celda y abre «Cómo se ha calculado».</p>
+
+    <h2>1. Los cinco niveles</h2>
+    <table>
+      <tr><th>Nivel</th><th>Significado</th><th>Umbral en 1 h</th><th>Umbral en 12 h</th></tr>
+      <tr><td>2 Medio</td><td>≈ aviso amarillo</td><td class="n">20 mm</td><td class="n">60 mm</td></tr>
+      <tr><td>3 Alto</td><td>≈ aviso naranja</td><td class="n">40 mm</td><td class="n">100 mm</td></tr>
+      <tr><td>4 Muy alto</td><td>≈ aviso rojo; no se recomienda permanecer en el exterior</td><td class="n">90 mm</td><td class="n">180 mm</td></tr>
+      <tr><td>5 Extremo</td><td>considerablemente más peligroso que un aviso rojo</td><td class="n">135 mm (1,5 × rojo)</td><td class="n">300 mm (1,67 × rojo)</td></tr>
+    </table>
+    <p>Los umbrales 2–4 son los del Plan Meteoalerta de AEMET (anexo 1, versión de 31-may-2022), iguales en las once zonas de aviso de la Comunitat Valenciana. El nivel 5 es propio: separa el 29 de octubre de 2024 (Turís, 771 mm en 24 h, 185 mm en 1 h) y Oliva 1987 (817 mm) de cualquier otro episodio del catálogo 2023–2026. En cuencas y barrancos hay una segunda vía al nivel 5: un caudal específico estimado cercano a la envolvente de las mayores crecidas mediterráneas.</p>
+
+    <h2>2. Escenarios de lluvia</h2>
+    <ul>
+      <li><b>Ahora (0–6 h).</b> Radar EUMETNET OPERA (1 km, cada 5–10 min) con los huecos rellenados por el compuesto de AEMET; reflectividad → lluvia con dos leyes Z–R (Marshall-Palmer para lluvia estratiforme, Z = 300 R<sup>1,4</sup> para celdas convectivas, detectadas con el criterio de Steiner, Houze y Yuter 1995); acumulación corregida por advección (flujo óptico). La lluvia ya caída se ajusta a los pluviómetros SAIH y AEMET (wradlib, modelo de error mixto). El futuro inmediato es un conjunto de 20 miembros pysteps STEPS (cascada espectral con ruido estocástico y velocidad perturbada), que se funde con AROME a partir de la primera hora y desaparece a las 4 h.</li>
+      <li><b>Próximas 48 h.</b> Las últimas pasadas de AROME-HD 1,3 km y AROME 2,5 km (Météo-France), ICON-EU (DWD), ARPEGE e IFS 0,25° (ECMWF): un conjunto con desfase temporal. Las pasadas más antiguas pesan menos.</li>
+      <li><b>Días 2–7.</b> Los 51 miembros del conjunto ECMWF ENS más IFS determinista.</li>
+    </ul>
+
+    <h2>3. De los escenarios a la probabilidad</h2>
+    <p>Para cada escenario y periodo se toma la mayor lluvia en 1 h y la mayor en 12 h. En los modelos de convección explícita se toma el máximo en un radio de 10–20 km: acertar la tormenta a 15 km es acertar (Schwartz y Sobash 2017). Con la media <i>m</i> y el percentil 90 <i>q</i> de los escenarios se construye una distribución gamma censurada y desplazada (Scheuerer y Hamill 2015):</p>
+    <p class="num">μ = a0 + a1·m + a2·q &nbsp; σ = b0·√μ + b1·(q − m) &nbsp; k = μ²/σ² &nbsp; θ = σ²/μ<br>P(lluvia ≥ T) = Q(k, (T − δ)/θ)</p>
+    <p>Las dos probabilidades (1 h y 12 h) se unen con una cópula gaussiana. Los coeficientes se ajustarán minimizando el CRPS sobre casos pasados; <b>de momento son valores iniciales sin ajustar</b> (ver <a href="validacion.html">Validación</a>).</p>
+
+    <h2>4. Regla de decisión</h2>
+    <p>Nivel = el mayor <i>L</i> cuya probabilidad P(≥ L) alcanza τ<sub>L</sub>. τ baja al subir la gravedad: el coste de no avisar de un nivel 5 es mucho mayor que el de una falsa alarma (teoría coste-pérdida: umbral óptimo = C/L).</p>
+    <table>
+      <tr><th>Horizonte</th><th>τ2</th><th>τ3</th><th>τ4</th><th>τ5</th></tr>
+      <tr><td>Ahora</td><td class="n">0,50</td><td class="n">0,40</td><td class="n">0,30</td><td class="n">0,20</td></tr>
+      <tr><td>48 h</td><td class="n">0,45</td><td class="n">0,35</td><td class="n">0,25</td><td class="n">0,15</td></tr>
+      <tr><td>Días 2–7</td><td class="n">0,40</td><td class="n">0,30</td><td class="n">0,20</td><td class="n">0,10</td></tr>
+    </table>
+    <p>Ejemplo: P(rojo) ≈ 100 % y P(extremo) ≈ 35 % da nivel 5 en los tres horizontes.</p>
+
+    <h2>5. Cuencas: la lluvia que cae aguas arriba</h2>
+    <p>El 29 de octubre de 2024 apenas llovió en Paiporta; el agua bajó por la rambla del Poyo desde Chiva y Cheste. Por eso cada escenario se integra también sobre 420 cuencas (masas de agua de la CHJ y subcuencas CEDEX) con su topología: lluvia media de la cuenca y de todo lo que drena a ella, en 1, 3, 6 y 12 h, contra los umbrales reducidos por área (Norma 5.2-IC, K<sub>A</sub> = 1 − log<sub>10</sub>A/15). Las ventanas aguas arriba pueden terminar hasta un tiempo de respuesta antes del periodo: el agua que ya viene de camino cuenta.</p>
+
+    <h2>6. Barrancos y ríos: caudal y desbordamiento</h2>
+    <p>En 60 puntos donde un barranco o río atraviesa una población: cuenca delimitada sobre el modelo digital Copernicus 30 m con los cauces de OpenStreetMap grabados; pérdidas por el método del umbral de escorrentía (P0 = 25 mm, con memoria de la lluvia anterior); propagación tiempo-área calibrada con la crecida del Poyo de 2024 (Chiva → Paiporta ≈ 3 h) y un embalse lineal; sección del cauce extraída del LiDAR del IGN y curva de gasto con Manning. Resultado: hidrograma probable, probabilidad de superar la capacidad del cauce y altura estimada del agua sobre la orilla. Hoy 25 de los 60 puntos tienen sección y capacidad; el resto muestra solo el caudal. No ve sueltas de presas, puentes taponados (decisivos en 2024) ni el alcantarillado.</p>
+
+    <h2>7. Lo que este método no hace</h2>
+    <ul>
+      <li>No sustituye a AEMET ni al 112: es un cálculo automático sin predictor humano.</li>
+      <li>Los modelos de 25 km no pueden producir los máximos de una tormenta; en días 2–7 el nivel es poco preciso en el espacio.</li>
+      <li>El radar pierde señal bajo lluvia muy intensa (atenuación) y en sombras orográficas; los pluviómetros lo corrigen solo donde los hay.</li>
+      <li>La muestra de episodios extremos para ajustar es muy pequeña.</li>
+    </ul>
+    <p>Código: <a href="https://github.com/Ces107/riua">github.com/Ces107/riua</a>.</p>
+  </article>
+</main>
+
+<footer class="foot">
+  <nav aria-label="Más información">
+    <a href="./">Mapa</a> · <a href="metodo.html" aria-current="page">Método</a> · <a href="validacion.html">Validación</a> · <a href="fuentes.html">Fuentes de datos</a>
+  </nav>
+</footer>
+
+<aside class="bar-fixed" aria-label="Aviso legal">
+  <p class="disclaimer">Herramienta no oficial. Las fuentes oficiales son <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos">AEMET</a> y el
+  <a href="https://www.112cv.gva.es/">112 Comunitat Valenciana</a>. Ante una emergencia, sigue sus indicaciones.</p>
+</aside>
+</body>
+</html>

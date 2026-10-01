@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>riuà — riesgo de lluvia extrema y riadas en la Comunitat Valenciana</title>
+<meta name="description" content="Riesgo probabilístico de lluvia extrema y de riada en la Comunitat Valenciana, en cinco niveles y tres plazos, con todo el cálculo a la vista. Herramienta no oficial.">
+<meta name="theme-color" content="#f3efe6">
+<!-- Link previews. The image URL must be absolute: change the host here if the site is not served from ces107.github.io/riua/. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="riuà">
+<meta property="og:locale" content="es_ES">
+<meta property="og:title" content="riuà — riesgo de lluvia extrema y riadas en la Comunitat Valenciana">
+<meta property="og:description" content="Qué riesgo hay donde vives, cuándo y por qué. Cinco niveles, tres plazos y todo el cálculo a la vista. Herramienta no oficial.">
+<meta property="og:image" content="https://ces107.github.io/riua/data/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Mapa de riesgo de lluvia extrema de riuà sobre la Comunitat Valenciana">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="riuà — riesgo de lluvia extrema y riadas en la Comunitat Valenciana">
+<meta name="twitter:description" content="Qué riesgo hay donde vives, cuándo y por qué. Herramienta no oficial.">
+<meta name="twitter:image" content="https://ces107.github.io/riua/data/og.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="css/riua.css">
+<link rel="modulepreload" href="js/main.js">
+<link rel="modulepreload" href="js/config.js">
+<link rel="modulepreload" href="js/data.js">
+<link rel="modulepreload" href="js/geo.js">
+<link rel="modulepreload" href="js/headline.js">
+<link rel="modulepreload" href="js/map.js">
+<link rel="modulepreload" href="js/draw.js">
+<link rel="modulepreload" href="js/panel.js">
+<link rel="modulepreload" href="js/auditview.js">
+<link rel="modulepreload" href="js/maths.js">
+<link rel="modulepreload" href="js/points.js">
+<link rel="modulepreload" href="js/share.js">
+<link rel="modulepreload" href="js/state.js">
+<link rel="modulepreload" href="js/time.js">
+</head>
+<body>
+<a class="skip" href="#detalle">Saltar al detalle del lugar</a>
+
+<header class="mast">
+  <h1 class="name">riuà</h1>
+  <p class="def"><i>riuà</i> (val.) f. Crecida súbita de un río o barranco.</p>
+</header>
+
+<main>
+  <p id="headline" class="headline" aria-live="polite">Cargando la última predicción…</p>
+
+  <div class="layout">
+    <section class="mapcol" aria-label="Mapa de riesgo">
+      <div id="map" role="application" aria-label="Mapa de riesgo de la Comunitat Valenciana. La misma información está en el titular, en la ficha del lugar y en la tabla de barrancos." aria-describedby="headline"></div>
+      <p id="pick" class="pick"></p>
+
+      <div class="controls">
+        <div class="tabs" role="tablist" aria-label="Plazo de la predicción">
+          <button type="button" role="tab" id="tab-now" data-hz="now" aria-selected="false" aria-controls="map" tabindex="-1">Ahora · 0–6 h</button>
+          <button type="button" role="tab" id="tab-mid" data-hz="mid" aria-selected="false" aria-controls="map" tabindex="-1">Próximas 48 h</button>
+          <button type="button" role="tab" id="tab-long" data-hz="long" aria-selected="false" aria-controls="map" tabindex="-1">Días 2–7</button>
+        </div>
+
+        <div class="stepper">
+          <p id="frame-label" class="frame-label num">&nbsp;</p>
+          <button type="button" id="prev" aria-label="Tramo anterior">&#8249;</button>
+          <input type="range" id="frame" min="0" max="1" step="1" value="0" aria-label="Momento: a la izquierda, lo peor del periodo; después, cada tramo">
+          <button type="button" id="next" aria-label="Tramo siguiente">&#8250;</button>
+        </div>
+
+        <div class="row">
+          <div class="pair" role="group" aria-label="Qué pinta el mapa">
+            <button type="button" id="mode-celdas" aria-pressed="true">Lluvia por celdas</button>
+            <button type="button" id="mode-cuencas" aria-pressed="false">Cuencas y barrancos</button>
+          </div>
+          <div class="pair">
+            <button type="button" id="share">Compartir</button>
+            <button type="button" id="copy">Copiar enlace</button>
+          </div>
+        </div>
+        <p id="msg" class="msg" role="status"></p>
+      </div>
+
+      <ol class="legend" aria-label="Niveles de riesgo">
+        <li><span class="lv lv1">1</span> <span>Sin riesgo</span></li>
+        <li><span class="lv lv2">2</span> <span>Medio <span class="dim">(≈ aviso amarillo AEMET)</span></span></li>
+        <li><span class="lv lv3">3</span> <span>Alto <span class="dim">(≈ naranja)</span></span></li>
+        <li><span class="lv lv4">4</span> <span>Muy alto <span class="dim">(≈ rojo)</span>: no se recomienda permanecer en el exterior</span></li>
+        <li><span class="lv lv5">5</span> <span>EXTREMO: considerablemente más peligroso que un aviso rojo</span></li>
+      </ol>
+    </section>
+
+    <section id="detalle" class="panel" aria-label="Detalle de un lugar" tabindex="-1">
+      <form id="search" class="search" role="search" autocomplete="off">
+        <label for="q">Busca tu municipio</label>
+        <input type="search" id="q" name="q" placeholder="p. ej. Paiporta" enterkeyhint="search" spellcheck="false" aria-controls="sug">
+        <button type="button" id="locate">Mi ubicación</button>
+        <ul id="sug" class="sug" hidden></ul>
+      </form>
+      <div id="place" aria-live="polite"><p class="hint">Toca el mapa, busca tu municipio o usa «Mi ubicación» para ver aquí el riesgo de un lugar, cuándo y por qué.</p></div>
+    </section>
+  </div>
+
+  <section id="barrancos" class="wide" aria-label="Barrancos y ríos" hidden></section>
+</main>
+
+<footer class="foot">
+  <nav aria-label="Más información">
+    <a href="metodo.html">Método</a> · <a href="validacion.html">Validación</a> · <a href="fuentes.html">Fuentes de datos</a>
+  </nav>
+  <p>Datos: Open-Meteo.com (CC BY 4.0), Météo-France, DWD, ECMWF (CC BY 4.0), EUMETNET OPERA (CC BY 4.0), © AEMET, confederaciones hidrográficas del Júcar, del Segura y del Ebro (datos provisionales),
+  © Instituto Geográfico Nacional. <a href="fuentes.html">Lista completa y estado de cada fuente</a>.</p>
+</footer>
+
+<aside id="bar" class="bar-fixed" aria-label="Actualización y aviso legal">
+  <p id="fresh" class="num">Cargando…</p>
+  <p class="disclaimer">Herramienta no oficial. Las fuentes oficiales son <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos">AEMET</a> y el
+  <a href="https://www.112cv.gva.es/">112 Comunitat Valenciana</a>. Ante una emergencia, sigue sus indicaciones.
+  <b>En pruebas:</b> los niveles aún no están calibrados con episodios pasados (<a href="validacion.html">ver validación</a>).</p>
+</aside>
+
+<noscript><p class="noscript">Esta página necesita JavaScript para dibujar el mapa. Los avisos oficiales están en <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos">aemet.es</a>.</p></noscript>
+<script src="vendor/leaflet/leaflet.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
