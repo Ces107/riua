@@ -4,11 +4,10 @@
 - Web: https://ces107.github.io/riua/ (branch `gh-pages`, published by `deploy/publish.sh`).
 - API: https://riua-api.onrender.com (`/healthz`, `/v1/status`, `/v1/snapshot`, `/v1/point?lat=&lon=`, `/docs`);
   Render free service `srv-dav1q28jo6nc73f47k80`, image `render/Dockerfile`, polls the snapshot from Pages.
-- Compute: scheduled task "Riua-ciclo" on this PC (at logon, hidden) runs `deploy/loop.sh` in WSL Ubuntu:
-  every 10 min `python -m riua.product` (~2.5 min) then publish. Log: WSL `/root/riua-loop.log`.
-  Stops when the PC is off. Remove with `Unregister-ScheduledTask Riua-ciclo`.
-- Cloud cron instead of the PC: run `gh auth refresh -s workflow`, copy `deploy/github-actions-cycle.yml`
-  to `.github/workflows/cycle.yml`, switch Pages to build_type=workflow, push, then disable the scheduled task.
+- Compute: GitHub Actions workflow `.github/workflows/cycle.yml`, cron every 10 min (GitHub may delay
+  scheduled runs), ~8 min per run, state kept in the Actions cache, deploys Pages directly. First cloud run
+  10:39Z, all sources OK. Manual run: `gh workflow run cycle.yml -R Ces107/riua`.
+  The PC scheduled task was removed; `deploy/loop.sh` remains as a local fallback.
 
 ## First real cycle (09:42Z)
 All sources OK: radar OPERA+AEMET (13 frames), 413 gauges, AROME-HD/AROME/ICON-EU/ARPEGE/IFS lagged runs,
