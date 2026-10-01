@@ -17,7 +17,7 @@ import time
 
 import numpy as np
 
-from common import CLIM_P, PARTS, doy366, hour_index, precip, rolling_sum, tcwv
+from common import CLIM_P, PARTS, doy366, hour_index, precip, rolling_sum, safe_savez, tcwv
 
 REF0, REF1 = 1991, 2020
 WINDOWS = (12, 24, 48, 72)
@@ -59,8 +59,7 @@ def build_precip():
         out[f"pr_max{w}"] = np.round(mx * Q_SCALE).astype(np.uint16)
         print(f"window {w} h: samples per node {min(nsamp)}..{max(nsamp)}, max quantile {q.max():.1f} mm, "
               f"pooled max {mx.max():.1f} mm, {time.time() - t0:.0f}s", flush=True)
-    PARTS.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(PARTS / "clim_precip.npz", lat=lat.astype(np.float32), lon=lon.astype(np.float32),
+    safe_savez(PARTS / "clim_precip.npz", lat=lat.astype(np.float32), lon=lon.astype(np.float32),
                         clim_p=CLIM_P, clim_doy=NODES.astype(np.int16), pr_q_scale=Q_SCALE, **out)
     print("saved", PARTS / "clim_precip.npz")
 
@@ -96,15 +95,44 @@ def build_tcwv():
     diurnal = hs1.sum(axis=1) / cnt.sum() * 24
     print(f"TCWV: {ny} years, hours per doy {cnt.min():.0f}..{cnt.max():.0f}; mean range {mean.min():.1f}..{mean.max():.1f}, "
           f"std range {std.min():.2f}..{std.max():.2f}; box-mean by hour of day min {diurnal.min():.2f} max {diurnal.max():.2f} kg/m2")
-    PARTS.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(PARTS / "clim_tcwv.npz", tcwv_lat=lat.astype(np.float32), tcwv_lon=lon.astype(np.float32),
+    safe_savez(PARTS / "clim_tcwv.npz", tcwv_lat=lat.astype(np.float32), tcwv_lon=lon.astype(np.float32),
                         tcwv_mean=mean.astype(np.float32), tcwv_std=std.astype(np.float32),
                         tcwv_diurnal_boxmean=diurnal.astype(np.float32))
     print("saved", PARTS / "clim_tcwv.npz")
 
 
+def build_monthly():
+    """Mean monthly and annual totals 1991-2020 (sanity values for verify.py) and the ERA5 fields of 29-Oct-2024."""
+    import calendar
+
+    import fetch_era5
+
+    pr, lat, lon = precip()
+    mon = np.zeros((12, len(lat), len(lon)))
+    for y in range(REF0, REF1 + 1):
+        for m in range(12):
+            a = hour_index(y, m + 1)
+            b = a + calendar.monthrange(y, m + 1)[1] * 24
+            mon[m] += np.asarray(pr[a:b]).astype(np.int64).sum(axis=0) / 10.0
+    mon /= (REF1 - REF0 + 1)
+    # demo fields: the ERA5 "analysis" of the 29 October 2024 event in the units of the climatology
+    demo = {}
+    for name, (d0, h0, w) in {"demo_20241029_pr24": ((2024, 10, 30), 0, 24), "demo_20241029_pr12": ((2024, 10, 30), 0, 12),
+                              "demo_20241029_pr48": ((2024, 10, 30), 12, 48), "demo_20241029_pr72": ((2024, 10, 31), 0, 72)}.items():
+        e = hour_index(*d0, h0)                       # window END (value at index t = hour ending at t)
+        demo[name] = (np.asarray(pr[e - w + 1:e + 1]).astype(np.int64).sum(axis=0) / 10.0).astype(np.float32)
+    z = np.load(fetch_era5.CACHE / "total_column_integrated_water_vapour" / "chunk_953.npz")
+    t = (hour_index(2024, 10, 29, 12) + (calendar.timegm((1940, 1, 1, 0, 0, 0)) // 3600)) - 953 * fetch_era5.CHUNK_H
+    demo["demo_20241029_tcwv_12utc"] = (z["data"][:, :, t] / float(z["scale"])).astype(np.float32)
+    safe_savez(PARTS / "clim_monthly.npz", pr_monthly_mean=mon.astype(np.float32), **demo)
+    print("monthly box mean:", np.round(mon.mean(axis=(1, 2)), 1), "annual", round(float(mon.sum(axis=0).mean()), 1))
+    print({k: (float(v.max()), float(v.mean())) for k, v in demo.items()})
+
+
 if __name__ == "__main__":
     what = sys.argv[1] if len(sys.argv) > 1 else "all"
+    if what in ("monthly", "all"):
+        build_monthly()
     if what in ("precip", "all"):
         build_precip()
     if what in ("tcwv", "all"):

@@ -278,6 +278,17 @@ def nowcast_members(rates: list, obs: Obs, nwp: list[risk.Member], now: datetime
 
 # ------------------------------------------------------------------------------- ENS members
 
+def _with_timeout(fn, seconds: float):
+    """Run fn in a thread; give up (the download keeps its partial cache for the next cycle)."""
+    import concurrent.futures as cf
+    ex = cf.ThreadPoolExecutor(max_workers=1)
+    fut = ex.submit(fn)
+    try:
+        return fut.result(timeout=seconds)
+    finally:
+        ex.shutdown(wait=False, cancel_futures=True)
+
+
 def ens_members(state: Path, now: datetime) -> tuple[list[risk.Member], dict]:
     """ECMWF ENS (51 members, 0.25 deg) straight from ECMWF open data: 12-h accumulations."""
     from .sources import ecmwf_open as E
@@ -293,13 +304,19 @@ def ens_members(state: Path, now: datetime) -> tuple[list[risk.Member], dict]:
         out = state / "ens" / f"ifsens_tp_{run:%Y%m%d%H}.npz"
         try:
             if not out.exists():
-                first = int(np.ceil(max((n - run).total_seconds() / 3600.0 + 12, 12) / 12.0) * 12) - 12
-                steps = list(range(max(first, 12), 204, 12))
+                # 12-hourly steps covering the long-range frames (UTC days +2 .. +7) and the 12 h before
+                day0 = n.replace(hour=0, minute=0, second=0, microsecond=0)
+                lo = int(((day0 + timedelta(days=2) - timedelta(hours=12)) - run).total_seconds() // 3600)
+                hi = int(((day0 + timedelta(days=8)) - run).total_seconds() // 3600)
+                steps = [s for s in range(lo - lo % 12, hi + 1, 12) if 0 < s <= 360]
                 out.parent.mkdir(parents=True, exist_ok=True)
-                E.fetch_run(run, steps, "tp", out, mirrors=["ecmwf", "gcs", "aws"], workers=6, verbose=False)
+                _with_timeout(lambda: E.fetch_run(run, steps, "tp", out, mirrors=["gcs", "ecmwf", "aws"],
+                                                  workers=4, verbose=False), 420)
             z = np.load(out, allow_pickle=True)
         except Exception as e:
             rep["error"] = f"{run:%d/%m %H}Z: {type(e).__name__}: {e}"[:200]
+            if isinstance(e, TimeoutError):
+                break                                   # resume the download in the next cycle
             continue
         data, steps = z["data"], z["steps"].astype(int)             # (M, S, lat, lon) mm since init
         rg = ingest.regridder("ens025", z["lat"], z["lon"])

@@ -450,7 +450,7 @@ def dedupe(coords):
     return out
 
 
-scale = 1.0
+scale = 0.6
 while True:
     feats = []
     for pid, scope, a, g in polys:

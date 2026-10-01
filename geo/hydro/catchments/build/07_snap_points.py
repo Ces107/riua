@@ -88,6 +88,19 @@ lines.append("")
 lines.append(f"{'dam':16s} {'lat':>8s} {'lon':>8s} {'area':>9s} {'cap_hm3':>8s}")
 for q in ddef:
     a, r, c = snap(q["lat"], q["lon"], 6 if q["kind"] == "dam" else 15)
+    if q["kind"] == "dam":
+        # nearest main-stem cell to the dam coordinate (acc >= half of the local maximum), so a
+        # tributary joining just below the dam (e.g. the Escalona below Tous) is not swallowed
+        r0, c0 = rc_of(q["lat"], q["lon"])
+        best = None
+        for rr in range(max(0, r0 - 6), min(NROW, r0 + 7)):
+            for cc in range(max(0, c0 - 6), min(NCOL, c0 + 7)):
+                if acc2[rr, cc] >= 0.5 * a:
+                    dd = (rr - r0) ** 2 + (cc - c0) ** 2
+                    if best is None or dd < best[0]:
+                        best = (dd, rr, cc)
+        _, r, c = best
+        a = float(acc2[r, c])
     if q["kind"] == "res":
         z0 = float(dem[r, c])
         path = trace_down(ds, r * NCOL + c, 400)

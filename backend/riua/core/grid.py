@@ -93,14 +93,12 @@ class Regridder:
     weights of the 4 nearest points) so 25 km boxes do not print on the map.
     """
 
-    def __init__(self, src_lat: np.ndarray, src_lon: np.ndarray, coarse: bool | None = None):
+    def __init__(self, src_lat: np.ndarray, src_lon: np.ndarray, coarse: bool | None = None, points: bool = False):
+        """1-D lat and lon are the axes of a regular grid, unless points=True (a list of points)."""
         src_lat = np.asarray(src_lat, dtype=np.float64)
         src_lon = np.asarray(src_lon, dtype=np.float64)
-        if src_lat.ndim == 1 and src_lon.ndim == 1 and src_lat.size != src_lon.size:
+        if src_lat.ndim == 1 and src_lon.ndim == 1 and not points:
             src_lon, src_lat = np.meshgrid(src_lon, src_lat)
-        elif src_lat.ndim == 1 and src_lon.ndim == 1:
-            # ambiguous square case or a plain list of points: treat as point list
-            pass
         self.src_shape = src_lat.shape
         pts = np.column_stack([src_lat.ravel() * KM_PER_DEG_LAT, src_lon.ravel() * KM_PER_DEG_LON])
         tree = cKDTree(pts)

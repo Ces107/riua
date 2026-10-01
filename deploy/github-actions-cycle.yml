@@ -1,0 +1,82 @@
+name: cycle
+
+# The scheduled worker: every 10 minutes it ingests radar, gauges and the model runs that
+# have appeared since the last pass, recomputes the three horizons and publishes the
+# product together with the static site. New radar composites arrive every 5-10 min,
+# AROME every hour (15-min product) and every 3 h, ICON-EU every 3 h, IFS/ENS every 6-12 h;
+# the pipeline only downloads runs it has not seen (state is kept in the Actions cache).
+
+on:
+  schedule:
+    - cron: "3-59/10 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ["web/**", "backend/**", "geo/out/**", "geo/hydro/**", ".github/workflows/cycle.yml"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: cycle
+  cancel-in-progress: false
+
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install
+        run: pip install -r backend/requirements.txt
+
+      - name: Restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: riua-state-${{ github.run_id }}
+          restore-keys: riua-state-
+
+      - name: Production cycle
+        working-directory: backend
+        env:
+          RIUA_ENS_CACHE: ${{ github.workspace }}/state/ens_cache
+          MPLBACKEND: Agg
+        run: |
+          python -m riua.product --state ../state --out ../web/data
+          python -c "import json,pathlib; from riua import card; card.from_snapshot(json.loads(pathlib.Path('../web/data/snapshot.json').read_text(encoding='utf-8')), pathlib.Path('../web/data/og.png'))"
+
+      - name: Save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: riua-state-${{ github.run_id }}
+
+      - name: Static geodata for the page
+        run: |
+          mkdir -p web/geo
+          cp geo/out/boundary.geojson geo/out/zones.geojson geo/out/rivers.geojson geo/out/places.json web/geo/ 2>/dev/null || true
+          [ -f web/geo/basins.geojson ] || cp geo/out/basins.geojson web/geo/
+          for f in geo/hydro/catchments/out/control_points.json geo/hydro/catchments/out/streams.geojson geo/hydro/catchments/out/catchments.geojson geo/hydro/sections/out/sections.json; do
+            [ -f "$f" ] && cp "$f" web/geo/ || true
+          done
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+
+      - id: deploy
+        uses: actions/deploy-pages@v4

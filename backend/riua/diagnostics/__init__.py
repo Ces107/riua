@@ -4,5 +4,5 @@
                      ``point_profile()``.
 ``hindcast_check``   the same diagnostics from the archived (stitched) forecasts of a past date.
 
-MetPy is imported lazily by ``ingredients`` so that importing this package stays cheap.
+This package imports nothing by itself: MetPy (heavy) is only loaded when ``ingredients`` is imported.
 """

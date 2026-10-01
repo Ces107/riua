@@ -37,7 +37,7 @@
     "vinalopo-elx": {"confidence": "medium", "note": "See vinalopo-elda. Elx reservoir is silted (no regulation in scope 1). Official 1,692 km2 includes endorheic parts."},
     "tarafa-aspe": {"confidence": "medium"},
     "abanilla-benferri": {"confidence": "medium", "note": "Outside the Júcar demarcation (no official reference available here); most of the catchment is in Murcia. Below Benferri the rambla has no channel to the Segura: it spreads over the Vega Baja."},
-    "segura-orihuela": {"confidence": "low", "note": "Mostly outside the Riuà box (see inside_box_fraction): rainfall on the missing part is not seen by the model. Heavily regulated basin with many flood-control dams and an artificial channel; endorheic areas from HydroSHEDS sinks (Yecla) excluded. Treat the natural scope as indicative only."},
+    "segura-orihuela": {"confidence": "low", "note": "About 10 % of the catchment (upper Segura west of lon -2.4, upper Guadalentín south of lat 37.6) is outside the Riuà box (see inside_box_fraction): rainfall there is not seen by the model. The Guadalentín is counted as a tributary although its floods are normally diverted to the sea at El Paretón. Heavily regulated basin with many flood-control dams and an artificial channel; endorheic areas from HydroSHEDS sinks (Yecla) excluded. Treat the natural scope as indicative only."},
     "seco-pilar": {"confidence": "medium", "note": "Outside the Júcar demarcation, no official reference area found."},
     "ovejas-alacant": {"note": "Area matches the official CEDEX basin 2001916 (196.4 km2)."}
   }

@@ -45,10 +45,10 @@ def member(name, family, model, run, t_end, t_rel, step, scale=1.0, jitter=1.0):
     a = float(np.exp(rng.normal(0.0, 0.35 * jitter))) * scale
     dlat, dlon = rng.normal(0, 0.07 * jitter), rng.normal(0, 0.09 * jitter)
     dt = rng.normal(0, 2.0 * jitter)
-    p = storm(t_rel, 39.43 + dlat, -0.72 + dlon, 20.0 + dt, 70.0 * a, 3.2, 16.0)
-    p += storm(t_rel, 39.05 + dlat, -0.35 + dlon, 24.0 + dt, 30.0 * a, 4.0, 22.0)
-    p += storm(t_rel, 38.85 + 2 * dlat, -0.10 + 2 * dlon, 86.0 + 4 * dt, 16.0 * a, 6.0, 30.0)   # day 4, weaker
-    p += storm(t_rel, 39.50 + dlat, -0.80 + dlon, 2.5 + 0.3 * dt, 18.0 * a, 1.6, 12.0)            # showers now
+    p = storm(t_rel, 39.43 + dlat, -0.72 + dlon, 20.0 + dt, 38.0 * a, 3.2, 16.0)
+    p += storm(t_rel, 39.05 + dlat, -0.35 + dlon, 24.0 + dt, 14.0 * a, 4.0, 22.0)
+    p += storm(t_rel, 38.85 + 2 * dlat, -0.10 + 2 * dlon, 86.0 + 4 * dt, 28.0 * a, 6.0, 30.0)   # day 4, weaker
+    p += storm(t_rel, 39.50 + dlat, -0.80 + dlon, 2.5 + 0.3 * dt, 45.0 * a, 1.6, 12.0)            # showers now
     if step > 1:                       # coarse models: uniform within the step
         T = (len(t_end) // step) * step
         q = p[:T].reshape(T // step, step, *p.shape[1:]).mean(axis=1)

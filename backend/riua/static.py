@@ -149,7 +149,7 @@ def hydro_net():
     qb, rq, rh, hb = [], [], [], []
     for i in ids:
         s = secs.get(i, {})
-        cap = s.get("q_capacity") or s.get("q_bankfull")
+        cap = (s.get("capacity_recommended") or {}).get("value_m3s") or s.get("q_bankfull")
         qb.append(float(cap) if cap else np.nan)
         rt = s.get("rating") or {}
         q_tab, h_tab = rt.get("q_m3s"), rt.get("h_m")
@@ -159,6 +159,6 @@ def hydro_net():
             rq.append(None); rh.append(None)
         hb.append(float(s["bankfull_depth_m"]) if s.get("bankfull_depth_m") else np.nan)
     net = HydroNet.build(ids, [order[i].get("area_unregulated_km2") or order[i]["area_km2"] for i in ids],
-                         [order[i]["tc_h"] for i in ids], pidx, ta["cell"][sel].astype(int),
+                         [order[i].get("t_longest_unregulated_h") or order[i]["tc_h"] for i in ids], pidx, ta["cell"][sel].astype(int),
                          ta["lag_h"][sel].astype(int), ta["area_km2"][sel].astype(float), qb, rq, rh, hb)
     return net, [dict(order[i], section=secs.get(i)) for i in ids]

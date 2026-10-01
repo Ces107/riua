@@ -136,7 +136,7 @@ SCORE_DOC = (
     "Campos et al. 2025]); instability = ramp(MUCAPE, 50..800 J/kg) x ramp(MUCIN, -150..-50) [Doswell et al. 1996: "
     "instability only has to be sufficient; Mediterranean torrential rain often has modest, tall-skinny CAPE]; "
     "efficiency = mean(ramp(warm-cloud depth, 1500..4000 m) [Davis 2001], ramp(RH 700-500, 40..80 %)); "
-    "stationarity = ramp-down(|Corfidi upwind vector|, 4..12 m/s) [Corfidi 2003]; forcing = max(ramp(low-level jet "
+    "stationarity = ramp-down(|Corfidi upwind vector|, 4..12 m/s) [Corfidi 2003]; forcing = mean(ramp(low-level jet "
     "from 045-135 deg, 6..18 m/s) [Homar et al. 2002; Pastor et al. 2010; Romero et al. 2000: persistent easterly "
     "low-level jet onto the Valencian ranges], ramp(upslope w, 0.03..0.25 m/s), ramp(925-hPa moisture-flux "
     "convergence, 0.5..3 g/kg/h)). Thresholds are round numbers chosen by the author from those sources, not fitted."
@@ -674,7 +674,9 @@ def _column_sounding(c, n, ps):
     """1-D sounding (surface first) of column ``n`` of a column dict; None if unusable."""
     tl, wl = np.asarray(c["tl"], float), np.asarray(c["wl"], float)
     t, rh, z = c["t"][n], np.clip(c["rh"][n], 1, 100), c["z"][n]
-    if not (np.isfinite(ps) and np.isfinite(t).all() and np.isfinite(rh).all() and np.isfinite(z).all()):
+    lev_ok = np.isfinite(t) & np.isfinite(rh) & np.isfinite(z)          # a level missing in the files is dropped
+    tl, t, rh, z = tl[lev_ok], t[lev_ok], rh[lev_ok], z[lev_ok]
+    if not np.isfinite(ps) or tl.size < 6:
         return None
     m = tl < ps - 0.5
     td = mpcalc.dewpoint_from_relative_humidity(t * units.K, rh * units.percent).m_as("K")
@@ -687,7 +689,9 @@ def _column_sounding(c, n, ps):
         p, tt, tdd, zz = tl[m], t[m], td[m], z[m]
     s = {"p": p, "t": tt, "td": tdd, "z": zz}
     u, v = c["u"][n], c["v"][n]
-    if np.isfinite(u).all() and np.isfinite(v).all():
+    w_ok = np.isfinite(u) & np.isfinite(v)
+    wl, u, v = wl[w_ok], u[w_ok], v[w_ok]
+    if wl.size >= 4:
         mw = wl < ps - 0.5
         zw = np.interp(-np.log(wl[mw]), -np.log(tl), z)
         if np.isfinite(c["u10"][n]) and np.isfinite(c["v10"][n]):
@@ -880,7 +884,7 @@ def ingredients_score(d: dict) -> dict:
         a = g(k)
         if a is not None:
             parts.append(np.nan_to_num(_ramp(a, lo, hi)))
-    forc = np.max(np.stack(parts), axis=0)
+    forc = np.mean(np.stack(parts), axis=0)
     subs = {"score_moisture": moist, "score_instability": inst, "score_efficiency": eff,
             "score_stationarity": stat, "score_forcing": forc}
     prod = np.ones_like(moist)
@@ -1094,21 +1098,39 @@ def _columns(store, ti, tl, wl, zs):
     }
 
 
-def _mfc925(store, ti, ps2d):
-    """925-hPa moisture-flux convergence -div(q V) in g/kg/h on the store's grid (NaN where 925 hPa is underground)."""
+def _mfc925(store, ti, ps2d, coarsen=1):
+    """925-hPa moisture-flux convergence -div(q V) in g/kg/h on the store's grid (NaN where 925 hPa is underground).
+
+    The magnitude of a divergence depends on the grid length, so the finer grid is first averaged ``coarsen`` x
+    ``coarsen`` (AROME 0.125 deg -> 0.25 deg, the IFS grid length) and the result repeated back.
+    """
     f = store["f"]
     try:
         t, rh = f["temperature_925hPa"][ti].astype(float) + T0C, np.clip(f["relative_humidity_925hPa"][ti].astype(float), 1, 100)
         u, v = f["wind_u_component_925hPa"][ti].astype(float), f["wind_v_component_925hPa"][ti].astype(float)
     except KeyError:
         return np.full(ps2d.shape, np.nan)
+    lat, lon = np.asarray(store["lat"], float), np.asarray(store["lon"], float)
+    ny, nx = t.shape
     with warnings.catch_warnings(), np.errstate(invalid="ignore"):
         warnings.simplefilter("ignore")
         td = mpcalc.dewpoint_from_relative_humidity(t * units.K, rh * units.percent)
         q = mpcalc.specific_humidity_from_dewpoint(925.0 * units.hPa, td).m_as("g/kg")
-        dx, dy = mpcalc.lat_lon_grid_deltas(store["lon"], store["lat"])
-        div = mpcalc.divergence((q * u) * units("m/s"), (q * v) * units("m/s"), dx=dx, dy=dy).m_as("1/s")
-    return np.where(ps2d >= 930.0, -div * 3600.0, np.nan)
+        qu, qv = q * u, q * v
+        if coarsen > 1 and ny >= 2 * coarsen and nx >= 2 * coarsen:
+            qu, qv = _block_mean(qu, coarsen).astype(float), _block_mean(qv, coarsen).astype(float)
+            lat = lat[: ny // coarsen * coarsen].reshape(-1, coarsen).mean(1)
+            lon = lon[: nx // coarsen * coarsen].reshape(-1, coarsen).mean(1)
+        if min(qu.shape) < 3:
+            return np.full(ps2d.shape, np.nan)
+        dx, dy = mpcalc.lat_lon_grid_deltas(lon, lat)
+        mfc = -mpcalc.divergence(qu * units("m/s"), qv * units("m/s"), dx=dx, dy=dy).m_as("1/s") * 3600.0
+        if mfc.shape != (ny, nx):
+            full = np.full((ny, nx), np.nan)
+            rep = np.repeat(np.repeat(mfc, coarsen, axis=0), coarsen, axis=1)
+            full[: rep.shape[0], : rep.shape[1]] = rep
+            mfc = full
+    return np.where(ps2d >= 930.0, mfc, np.nan)
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -1130,6 +1152,10 @@ SERIES = [
     ("score_instability", "score_instability", "p90", 2), ("score_efficiency", "score_efficiency", "p90", 2),
     ("score_stationarity", "score_stationarity", "p90", 2), ("score_forcing", "score_forcing", "p90", 2),
 ]
+#: series that also carry the value at every anchor point (the others only have the strip statistic: JSON size)
+SERIES_WITH_ANCHORS = {"pwat", "pwat_anom", "ivt", "ivt_dir", "mfc925", "mucape", "mucin", "mlcape", "cape_model",
+                       "lcl_agl", "el_z", "ncape", "li", "kindex", "fzl", "wcd", "rh_700_500", "corfidi_up",
+                       "cl_speed", "cl_dir", "llj_speed", "llj_dir", "shear06", "backbuild", "score"}
 SERIES_STAT_DOC = {"p90": "90th percentile over the strip", "p50": "median over the strip",
                    "p10": "10th percentile over the strip", "mean": "mean over the strip",
                    "vdir": "direction of the strip-mean vector"}
@@ -1231,7 +1257,7 @@ def compute(now_utc: datetime | None = None, *, threads: int | None = None, proc
             exact_anchors: bool = True) -> dict:
     """The JSON-serialisable "drivers" block. Never raises: problems are recorded in ``notes``.
 
-    ``threads``: parallel S3 readers (default ``$RIUA_DIAG_THREADS`` or 12). ``procs``: worker processes for the
+    ``threads``: parallel S3 readers (default ``$RIUA_DIAG_THREADS`` or 24). ``procs``: worker processes for the
     MetPy reference soundings at the anchor points (default ``$RIUA_DIAG_PROCS`` or min(4, cpu count); 1 = inline).
     """
     notes: list[str] = []
@@ -1253,8 +1279,9 @@ def compute(now_utc: datetime | None = None, *, threads: int | None = None, proc
 def _compute(now_utc, threads, procs, exact_anchors, notes):
     timing = {}
     tic = time.time()
+    cpu0 = time.process_time()
     now = _utc(now_utc) if now_utc is not None else datetime.now(timezone.utc)
-    threads = threads or int(os.environ.get("RIUA_DIAG_THREADS", "12"))
+    threads = threads or int(os.environ.get("RIUA_DIAG_THREADS", "24"))
     procs = procs or int(os.environ.get("RIUA_DIAG_PROCS", str(min(4, os.cpu_count() or 1))))
     times = _time_axis(now)
     nt = len(times)
@@ -1274,6 +1301,7 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
     stores = _fetch(jobs, threads, notes)
     r1, b1 = om.transfer_stats()
     timing["read_s"] = round(time.time() - tic, 1)
+    timing["read_cpu_s"] = round(time.process_time() - cpu0, 1)
     timing["requests"], timing["mb"] = r1 - r0, round((b1 - b0) / 1e6, 1)
     tic = time.time()
 
@@ -1301,7 +1329,7 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
             res = diagnose_columns(c)
             for k in COLUMN_KEYS:
                 d[k][ti] = res[k].reshape(shape)
-            d["mfc925"][ti] = _mfc925(st, ti, d["psfc"][ti])
+            d["mfc925"][ti] = _mfc925(st, ti, d["psfc"][ti], coarsen=2 if key == "arome" else 1)
             if "cape" in st["f"]:
                 d["cape_model"][ti] = st["f"]["cape"][ti]
             cols[key][ti] = c
@@ -1316,6 +1344,22 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
         tcwv = f.get("total_column_integrated_water_vapour", nan3)
         diag["ifs"]["pwat"] = np.where(np.isfinite(tcwv), tcwv, diag["ifs"]["pwat"])   # model field first
         diag["ifs"]["omega700"] = f.get("vertical_velocity_700hPa", nan3)
+    # sanity check (before any filling): our parcels against each model's own CAPE field at the same points
+    checks: dict = {"cape_vs_model": {}}
+    for key, d in diag.items():
+        model_cape = d["cape_model"]
+        rec = {}
+        for pk in ("mucape", "mlcape", "sbcape"):
+            okm = np.isfinite(d[pk]) & np.isfinite(model_cape)
+            if okm.sum() >= 10:
+                rec[pk] = _scatter(list(zip(d[pk][okm].tolist(), model_cape[okm].tolist())), "ours", "model")
+        if rec:
+            checks["cape_vs_model"][key] = rec
+            best = max(rec, key=lambda k: rec[k]["r"] if rec[k]["r"] is not None else -9)
+            m = rec["mucape"]
+            notes.append(f"sanity: MUCAPE vs {key.upper()} model 'cape' field: n={m['n']}, r={m['r']}, bias(ours-model)="
+                         f"{m['bias']} J/kg, RMSE={m['rmse']} J/kg; best-correlated parcel: {best} (r={rec[best]['r']}, "
+                         f"bias={rec[best]['bias']})")
     timing["columns_s"] = round(time.time() - tic, 1)
     tic = time.time()
 
@@ -1411,7 +1455,8 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         for name, src, stat, nd in SERIES:
-            rec = {"strip": [], **{a: [] for a in ANCHORS}}
+            with_anchors = name in SERIES_WITH_ANCHORS
+            rec = {"strip": [], **({a: [] for a in ANCHORS} if with_anchors else {})}
             for ti, pm in enumerate(primary):
                 d = diag.get(pm) if pm else None
                 if d is None or (isinstance(src, str) and src not in d):
@@ -1423,8 +1468,9 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
                     uu, vv = d[src[0]][ti], d[src[1]][ti]
                     um, vm = np.nanmean(uu[m]), np.nanmean(vv[m])
                     rec["strip"].append(_num(_wdir(um, vm), 0) if np.isfinite(um) else None)
-                    for a, (j, i) in anchors_idx[pm].items():
-                        rec[a].append(_num(_wdir(uu[j, i], vv[j, i]), 0) if np.isfinite(uu[j, i]) else None)
+                    if with_anchors:
+                        for a, (j, i) in anchors_idx[pm].items():
+                            rec[a].append(_num(_wdir(uu[j, i], vv[j, i]), 0) if np.isfinite(uu[j, i]) else None)
                     continue
                 fld = d[src][ti]
                 vals = fld[m]
@@ -1433,9 +1479,11 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
                 else:
                     sv = np.nanpercentile(vals, int(stat[1:])) if np.isfinite(vals).any() else np.nan
                 rec["strip"].append(_num(sv, nd))
-                for a, (j, i) in anchors_idx[pm].items():
-                    rec[a].append(_num(fld[j, i], nd))
-            series[name] = rec
+                if with_anchors:
+                    for a, (j, i) in anchors_idx[pm].items():
+                        rec[a].append(_num(fld[j, i], nd))
+            if any(x is not None for x in rec["strip"]):
+                series[name] = rec
         if "ifs" in diag:                                        # cross-model references, IFS at every step
             d = diag["ifs"]
             series["pwat_ifs"] = {"strip": [_num(np.nanpercentile(d["pwat"][ti][d["strip"]], 90), 1)
@@ -1463,7 +1511,7 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
         glat, glon = diag["ifs"]["lat"], diag["ifs"]["lon"]
     else:
         glat, glon = diag["arome"]["lat"][1::2], diag["arome"]["lon"][1::2]
-    maps = {"pwat": ("pwat", 1.0), "ivt": ("ivt", 1.0), "ivt_dir": ("ivt_dir", 10.0), "mucape": ("mucape", 10.0)}
+    maps = {"pwat": ("pwat", 1.0), "ivt": ("ivt", 10.0), "ivt_dir": ("ivt_dir", 10.0), "mucape": ("mucape", 25.0)}
     fields = {k: [] for k in maps}
     for ti, pm in enumerate(primary):
         for k, (src, scale) in maps.items():
@@ -1528,8 +1576,12 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
                 "favourable_position": q["favourable_position"], "favourable": q["favourable"]}
                 for q in lows_all[ti] if q["dist_km"] <= 3000.0]
             if syn["jet"][ti]:
-                syn["jet"][ti] = {k: (_num(val, 1) if isinstance(val, float) else val) for k, val in syn["jet"][ti].items()}
+                syn["jet"][ti] = {k: (_num(val, 0 if k in ("dist_km", "bearing", "dir") else 1) if isinstance(val, float) else val)
+                                  for k, val in syn["jet"][ti].items()}
             syn.setdefault("onshore_flow", [None] * nt)[ti] = onshore
+            syn.setdefault("z500_valencia", [None] * nt)[ti] = _num(float(_sample(z5[ti], slat, slon, VLC[0], VLC[1])) / 10.0, 1)
+            if t5 is not None and np.isfinite(t5[ti]).all():
+                syn.setdefault("t500_valencia", [None] * nt)[ti] = _num(float(_sample(t5[ti], slat, slon, VLC[0], VLC[1])), 1)
         for ti in range(nt):
             if times[ti].hour % 6:
                 continue
@@ -1547,7 +1599,6 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
     tic = time.time()
 
     # ---- MetPy reference soundings at the anchors (first 48 h) and self-checks ------------------------------
-    checks: dict = {}
     anchors_metpy: dict = {}
     if exact_anchors:
         tasks, where = [], []
@@ -1560,13 +1611,17 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
                 tasks.append(_column_sounding(cols[pm][ti], nflat, float(d["psfc"][ti].ravel()[nflat])))
                 where.append((a, ti, pm, j, i))
         results = _run_exact(tasks, procs, notes)
-        anchors_metpy = {a: {k: [None] * nt for k in EXACT_KEYS} for a in ANCHORS}
+        tix = sorted({w[1] for w in where})
+        pos = {ti: n for n, ti in enumerate(tix)}
+        anchors_metpy = {"time_index": tix,
+                         "doc": "MetPy 1-D reference functions on the native model levels + surface, first 48 h",
+                         **{a: {k: [None] * len(tix) for k in EXACT_KEYS} for a in ANCHORS}}
         pairs = {k: [] for k in ("mucape", "mlcape", "sbcape", "pwat", "corfidi_up", "lcl_agl", "el_z")}
         for (a, ti, pm, j, i), r in zip(where, results):
             if not r:
                 continue
             for k in EXACT_KEYS:
-                anchors_metpy[a][k][ti] = _num(r.get(k), EXACT_ND.get(k, 0))
+                anchors_metpy[a][k][pos[ti]] = _num(r.get(k), EXACT_ND.get(k, 0))
             d = diag[pm]
             for k in pairs:
                 src = "pwat_profile" if (k == "pwat" and pm == "ifs") else k
@@ -1579,20 +1634,9 @@ def _compute(now_utc, threads, procs, exact_anchors, notes):
             if m:
                 notes.append(f"self-check: vectorised MUCAPE vs MetPy most_unstable_cape_cin at the anchors: n={m['n']}, "
                              f"r={m['r']}, bias={m['bias']} J/kg, RMSE={m['rmse']} J/kg")
-    checks["mucape_vs_model_cape"] = {}
-    for key, d in diag.items():
-        sel = [ti for ti in sorted(plan[key])]
-        if not sel:
-            continue
-        mine = d["mucape"][sel] if key == "ifs" else np.where(np.isfinite(stores[key]["f"].get("cape", d["cape_model"])[sel]), d["mucape"][sel], np.nan)
-        model = d["cape_model"][sel] if key == "ifs" else stores[key]["f"].get("cape", d["cape_model"])[sel]
-        okm = np.isfinite(mine) & np.isfinite(model)
-        if okm.sum() >= 10:
-            sc = _scatter(list(zip(mine[okm].tolist(), model[okm].tolist())), "mucape", "model_cape")
-            checks["mucape_vs_model_cape"][key] = sc
-            notes.append(f"sanity: MUCAPE vs {key.upper()} model cape: n={sc['n']}, r={sc['r']}, "
-                         f"bias(ours-model)={sc['bias']} J/kg, RMSE={sc['rmse']} J/kg")
     timing["exact_s"] = round(time.time() - tic, 1)
+    timing["cpu_main_process_s"] = round(time.process_time() - cpu0, 1)
+    timing["threads"], timing["procs"] = threads, procs
 
     # ---- sea-surface temperature (IFS 9 km) ------------------------------------------------------------------
     sst = None

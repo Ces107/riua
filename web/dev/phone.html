@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>riuà — vista de móvil (desarrollo)</title>
+<style>
+  body { margin: 0; background: #777; display: flex; gap: 24px; padding: 12px; align-items: flex-start; }
+  iframe { border: 0; background: #fff; flex: none; }
+</style>
+</head>
+<body>
+<!-- Development aid: the page at phone widths, when the browser window cannot be made that narrow.
+     ?src=... chooses the page; default is the fabricated storm. -->
+<iframe id="a" width="390" height="760" title="390 px"></iframe>
+<iframe id="b" width="360" height="640" title="360 px"></iframe>
+<script>
+  const q = new URLSearchParams(location.search);
+  const src = q.get('src') || '../index.html?dev=1';
+  document.getElementById('a').src = src + location.hash;
+  document.getElementById('b').src = (q.get('src2') || src) + location.hash;
+</script>
+</body>
+</html>

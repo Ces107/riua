@@ -24,6 +24,30 @@ Y0, Y1 = 1940, 2026                # consolidated precipitation record (2026 par
 CLIM_P = np.concatenate([np.arange(1, 100) / 100.0, [0.995, 0.999]])
 
 
+def safe_savez(path: Path, **arrays) -> None:
+    """np.savez_compressed through a local temporary file with retries: writing straight to /mnt/c from WSL
+    fails with ENOMEM when the (shared) machine is swapping."""
+    import shutil
+    import tempfile
+    import time
+
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td) / "x.npz"
+        np.savez_compressed(tmp, **arrays)
+        for attempt in range(6):
+            try:
+                shutil.copyfile(tmp, path)
+                with np.load(path) as z:      # read back: the file must be complete
+                    assert set(z.files) == set(arrays)
+                return
+            except (OSError, AssertionError, ValueError) as exc:
+                print(f"  write {path.name} failed ({exc!r}), retry {attempt + 1}", flush=True)
+                time.sleep(10)
+    raise OSError(f"could not write {path}")
+
+
 def hour_index(y: int, m: int = 1, d: int = 1, hh: int = 0, y0: int = Y0) -> int:
     """Index on the hourly axis that starts at 1 Jan ``y0`` 00 UTC."""
     return (calendar.timegm((y, m, d, hh, 0, 0)) - calendar.timegm((y0, 1, 1, 0, 0, 0))) // 3600

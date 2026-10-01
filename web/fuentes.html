@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fuentes de datos — riuà</title>
+<meta name="description" content="De dónde salen los datos de riuà, con qué licencia y en qué estado estaba cada fuente en la última actualización.">
+<meta name="theme-color" content="#f3efe6">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/riua.css">
+</head>
+<body>
+<header class="mast">
+  <p class="name"><a href="./">riuà</a></p>
+  <p class="def"><i>riuà</i> (val.) f. Crecida súbita de un río o barranco.</p>
+</header>
+
+<main>
+  <a class="back" href="./">← Volver al mapa</a>
+  <article class="page">
+    <h1 class="title">Fuentes de datos</h1>
+
+    <h2>Estado en la última actualización</h2>
+    <p id="src-when" class="num">Cargando…</p>
+    <div id="src-table"></div>
+    <div id="src-notes"></div>
+
+    <h2>De dónde sale cada cosa</h2>
+
+    <h3>Predicción y observación de la lluvia</h3>
+    <ul>
+      <li>Modelos de predicción AROME y ARPEGE (Météo-France), ICON-EU (DWD) e IFS (ECMWF), descargados de
+        <a href="https://open-meteo.com/">Open-Meteo.com</a> (CC BY 4.0). Datos de Météo-France; datos de DWD; datos de ECMWF (CC BY 4.0).</li>
+      <li>Conjunto ECMWF ENS, de los datos abiertos de <a href="https://www.ecmwf.int/en/forecasts/datasets/open-data">ECMWF</a> (CC BY 4.0).</li>
+      <li>Radar: compuesto europeo EUMETNET OPERA (CC BY 4.0) y radar de AEMET (© AEMET).</li>
+      <li>Pluviómetros y aforos: SAIH de la Confederación Hidrográfica del Júcar, Confederación Hidrográfica del Segura y Confederación Hidrográfica del Ebro
+        (datos provisionales, sin validar) y estaciones automáticas de AEMET (© AEMET).</li>
+      <li>Avisos oficiales: © AEMET (Meteoalerta). Fuente: AEMET.</li>
+    </ul>
+
+    <h3>Cartografía</h3>
+    <ul>
+      <li>Zonas y umbrales de aviso: © AEMET. Límites: obra derivada de BDLJE, CC-BY 4.0 ign.es.</li>
+      <li>Cuencas y ríos: Confederación Hidrográfica del Júcar, O.A. (Plan Hidrológico 2022-2027) y © Ministerio para la Transición Ecológica y el Reto Demográfico
+        (CEDEX / Dirección General del Agua); HydroBASINS / HydroRIVERS (HydroSHEDS, WWF; Lehner y Grill, 2013);
+        © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> (ODbL) fuera de la demarcación del Júcar.</li>
+      <li>Municipios: © Instituto Geográfico Nacional (CC-BY 4.0 scne.es). Población: Instituto Nacional de Estadística (www.ine.es); elaboración propia con datos extraídos del sitio web del INE.</li>
+      <li>Mapa base de calles (al acercar el mapa): © Instituto Geográfico Nacional.</li>
+      <li>Relieve: Copernicus DEM GLO-90. © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved.</li>
+      <li>Secciones de los cauces en los puntos de control: modelo digital del terreno LiDAR de 1 m, © Institut Cartogràfic Valencià, Generalitat (CC BY 4.0).</li>
+    </ul>
+
+    <h3>Programas</h3>
+    <ul>
+      <li>Mapa: <a href="https://leafletjs.com/">Leaflet</a> 1.9.4 (licencia BSD de 2 cláusulas). Tipografía de los números: Courier Prime (SIL Open Font License).</li>
+    </ul>
+
+    <p>Ninguna de estas entidades avala esta página ni sus resultados. Los datos en tiempo real son provisionales y pueden contener errores.</p>
+  </article>
+</main>
+
+<footer class="foot">
+  <nav aria-label="Más información">
+    <a href="./">Mapa</a> · <a href="metodo.html">Método</a> · <a href="validacion.html">Validación</a> · <a href="fuentes.html" aria-current="page">Fuentes de datos</a>
+  </nav>
+</footer>
+
+<aside class="bar-fixed" aria-label="Aviso legal">
+  <p class="disclaimer">Herramienta no oficial. Las fuentes oficiales son <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos">AEMET</a> y el
+  <a href="https://www.112cv.gva.es/">112 Comunitat Valenciana</a>. Ante una emergencia, sigue sus indicaciones.</p>
+</aside>
+<script type="module" src="js/fuentes.js"></script>
+</body>
+</html>

@@ -123,13 +123,17 @@ def main() -> None:
             sj = json.loads((sdir / "sections.json").read_text(encoding="utf-8"))
             sj = sj.get("points", sj) if isinstance(sj, dict) else sj
             secs = sj if isinstance(sj, dict) else {s["id"]: s for s in sj}
-        dump("points.json", {"points": [slim_point(p, secs.get(p["id"], {})) for p in pts]})
+        have = {}
         for name in ("catchments.geojson", "streams.geojson"):
+            have[name.split(".")[0]] = (cdir / name).exists()
             if (cdir / name).exists():
                 gj = json.loads((cdir / name).read_text(encoding="utf-8"))
                 for f in gj["features"]:
                     f["geometry"] = rounded(f["geometry"], 4)
                 dump(name, gj)
+            else:
+                (OUT / name).unlink(missing_ok=True)
+        dump("points.json", {"points": [slim_point(p, secs.get(p["id"], {})) for p in pts], **have})
     else:
         for name in ("points.json", "catchments.geojson", "streams.geojson"):
             (OUT / name).unlink(missing_ok=True)
