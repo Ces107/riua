@@ -50,7 +50,8 @@ DEFAULTS: dict = {
     # error; larger radii inflate every amount relative to what falls in one cell.
     "radius_km": {"now": 6.0, "mid": 12.0, "long": 12.0},
     # Displacement applied to each convection-permitting member for basin means (km).
-    "basin_shift_km": {"now": 6.0, "mid": 12.0, "long": 0.0},
+    # a storm's position is uncertain by more than a small catchment: 10 km within 6 h, 20 km a day ahead
+    "basin_shift_km": {"now": 10.0, "mid": 20.0, "long": 0.0},
     # --- Model families ---------------------------------------------------------------
     # weight: relative weight of ONE member of that family, before run-age decay.
     # s1h / s12h: multiplicative representativeness factors applied to the model's

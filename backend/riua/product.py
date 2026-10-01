@@ -270,8 +270,12 @@ def nowcast_members(rates: list, obs: Obs, nwp: list[risk.Member], now: datetime
                 w = 1.0
             p[i] = w * r_max + (1.0 - w) * n_max
             a[i] = w * r_mean + (1.0 - w) * n_mean
+        # beyond the blending window the member would be a plain copy of its model donor: stop there,
+        # the model runs themselves cover those hours (no double counting)
+        keep = int(sum(1 for i in range(6) if float(NC.blend_weights(np.array([max((i + 1) - lead_off - 0.5, 0.0)]))[0]) > 0.02))
+        keep = max(keep, 1)
         out.append(risk.Member(f"Radar STEPS m{k + 1:02d}" + (f" → {d.name}" if d is not None else ""), "radar", "steps",
-                               hnow, hours, p, 1, 1.0, a, {"donor": d.name if d is not None else None}))
+                               hnow, hours[:keep], p[:keep], 1, 1.0, a[:keep], {"donor": d.name if d is not None else None}))
     rep["members"] = len(out)
     return out, rep
 
@@ -508,7 +512,7 @@ def run_cycle(state: Path, out: Path, now: datetime | None = None, with_radar: b
     jj, ii = np.mgrid[0:grid.NY, 0:grid.NX]
     lattice = (jj % 2 == 0) & (ii % 2 == 0)
     horizon_members = {
-        "now": past(radar_m + [m for m in nwp if m.family == "cp"]),
+        "now": past(radar_m + nwp),
         "mid": past(nwp),
         "long": past(ens + [m for m in nwp if m.family == "global"]),
     }
@@ -591,7 +595,8 @@ def ingest_cached(state: Path, now: datetime):
             if f.exists():
                 z = np.load(f)
                 m = risk.Member(str(z["name"]), cfg["family"], key, ingest.naive(r), z["t_end"],
-                                z["p"].astype(np.float32), int(z["step"]), meta={"nan_frac": float(z["nan_frac"])})
+                                z["p"].astype(np.float32), int(z["step"]), float(cfg.get("weight", 1.0)),
+                                meta={"nan_frac": float(z["nan_frac"])})
             else:
                 ahead = 52 if key != "ifs" else 24 * 8
                 m = ingest.load_run(key, r, t_from, now + timedelta(hours=ahead))

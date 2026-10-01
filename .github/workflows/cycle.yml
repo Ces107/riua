@@ -78,6 +78,14 @@ jobs:
       - name: Drop development fixtures
         run: rm -rf web/dev
 
+      # A new page must never run with a cached older stylesheet or script: stamp them per deploy.
+      # (the unversioned js/ stays so that a cached older page keeps working for its 10 minutes)
+      - name: Version the assets
+        run: |
+          v=${{ github.run_id }}
+          cp -r web/js "web/js-$v"
+          sed -i "s#\"js/#\"js-$v/#g; s#css/riua.css#css/riua.css?v=$v#g" web/*.html
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web

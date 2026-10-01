@@ -400,10 +400,12 @@ def now_block(args):
     keep = past & (truth.t > h - 24 * H1)
     obs = product.Obs(truth.t[keep], truth.o_max[keep], truth.o_mean[keep])
     nwp = []
-    for model, key in (("meteofrance_arome_france_hd", "arome_hd"), ("meteofrance_arome_france", "arome")):
+    for model, key, fam in (("meteofrance_arome_france_hd", "arome_hd", "cp"), ("meteofrance_arome_france", "arome", "cp"),
+                            ("icon_eu", "icon_eu", "regional")):
         d = _day0(model)
         if d is not None:
-            nwp.append(risk.Member(f"{key} corto plazo", "cp", key, t_issue - timedelta(hours=3), d[0], d[1], 1))
+            nwp.append(risk.Member(f"{key} corto plazo", fam, key, t_issue - timedelta(hours=3), d[0], d[1], 1,
+                                   float(ingest.MODELS[key].get("weight", 1.0))))
     radar_m, _ = product.nowcast_members(_radar_rates(t_issue), obs, nwp, t_issue.replace(tzinfo=timezone.utc))
     members = [product.with_past(m, obs, t_issue) for m in radar_m + nwp]
     frames = product.frames_for("now", t_issue)

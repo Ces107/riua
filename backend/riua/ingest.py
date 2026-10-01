@@ -19,8 +19,9 @@ log = logging.getLogger("riua.ingest")
 
 # label, S3 id, family, how many lagged runs, native grid is fine enough to be "sampled"
 MODELS = {
-    "arome_hd": dict(s3="meteofrance_arome_france_hd", family="cp", label="AROME-HD 1,3 km", lags=3),
-    "arome": dict(s3="meteofrance_arome_france0025", family="cp", label="AROME 2,5 km", lags=2),
+    # AROME 1.3 km and 2.5 km of the same run are almost the same forecast: together they weigh 1.2, not 2
+    "arome_hd": dict(s3="meteofrance_arome_france_hd", family="cp", label="AROME-HD 1,3 km", lags=3, weight=0.7),
+    "arome": dict(s3="meteofrance_arome_france0025", family="cp", label="AROME 2,5 km", lags=2, weight=0.5),
     "icon_eu": dict(s3="dwd_icon_eu", family="regional", label="ICON-EU 6,5 km", lags=2),
     "arpege": dict(s3="meteofrance_arpege_europe", family="regional", label="ARPEGE 0,1°", lags=2),
     "ifs": dict(s3="ecmwf_ifs025", family="global", label="IFS 0,25°", lags=2),
@@ -85,7 +86,7 @@ def load_run(key: str, run: datetime, t_from: datetime, t_to: datetime) -> Membe
     if len(t_end) == 0:
         return None
     return Member(name=f"{cfg['label']} · {naive(run):%d/%m %H}Z", family=cfg["family"], model=key,
-                  run=naive(run), t_end=t_end, p=p, native_step_h=step,
+                  run=naive(run), t_end=t_end, p=p, native_step_h=step, weight=float(cfg.get("weight", 1.0)),
                   meta={"nan_frac": float(np.isnan(p).mean())})
 
 
