@@ -9,6 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="riuà">
 <meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://ces107.github.io/riua/">
 <meta property="og:title" content="riuà — riesgo de lluvia extrema y riadas">
 <meta property="og:description" content="Dónde, cuándo y por qué en la Comunitat Valenciana. Herramienta no oficial.">
 <meta property="og:image" content="https://ces107.github.io/riua/data/og.png">
@@ -19,18 +20,48 @@
 <meta name="twitter:title" content="riuà — riesgo de lluvia extrema y riadas">
 <meta name="twitter:description" content="Dónde, cuándo y por qué en la Comunitat Valenciana. Herramienta no oficial.">
 <meta name="twitter:image" content="https://ces107.github.io/riua/data/og.png">
+<link rel="canonical" href="https://ces107.github.io/riua/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<!-- the forecast starts downloading before any script has been parsed (js/data.js picks it up) -->
+<script>
+if (!/[?&]dev(=|&|$)/.test(location.search)) {
+  window.riuaSnap = fetch('data/snapshot.json', { cache: 'no-cache' })
+    .then(function (r) { return r.ok ? r.text() : null; })
+    .then(function (t) { return t ? { text: t } : null; }, function () { return null; });
+}
+</script>
+<link rel="preload" href="vendor/fonts/CourierPrime-Regular.ttf" as="font" type="font/ttf" crossorigin>
+<!-- the cartography is asked for at once too, not after the scripts have run (js/geo.js fetches the same URLs) -->
+<link rel="preload" href="geo/boundary.geojson" as="fetch" crossorigin>
+<link rel="preload" href="geo/zones.geojson" as="fetch" crossorigin>
+<link rel="preload" href="geo/cells.json" as="fetch" crossorigin>
+<link rel="preload" href="geo/places.json" as="fetch" crossorigin>
+<link rel="preload" href="geo/rivers.json" as="fetch" crossorigin>
+<link rel="preload" href="geo/basins.json" as="fetch" crossorigin>
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="css/riua.css">
 <link rel="modulepreload" href="js/main.js">
+<link rel="modulepreload" href="js/config.js">
+<link rel="modulepreload" href="js/data.js">
+<link rel="modulepreload" href="js/geo.js">
+<link rel="modulepreload" href="js/time.js">
+<link rel="modulepreload" href="js/state.js">
+<link rel="modulepreload" href="js/headline.js">
+<link rel="modulepreload" href="js/draw.js">
+<link rel="modulepreload" href="js/map.js">
+<link rel="modulepreload" href="js/points.js">
+<link rel="modulepreload" href="js/panel.js">
+<link rel="modulepreload" href="js/auditview.js">
+<link rel="modulepreload" href="js/maths.js">
+<link rel="modulepreload" href="js/share.js">
 </head>
 <body>
 <a class="skip" href="#detalle">Saltar al detalle</a>
 
 <header class="top">
   <h1 class="name"><a href="./" title="riuà (val.): crecida súbita de un río o barranco">riuà</a></h1>
-  <p id="headline" class="headline" aria-live="polite">Cargando la última predicción…</p>
-  <p class="top-meta"><span id="fresh" class="num">Cargando…</span>
+  <p id="headline" class="headline" aria-live="polite">Cargando…</p>
+  <p class="top-meta"><span id="fresh" class="num">&nbsp;</span>
     <button type="button" id="share" class="link">Compartir</button>
     <button type="button" id="copy" class="link">Copiar enlace</button></p>
 </header>
@@ -39,14 +70,14 @@
   <section class="mapcol" aria-label="Mapa de riesgo">
     <div class="ctl">
       <div class="tabs" role="tablist" aria-label="Plazo">
-        <button type="button" role="tab" id="tab-now" data-hz="now" aria-selected="false" aria-controls="map" tabindex="-1">Ahora</button>
+        <button type="button" role="tab" id="tab-now" data-hz="now" aria-selected="false" aria-controls="map" tabindex="0">Ahora</button>
         <button type="button" role="tab" id="tab-mid" data-hz="mid" aria-selected="false" aria-controls="map" tabindex="-1">48 h</button>
         <button type="button" role="tab" id="tab-long" data-hz="long" aria-selected="false" aria-controls="map" tabindex="-1">Días 2–7</button>
       </div>
-      <div class="stepper">
+      <div class="stepper" role="group" aria-label="Momento">
         <button type="button" id="prev" aria-label="Tramo anterior">&#8249;</button>
         <label class="frame"><span id="frame-label" class="num">&nbsp;</span>
-          <input type="range" id="frame" min="0" max="1" step="1" value="0" aria-label="Momento: a la izquierda, lo peor del periodo; después, cada tramo"></label>
+          <input type="range" id="frame" min="0" max="1" step="1" value="0" aria-label="Momento: a la izquierda, el máximo del periodo; después, cada tramo"></label>
         <button type="button" id="next" aria-label="Tramo siguiente">&#8250;</button>
       </div>
       <div class="pair" role="group" aria-label="Qué pinta el mapa">
@@ -55,7 +86,7 @@
       </div>
     </div>
     <div class="mapwrap">
-      <div id="map" role="application" aria-label="Mapa de riesgo. La misma información está en el titular, en el panel y en la tabla de barrancos." aria-describedby="headline"></div>
+      <div id="map" role="application" aria-label="Mapa de riesgo. Flechas: mover. Más y menos: acercar y alejar. Intro: elegir el punto del centro. La misma información está en el panel y en la tabla de cauces."></div>
       <ol class="legend" aria-label="Niveles">
         <li><span class="sw lv2"></span>2<span class="nm"> medio</span></li><li><span class="sw lv3"></span>3<span class="nm"> alto</span></li><li><span class="sw lv4"></span>4<span class="nm"> muy alto</span></li><li><span class="sw lv5"></span>5<span class="nm"> extremo</span></li>
       </ol>
@@ -65,24 +96,23 @@
 
   <aside id="detalle" class="side" aria-label="Detalle" tabindex="-1">
     <form id="search" class="search" role="search" autocomplete="off">
-      <input type="search" id="q" name="q" placeholder="Tu municipio" aria-label="Buscar municipio" enterkeyhint="search" spellcheck="false" aria-controls="sug">
+      <input type="search" id="q" name="q" placeholder="Tu municipio" aria-label="Buscar municipio" enterkeyhint="search" spellcheck="false" autocapitalize="off" autocorrect="off" aria-controls="sug" aria-expanded="false">
       <button type="button" id="locate">Ubicarme</button>
       <ul id="sug" class="sug" hidden></ul>
     </form>
-    <div id="place" aria-live="polite"></div>
+    <div id="place"></div>
   </aside>
 
-  <section id="barrancos" class="wide" aria-label="Barrancos y ríos" hidden></section>
+  <section id="barrancos" class="wide" aria-label="Cauces: barrancos y ríos" hidden></section>
 </main>
-
 
 <footer class="foot">
   <nav aria-label="Más información"><a href="metodo.html">Método</a> · <a href="validacion.html">Validación</a> · <a href="fuentes.html">Fuentes</a> · <a href="https://github.com/Ces107/riua">Código</a></nav>
-  <p>Datos: Open-Meteo, Météo-France, DWD, ECMWF, EUMETNET OPERA, AEMET, CHJ, CHS, CHE, IGN. <a href="fuentes.html">Licencias y estado</a>.</p>
+  <p>Datos: Open-Meteo, Météo-France, DWD, ECMWF, EUMETNET OPERA, AEMET, CHJ, CHS, CHE, IGN, ICV.</p>
 </footer>
 
 <aside id="bar" class="bar-fixed" aria-label="Aviso">
-  <p><strong>No oficial y en pruebas.</strong> Lo que vale son los avisos de <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos">AEMET</a> y el <a href="https://www.112cv.gva.es/">112&nbsp;CV</a>.</p>
+  <p><strong>No oficial, en pruebas.</strong> Oficial: <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos">AEMET</a> · <a href="https://www.112cv.gva.es/">112&nbsp;CV</a></p>
 </aside>
 
 <noscript><p class="noscript">Esta página necesita JavaScript. Los avisos oficiales están en <a href="https://www.aemet.es/es/eltiempo/prediccion/avisos">aemet.es</a>.</p></noscript>

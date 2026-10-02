@@ -170,6 +170,53 @@ export function weightedStats(values, weights, q = 0.9) {
   return { mean: acc / wsum, q: quant, n: rows.length };
 }
 
+// ---- scenario dressing (risk.py::dressed_probabilities) -----------------------------------------
+
+/**
+ * Probability that one scenario reaches each of the four levels.
+ *   a1, a12   its largest 1-h and 12-h amounts in the neighbourhood, mm (null = not available)
+ *   fam       {s1h, s12h} representativeness factors of its family
+ *   o12       mm already measured inside the 12-h amount of the frame
+ *   k         kernel of the horizon: {sigma, bias, sigma1h, bias1h, sigmaObs, obs12Factor}
+ *   thr       {t1:[4], t12:[4]} thresholds in mm
+ * The 12-h term: the measured share phi of the amount carries the bias of the analysis (obs12Factor) and
+ * almost no spread; only the forecast share carries the bias and spread of the horizon.
+ *   A12 = s12h·a12      phi = min(1, o12 / A12)
+ *   b12 = phi·obs12Factor + (1 − phi)·bias      sg12 = max(sigma·(1 − phi), min(sigma, sigmaObs))
+ *   p12 = Φ(ln(b12·A12 / T12) / sg12)           p1 = Φ(ln(bias1h·s1h·a1 / T1) / sigma1h)      p = max(p1, p12)
+ */
+export function dressScenario(a1, a12, fam, o12, k, thr) {
+  const A1 = a1 == null ? 0 : fam.s1h * a1;
+  const A12 = a12 == null ? 0 : fam.s12h * a12;
+  const phi = A12 > 0 ? Math.min(1, o12 / A12) : 0;
+  const b12 = phi * k.obs12Factor + (1 - phi) * k.bias;
+  const sg12 = Math.max(k.sigma * (1 - phi), Math.min(k.sigma, k.sigmaObs));
+  const p1 = [0, 1, 2, 3].map((L) => (A1 > 0 ? normCdf(Math.log((k.bias1h * A1) / thr.t1[L]) / k.sigma1h) : 0));
+  const p12 = [0, 1, 2, 3].map((L) => (A12 > 0 ? normCdf(Math.log((b12 * A12) / thr.t12[L]) / sg12) : 0));
+  return { A1, A12, phi, b12, sg12, p1, p12, p: p1.map((v, L) => Math.max(v, p12[L])) };
+}
+
+/**
+ * The dressing of one cell and frame: rows = [{a1, a12, family, w}] (the scenarios with weight),
+ * famOf(family) -> {s1h, s12h}, tau = {"2":..,"5":..}, cap = highest level the horizon may publish (or null).
+ * -> { per:[dressScenario result per row], P:[4] (nested), W, level }
+ */
+export function dressCell(rows, famOf, o12, k, thr, tau, cap = null) {
+  const sum = [0, 0, 0, 0];
+  let W = 0;
+  const per = rows.map((r) => {
+    const d = dressScenario(r.a1, r.a12, famOf(r.family), o12, k, thr);
+    if (r.a1 != null || r.a12 != null) { W += r.w; d.p.forEach((p, L) => { sum[L] += r.w * p; }); }
+    return d;
+  });
+  const P = sum.map((p) => (W > 0 ? p / W : 0));
+  for (let L = 1; L < 4; L++) P[L] = Math.min(P[L], P[L - 1]);          // np.minimum.accumulate over the levels
+  let level = 1;
+  [2, 3, 4, 5].forEach((L, i) => { if (P[i] >= Number(tau[String(L)])) level = L; });
+  if (cap != null) level = Math.min(level, cap);
+  return { per, P, W, level };
+}
+
 /**
  * The whole chain for one cell and frame. `c` = cellFrame() numbers, `cal` = frame.cal,
  * `thr` = {t1:[4], t12:[4]} thresholds in mm (yellow, orange, red, extreme), tau = {"2":..,"5":..}.

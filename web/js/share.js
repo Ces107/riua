@@ -2,6 +2,7 @@
 
 import { INK, LEVEL, MONO, PAPER, SERIF } from './config.js';
 import { drawScene, hatch, mercator } from './draw.js';
+import { geo } from './geo.js';
 import { stamp } from './time.js';
 
 const W = 1080, H = 1350, M = 56;
@@ -64,39 +65,36 @@ export async function drawCard(info) {
   ctx.fillText(info.sub, M, y + 26);
   y += 48;
 
-  // map
-  const legendH = 150, footH = 118;
-  const box = { x: M, y, w: W - 2 * M, h: H - y - legendH - footH };
-  const b = [-1.62, 37.8, 0.62, 40.82];                     // Comunitat Valenciana with a margin
-  let P = mercator(1, b[0], b[3], 0, 0);
-  const k = Math.min(box.w / (b[2] - b[0]), box.h / (P.my(b[3]) - P.my(b[1])));
-  const cx = (b[0] + b[2]) / 2;
-  P = mercator(k, cx, b[3], box.x + box.w / 2, box.y + (box.h - k * (P.my(b[3]) - P.my(b[1]))) / 2);
-  const inv = { lon: (px) => cx + (px - (box.x + box.w / 2)) / k };
-  const yTop = box.y, yBot = box.y + box.h;
-  const latAt = (py) => { const m = P.my(b[3]) - (py - P.y(b[3])); return (Math.atan(Math.exp(m / P.R)) * 360) / Math.PI - 90; };
-  const proj = { x: P.x, y: P.y, zoom: Math.log2((k * 360) / 256), view: [inv.lon(box.x), latAt(yBot), inv.lon(box.x + box.w), latAt(yTop)] };
+  // map: the Comunitat Valenciana from top to bottom; the frame is the edge of the sheet (the rectangle the
+  // cartography covers), so nothing outside it is ever shown
+  const footH = 118;
+  const lat0 = 37.8, lat1 = 40.82;
+  const sheet = geo.land ? geo.land.bbox : [-2.7, 37.3, 1.1, 41.3];
+  const maxH = H - y - footH - 26;
+  let P = mercator(1, 0, lat1, 0, 0);
+  const span = P.my(lat1) - P.my(lat0);
+  const k = Math.min(maxH / span, (W - 2 * M) / (sheet[2] - sheet[0]));
+  const box = { w: Math.round(k * (sheet[2] - sheet[0])), h: Math.round(k * span), y };
+  box.x = Math.round((W - box.w) / 2);
+  const cx = (sheet[0] + sheet[2]) / 2;
+  P = mercator(k, cx, lat1, box.x + box.w / 2, box.y);
+  const proj = { x: P.x, y: P.y, zoom: Math.log2((k * 360) / 256), view: [sheet[0], lat0, sheet[2], lat1] };
+  // legend inside the map, in the sea off Alicante (bottom right corner)
+  const names = ['', '', 'Medio', 'Alto', 'Muy alto', 'Extremo'];
+  const lg = { w: 196, h: 4 * 46 + 12 };
+  lg.x = box.x + box.w - lg.w - 14; lg.y = box.y + box.h - lg.h - 14;
   ctx.save();
   ctx.beginPath(); ctx.rect(box.x, box.y, box.w, box.h); ctx.clip();
-  drawScene(ctx, proj, { ...info.scene, base: true, labels: true, k: 1.7 });
+  drawScene(ctx, proj, { ...info.scene, base: true, labels: true, k: 1.7, blocked: [[lg.x - 6, lg.y - 6, lg.w + 12, lg.h + 12]] });
   ctx.restore();
   ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(box.x, box.y, box.w, box.h);
-  // degree labels on the frame
-  ctx.font = `17px ${MONO}`; ctx.fillStyle = INK; ctx.textBaseline = 'top';
-  for (let lat = Math.ceil(proj.view[1] * 2) / 2; lat < proj.view[3]; lat += 0.5) {
-    const py = P.y(lat);
-    if (py > box.y + 30 && py < yBot - 30 && Number.isInteger(lat)) ctx.fillText(`${lat}° N`, box.x + 8, py + 4);
-  }
-
-  // legend
-  let ly = yBot + 26;
-  const names = ['', 'Sin riesgo', 'Medio (≈ amarillo AEMET)', 'Alto (≈ naranja)', 'Muy alto (≈ rojo)', 'EXTREMO (más que un aviso rojo)'];
-  const pos = [[M, ly], [M + 330, ly], [M + 690, ly], [M, ly + 58], [M + 330, ly + 58]];
-  for (let L = 1; L <= 5; L++) {
-    const [sx, sy] = pos[L - 1];
-    swatch(ctx, sx, sy, 40, L);
+  ctx.fillStyle = PAPER; ctx.fillRect(lg.x, lg.y, lg.w, lg.h);
+  ctx.lineWidth = 1; ctx.strokeRect(lg.x + 0.5, lg.y + 0.5, lg.w - 1, lg.h - 1);
+  for (let L = 2; L <= 5; L++) {
+    const sy = lg.y + 9 + (L - 2) * 46;
+    swatch(ctx, lg.x + 9, sy, 36, L);
     ctx.fillStyle = INK; ctx.font = `25px ${SERIF}`; ctx.textBaseline = 'middle';
-    ctx.fillText(names[L], sx + 52, sy + 21);
+    ctx.fillText(names[L], lg.x + 57, sy + 19);
   }
 
   // foot

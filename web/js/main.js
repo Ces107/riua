@@ -1,15 +1,15 @@
 // Page controller: loads data and geodata, keeps the view state, and re-renders every part on change.
 
-import { DEV, HORIZONS, HZ_LABEL, LEVEL, STALE_MIN } from './config.js';
+import { DEV, HORIZONS, HZ_LABEL, LATE_MIN, LEVEL, STALE_MIN } from './config.js';
 import { cellAt, loadSnapshots } from './data.js';
-import { geo, loadGeo, loadPoints, searchPlaces } from './geo.js';
+import { geo, loadCatchments, loadGeo, loadPoints, searchPlaces } from './geo.js';
 import { defaultHorizon, headline } from './headline.js';
 import { createMap } from './map.js';
 import { context, placeTitle, renderPanel } from './panel.js';
 import { renderPoints } from './points.js';
 import { shareCard } from './share.js';
 import { decode, isOwnHash, state, writeHash } from './state.js';
-import { age, dayTime, esc, frameLabel, spanLabel } from './time.js';
+import { age, dayTime, esc, frameLabel } from './time.js';
 
 const $ = (id) => document.getElementById(id);
 let snap = null;
@@ -17,7 +17,11 @@ let mapApi = null;
 let auditOpen = false;
 let head = null;
 let loadFailed = false;
+let catchmentsAsked = false;
+let wantT = null;                     // frame start asked for by the link (ISO), resolved when the data arrives
 const maxCache = new WeakMap();        // per horizon object: worst level per basin unit / control point
+const wide = window.matchMedia('(min-width: 980px)');
+const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 // ---- what the map paints -------------------------------------------------------------------------
 
@@ -29,6 +33,12 @@ function maxOverFrames(table) {         // [F][X] -> [X]
 }
 
 function frameIndex(h) { return state.f === 'max' ? 'max' : Math.min(state.f, h.F - 1); }
+
+/** ISO start of the selected frame, or null in the "máximo" view: what the link carries. */
+function frameT0() {
+  const h = snap && snap.hz[state.hz];
+  return h && state.f !== 'max' ? h.frames[Math.min(state.f, h.F - 1)].t0 : null;
+}
 
 function scene() {
   const h = snap && snap.hz[state.hz];
@@ -50,11 +60,16 @@ function scene() {
 
 // ---- rendering -----------------------------------------------------------------------------------
 
+function setHtml(el, html) { if (el.dataset.html !== html) { el.dataset.html = html; el.innerHTML = html; } }
+
 function renderHeadline() {
   const el = $('headline');
-  if (!snap) { el.textContent = loadFailed ? 'No se ha podido cargar la predicción. Comprueba la conexión y vuelve a cargar la página.' : 'Cargando la última predicción…'; return; }
+  if (!snap) { setHtml(el, loadFailed ? 'Sin datos. <button type="button" class="link" id="retry">Reintentar</button>' : 'Cargando…'); return; }
   head = headline(snap);
-  el.innerHTML = `${head.level >= 2 ? `<span class="lv lv${head.level}">${head.level}</span> ` : ''}${esc(head.text)}`;
+  // "level and where · when": the hours never break across two lines
+  const cut = head.text.lastIndexOf(' · ');
+  const text = cut < 0 ? esc(head.text) : `${esc(head.text.slice(0, cut))} <span class="nw">· ${esc(head.text.slice(cut + 3))}</span>`;
+  setHtml(el, `${head.level >= 2 ? `<span class="lv lv${head.level}">${head.level}</span> ` : ''}${text}`);
 }
 
 function renderControls() {
@@ -63,14 +78,16 @@ function renderControls() {
     const h = snap && snap.hz[key];
     const on = key === state.hz;
     tab.setAttribute('aria-selected', String(on));
-    tab.tabIndex = on ? 0 : -1;
+    tab.tabIndex = on || (!state.hz && key === 'now') ? 0 : -1;
     tab.disabled = !!snap && !h;
-    tab.innerHTML = `${h ? `<span class="lv lv${h.top}">${h.top || '–'}</span>` : ''}${HZ_LABEL[key]}`;
-    tab.setAttribute('aria-label', `${HZ_LABEL[key]}${h ? `: nivel máximo ${h.top}, ${LEVEL[h.top].name}` : ': sin datos'}`);
+    setHtml(tab, `${h ? `<span class="lv lv${h.top}" aria-hidden="true">${h.top || '–'}</span>` : ''}${HZ_LABEL[key]}`);
+    tab.setAttribute('aria-label', `${HZ_LABEL[key]}${h ? `: nivel máximo ${h.top}, ${LEVEL[h.top].name}` : snap ? ': sin datos' : ''}`);
   }
+  $('mode-celdas').setAttribute('aria-pressed', String(state.mode === 'celdas'));
+  $('mode-cuencas').setAttribute('aria-pressed', String(state.mode === 'cuencas'));
   const h = snap && snap.hz[state.hz];
   const range = $('frame'), label = $('frame-label');
-  if (!h) { range.disabled = true; $('prev').disabled = true; $('next').disabled = true; label.textContent = snap ? 'Sin datos para este plazo.' : ' '; return; }
+  if (!h) { range.disabled = true; $('prev').disabled = true; $('next').disabled = true; label.textContent = snap ? 'sin datos' : ' '; return; }
   const f = frameIndex(h);
   range.disabled = false;
   range.max = String(h.F);
@@ -82,41 +99,30 @@ function renderControls() {
   else text = `${frameLabel(state.hz, h.frames[f])}${h.frames[f].ok ? '' : ' · sin datos'}`;
   label.textContent = text;
   range.setAttribute('aria-valuetext', text);
-  $('mode-celdas').setAttribute('aria-pressed', String(state.mode === 'celdas'));
-  $('mode-cuencas').setAttribute('aria-pressed', String(state.mode === 'cuencas'));
-}
-
-function renderPick(ctx) {
-  const el = $('pick');
-  if (!el) return;
-  if (!ctx) { el.innerHTML = '<span class="dim">Toca el mapa o busca tu municipio.</span>'; return; }
-  let L = null;
-  if (ctx.h && ctx.n >= 0) L = ctx.h.level[ctx.f * ctx.h.N + ctx.n];
-  el.innerHTML = `${L == null ? '' : `<span class="lv lv${L}">${L || '–'}</span>`}<a href="#detalle"><strong>${esc(placeTitle(ctx))}</strong>${L == null ? ': fuera de la zona calculada' : ` · ${LEVEL[L].name}`} — ver el detalle</a>`;
 }
 
 function renderFresh() {
   const el = $('fresh');
-  if (!snap) { el.textContent = loadFailed ? 'Sin datos: no se ha podido cargar la predicción.' : 'Cargando…'; return; }
+  if (!snap) { el.textContent = loadFailed ? '' : ' '; el.className = 'num'; return; }
   const now = new Date();
   const min = (now - snap.generated) / 60000;
-  const stale = min > STALE_MIN;
-  el.classList.toggle('stale', stale);
-  const dev = DEV ? 'DATOS INVENTADOS PARA PRUEBAS · ' : '';
-  el.textContent = stale
-    ? `${dev}Desactualizado: ${dayTime(snap.generated, now)} (${age(snap.generated, now)})`
-    : `${dev}${dayTime(snap.generated, now)} · ${age(snap.generated, now)}`;
+  const stale = min > STALE_MIN, late = !stale && min > LATE_MIN;
+  el.className = `num${stale ? ' stale' : late ? ' late' : ''}`;
+  const dev = DEV ? 'PRUEBA · ' : '';
+  const when = dayTime(snap.generated, now);
+  el.textContent = stale ? `${dev}Desactualizado · ${age(snap.generated, now)}` : `${dev}${when} · ${age(snap.generated, now)}`;
+  el.title = `Última actualización: ${when}`;
 }
 
 function render(parts = {}) {
   renderHeadline();
   renderControls();
+  if (state.pt && !geo.catchments && !catchmentsAsked) { catchmentsAsked = true; loadCatchments().then((c) => { if (c && mapApi) mapApi.redraw(); }); }
   if (mapApi) mapApi.redraw();
-  const ctx = snap ? renderPanel($('place'), snap, state, { auditOpen: () => auditOpen, onAudit: (v) => { auditOpen = v; } }) : null;
-  renderPick(ctx);
+  if (snap) renderPanel($('place'), snap, state, { auditOpen: () => auditOpen, onAudit: (v) => { auditOpen = v; } });
   renderPoints($('barrancos'), snap, state);
   renderFresh();
-  if (snap && state.hz) writeHash();
+  if (snap && state.hz) writeHash(frameT0());
   if (parts.scrollToPoint && state.pt) {
     const row = document.querySelector('#barrancos tr.open');
     if (row) row.scrollIntoView({ block: 'center' });
@@ -125,7 +131,12 @@ function render(parts = {}) {
 
 // ---- actions -------------------------------------------------------------------------------------
 
-function say(text) { $('msg').textContent = text || ''; }
+let sayTimer = 0;
+function say(text, keep = false) {
+  $('msg').textContent = text || '';
+  clearTimeout(sayTimer);
+  if (text && !keep) sayTimer = setTimeout(() => { $('msg').textContent = ''; }, 6000);
+}
 
 function setHorizon(key) {
   if (!snap || !snap.hz[key]) return;
@@ -140,11 +151,27 @@ function setFrame(v) {
   render();
 }
 
+/** One column (phone, tablet): after choosing a place, bring its name and level into view with the least scroll. */
+function peek() {
+  if (wide.matches) return;
+  const el = document.querySelector('#place .lvl') || document.querySelector('#place h2');
+  if (el) el.scrollIntoView({ block: 'nearest', behavior: calm.matches ? 'auto' : 'smooth' });
+}
+
 function select(lat, lon, ptId = null, reveal = 0) {
+  const inPanel = $('place').contains(document.activeElement);
   state.sel = { lat, lon };
   state.pt = ptId;
   say('');
   if (reveal && mapApi) mapApi.reveal(lat, lon, reveal);
+  render();
+  if (inPanel) $('detalle').focus({ preventScroll: true });   // the button that was pressed no longer exists
+  peek();
+}
+
+function clearSelection() {
+  state.sel = null; state.pt = null;
+  $('q').value = '';
   render();
 }
 
@@ -157,6 +184,8 @@ function selectPoint(id, scroll) {
   state.pt = id;
   mapApi.reveal(pt.lat, pt.lon, 10.5);
   render({ scrollToPoint: scroll });
+  const btn = [...document.querySelectorAll('#barrancos tr.open button[data-pt]')].find((b) => b.dataset.pt === id);
+  if (btn && scroll) btn.focus({ preventScroll: true });
 }
 
 function wire() {
@@ -175,15 +204,17 @@ function wire() {
     });
   });
   $('frame').addEventListener('input', (e) => setFrame(Number(e.target.value) - 1));
-  $('prev').addEventListener('click', () => setFrame(state.f === 'max' ? 'max' : state.f - 1));
-  $('next').addEventListener('click', () => setFrame(state.f === 'max' ? 0 : state.f + 1));
+  $('prev').addEventListener('click', () => { setFrame(state.f === 'max' ? 'max' : state.f - 1); if ($('prev').disabled) $('next').focus(); });
+  $('next').addEventListener('click', () => { setFrame(state.f === 'max' ? 0 : state.f + 1); if ($('next').disabled) $('prev').focus(); });
   $('mode-celdas').addEventListener('click', () => { state.mode = 'celdas'; render(); });
   $('mode-cuencas').addEventListener('click', () => { state.mode = 'cuencas'; render(); });
+  $('headline').addEventListener('click', (e) => { if (e.target.id === 'retry') { loadFailed = false; render(); refresh(); } });
 
-  // panel: timeline cells and control-point links
+  // panel: zones, timeline cells, control-point links, back to the zones
   $('place').addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (!b) return;
+    if (b.dataset.act === 'back') { clearSelection(); $('q').focus({ preventScroll: true }); return; }
     if (b.dataset.ll) {
       const [la, lo] = b.dataset.ll.split(',').map(Number);
       if (b.dataset.hz && snap.hz[b.dataset.hz]) { state.hz = b.dataset.hz; state.f = 'max'; }
@@ -198,63 +229,75 @@ function wire() {
     if (b) selectPoint(b.dataset.pt, false);
   });
 
-  // search
-  const q = $('q'), sug = $('sug');
+  // search: a list of buttons under the box; arrows move through it, Escape closes it
+  const q = $('q'), sug = $('sug'), form = $('search');
   let hits = [];
-  const choose = (p) => { q.value = p.name; sug.hidden = true; sug.innerHTML = ''; select(p.lat, p.lon, null, 10); };
+  const close = () => { sug.hidden = true; sug.innerHTML = ''; q.setAttribute('aria-expanded', 'false'); };
+  const choose = (p) => { q.value = p.name; close(); select(p.lat, p.lon, null, 10); };
   const suggest = () => {
     hits = geo.places.length ? searchPlaces(q.value) : [];
-    if (!q.value.trim()) { sug.hidden = true; sug.innerHTML = ''; return; }
+    if (!q.value.trim()) { close(); return; }
     sug.hidden = false;
+    q.setAttribute('aria-expanded', 'true');
     sug.innerHTML = hits.length
       ? hits.map((p, i) => `<li><button type="button" data-i="${i}"><span>${esc(p.name)}${p.alt ? ` <span class="dim">/ ${esc(p.alt)}</span>` : ''}</span><span class="dim">${p.zone ? '' : 'fuera de la C. Valenciana'}</span></button></li>`).join('')
-      : `<li><button type="button" disabled>${geo.places.length ? 'Ningún municipio con ese nombre.' : 'La lista de municipios aún no ha cargado.'}</button></li>`;
+      : `<li><button type="button" disabled>${geo.places.length ? 'Sin resultados' : 'Cargando…'}</button></li>`;
   };
   q.addEventListener('input', suggest);
-  q.addEventListener('keydown', (e) => { if (e.key === 'Escape') { sug.hidden = true; } });
+  form.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { if (!sug.hidden) { close(); q.focus(); } return; }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    const items = [...sug.querySelectorAll('button[data-i]')];
+    if (!items.length) return;
+    e.preventDefault();
+    const at = items.indexOf(document.activeElement);
+    const to = e.key === 'ArrowDown' ? at + 1 : at - 1;
+    if (to < 0) q.focus(); else items[Math.min(to, items.length - 1)].focus();
+  });
+  form.addEventListener('focusout', (e) => { if (!form.contains(e.relatedTarget)) setTimeout(() => { if (!form.contains(document.activeElement)) close(); }, 150); });
   sug.addEventListener('click', (e) => { const b = e.target.closest('button[data-i]'); if (b) choose(hits[Number(b.dataset.i)]); });
-  $('search').addEventListener('submit', (e) => { e.preventDefault(); suggest(); if (hits.length) choose(hits[0]); });
+  form.addEventListener('submit', (e) => { e.preventDefault(); suggest(); if (hits.length) choose(hits[0]); });
 
   $('locate').addEventListener('click', () => {
-    if (!navigator.geolocation) { say('Este navegador no ofrece la ubicación.'); return; }
-    say('Buscando tu ubicación…');
+    if (!navigator.geolocation) { say('Este navegador no da la ubicación.'); return; }
+    say('Buscando…', true);
     navigator.geolocation.getCurrentPosition((pos) => {
       const { latitude: lat, longitude: lon } = pos.coords;
-      if (snap && cellAt(snap, lat, lon) < 0) { say('Tu ubicación queda fuera de la zona que se calcula (Comunitat Valenciana y cuencas que desaguan en ella).'); return; }
+      if (snap && cellAt(snap, lat, lon) < 0) { say('Tu ubicación queda fuera del mapa.'); return; }
       select(lat, lon, null, 10);
     }, (err) => {
-      say(err.code === 1 ? 'No has dado permiso para usar tu ubicación. Puedes buscar tu municipio.' : 'No se ha podido obtener tu ubicación. Puedes buscar tu municipio.');
+      say(err.code === 1 ? 'Sin permiso de ubicación.' : 'No se ha podido obtener la ubicación.');
     }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 });
   });
 
   // sharing
   $('copy').addEventListener('click', async () => {
-    writeHash();
+    writeHash(frameT0());
     const url = location.href;
-    try { await navigator.clipboard.writeText(url); say('Enlace copiado: lleva a esta misma vista.'); } catch (e) {
+    try { await navigator.clipboard.writeText(url); say('Enlace copiado.'); } catch (e) {
       const t = document.createElement('textarea');
       t.value = url; document.body.appendChild(t); t.select();
       let ok = false;
       try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
       t.remove();
-      say(ok ? 'Enlace copiado: lleva a esta misma vista.' : `No se ha podido copiar. El enlace es: ${url}`);
+      say(ok ? 'Enlace copiado.' : url, !ok);
     }
   });
   $('share').addEventListener('click', async () => {
-    if (!snap || !head) { say('Todavía no hay predicción que compartir.'); return; }
+    if (!snap || !head) return;
     const btn = $('share');
-    btn.disabled = true; say('Preparando la imagen…');
+    btn.disabled = true;
     try {
       const h = snap.hz[state.hz];
       const f = h ? frameIndex(h) : 'max';
       const ctx = context(snap, state);
-      let sub = h ? `${HZ_LABEL[state.hz]} · ${f === 'max' ? 'lo peor del periodo' : frameLabel(state.hz, h.frames[f])}` : '';
-      if (state.mode === 'cuencas') sub += ' · cuencas';
+      let sub = h ? `${HZ_LABEL[state.hz]} · ${f === 'max' ? 'máximo' : frameLabel(state.hz, h.frames[f])}` : '';
+      if (state.mode === 'cuencas') sub += ' · cauces';
       if (ctx && ctx.h && ctx.n >= 0) sub += ` · ${placeTitle(ctx)}: nivel ${ctx.h.level[ctx.f * ctx.h.N + ctx.n]}`;
-      writeHash();
+      writeHash(frameT0());
       const site = (location.host + location.pathname).replace(/index\.html$/, '').replace(/\/$/, '');
       const res = await shareCard({ headline: head.text, level: head.level, sub, generated: snap.generated, url: site, scene: scene() }, location.href);
-      say(res === 'downloaded' ? 'Imagen descargada (1080 × 1350).' : res === 'shared' ? 'Compartido.' : '');
+      say(res === 'downloaded' ? 'Imagen descargada.' : '');
     } catch (e) { say(`No se ha podido crear la imagen: ${e.message}.`); }
     btn.disabled = false;
   });
@@ -267,18 +310,26 @@ function wire() {
 
   // the fixed bar must never cover content: reserve exactly its height
   const bar = $('bar');
-  const top = document.querySelector('.top');
   const fit = () => {
     document.documentElement.style.setProperty('--bar-h', `${bar.offsetHeight}px`);
     if (mapApi && mapApi.invalidate) mapApi.invalidate();
   };
-  if (window.ResizeObserver) { new ResizeObserver(fit).observe(bar); new ResizeObserver(fit).observe(top); }
+  if (window.ResizeObserver) { const ro = new ResizeObserver(fit); ro.observe(bar); ro.observe($('map')); }
   fit();
+}
+
+/** Frame index for a frame start (ISO) in the current horizon, or 'max' when that frame no longer exists. */
+function frameAt(t0) {
+  const h = snap && snap.hz[state.hz];
+  if (!h || !t0) return 'max';
+  const ms = Date.parse(t0);
+  const f = h.frames.findIndex((fr) => fr.d0.getTime() === ms);
+  return f < 0 ? 'max' : f;
 }
 
 function applyHash(p) {
   if (p.hz) state.hz = p.hz;
-  if (p.f != null) state.f = p.f;
+  if (p.t) { wantT = p.t; if (snap) { state.f = frameAt(wantT); wantT = null; } } else if (p.f != null) state.f = p.f;
   if (p.mode) state.mode = p.mode;
   state.sel = p.sel || null;
   state.pt = p.pt || null;
@@ -287,9 +338,13 @@ function applyHash(p) {
 
 function onSnapshot(s) {
   const first = !snap;
+  // the selected frame is a time, not a position: keep the same hours when the frames move on
+  const keepT = wantT || frameT0();
+  wantT = null;
   snap = s;
   loadFailed = false;
   if (!state.hz || !snap.hz[state.hz]) { state.hz = defaultHorizon(snap); state.f = 'max'; }
+  else if (keepT) state.f = frameAt(keepT);
   const h = snap.hz[state.hz];
   if (h && state.f !== 'max' && state.f >= h.F) state.f = 'max';
   if (HORIZONS.some((k) => snap.hz[k] && snap.hz[k].points)) loadPoints().then((pts) => { if (pts) render(); });
@@ -297,21 +352,25 @@ function onSnapshot(s) {
   if (first && DEV) console.info('riuà: datos inventados de web/dev (modo ?dev=1)');
 }
 
+let busy = false;
 async function refresh() {
-  await loadSnapshots(onSnapshot, () => { if (!snap) { loadFailed = true; render(); } }, snap ? snap.generated.getTime() : 0);
+  if (busy) return;
+  busy = true;
+  await loadSnapshots(onSnapshot, (e) => { if (!snap) { loadFailed = true; render(); } console.warn('riuà: no se ha podido actualizar', e); }, snap ? snap.generated.getTime() : 0);
+  busy = false;
 }
 
 function start() {
   const initial = decode(location.hash);
   if (initial.hz) state.hz = initial.hz;
-  if (initial.f != null) state.f = initial.f;
+  if (initial.t) wantT = initial.t; else if (initial.f != null) state.f = initial.f;
   if (initial.mode) state.mode = initial.mode;
   if (initial.sel) state.sel = initial.sel;
   if (initial.pt) state.pt = initial.pt;
 
   mapApi = createMap($('map'), scene, {
     onPick: (lat, lon, ptId) => { if (ptId) selectPoint(ptId, false); else select(lat, lon, null); },
-    onView: () => { state.view = mapApi.view(); if (snap) writeHash(); },
+    onView: () => { state.view = mapApi.view(); if (snap) writeHash(frameT0()); },
   });
   if (initial.view) { state.view = initial.view; mapApi.setView(initial.view); }
   wire();
@@ -320,15 +379,15 @@ function start() {
   // geodata arrives file by file: repaint the map each time, and the texts once names and zones are in
   let pending = null;
   loadGeo((name, err) => {
-    if (err) say('Parte de la cartografía no ha cargado; el mapa puede verse incompleto.');
+    if (err) say('Parte del mapa no ha cargado.', true);
     if (pending) return;
     pending = requestAnimationFrame(() => { pending = null; render(); });
   });
   refresh();
   setInterval(renderFresh, 30000);
-  setInterval(refresh, 5 * 60000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderFresh(); if (snap && Date.now() - snap.generated > 20 * 60000) refresh(); } });
+  setInterval(() => { if (!document.hidden) refresh(); }, 3 * 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderFresh(); if (!snap || Date.now() - snap.generated > 10 * 60000) refresh(); } });
 }
 
 if (window.L) start();
-else $('headline').textContent = 'No se ha podido cargar el mapa. Vuelve a cargar la página.';
+else $('headline').textContent = 'No se ha podido cargar el mapa.';

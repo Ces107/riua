@@ -13,6 +13,42 @@ HZ = {"now": ("Ahora (0–6 h)", "Now (0–6 h)"), "mid": ("48 h (predicción de
       "long": ("Días 2–7 (emitida 3 y 5 días antes)", "Days 2–7 (issued 3 and 5 days before)")}
 LV = {"2": "2 medio", "3": "3 alto", "4": "4 muy alto", "5": "5 extremo"}
 pc = lambda v: "—" if v is None else f"{round(100 * v)} %"
+MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+# The Poyo at the A-3 gauge on 29 Oct 2024: the last reading before the sensor was lost, and the CEDEX
+# estimate of the real peak. One figure, used wherever that flood is quoted.
+POYO_MEASURED, POYO_PEAK = 2283, 3200
+try:
+    POINTS = {p["id"]: p for p in json.loads((ROOT / "web" / "geo" / "points.json").read_text(encoding="utf-8"))["points"]}
+except Exception:
+    POINTS = {}
+
+
+def es(v, dec=None) -> str:
+    """A number the Spanish way: decimal comma, a thin space every three digits from 10 000 on."""
+    if v is None:
+        return "—"
+    s = f"{v:.{dec}f}" if dec is not None else f"{v:g}"
+    whole, _, frac = s.partition(".")
+    sign, digits = ("−", whole[1:]) if whole.startswith("-") else ("", whole)
+    if len(digits) > 4:
+        digits = re.sub(r"(?<=\d)(?=(\d{3})+$)", " ", digits)
+    return sign + digits + ("," + frac if frac else "")
+
+
+def point_name(pid: str) -> str:
+    """'poyo-ribarroja' -> 'Rambla del Poyo, Riba-roja de Túria' (names of web/geo/points.json)."""
+    p = POINTS.get(pid)
+    if not p:
+        return pid
+    town = re.sub(r"\s*\(.*?\)", "", p.get("town") or "").split(" / ")[0].strip()
+    stream = re.sub(r"\s*\(.*?\)", "", p.get("stream") or pid).split(" / ")[0].strip()
+    return f"{stream}, {town}" if town else stream
+
+
+def month(case: str) -> str:
+    """'2025-03-03' -> 'mar 2025'."""
+    m = re.match(r"(\d{4})-(\d{2})", case)
+    return f"{MONTHS[int(m.group(2)) - 1]} {m.group(1)}" if m else case
 
 
 def counts(res: dict, key: str):
@@ -33,11 +69,11 @@ def html() -> str:
         block, tau, kind = counts(res, key)
         t = res["tuned"]
         out.append(f"<h2>{HZ[key][0]}</h2>")
-        out.append(f'<p class="n">{len(res["cases"])} casos · {res["n_frames"]} tramos · σ {t["sigma"]} · sesgo {t["bias"]}</p>')
+        out.append(f'<p class="n">{len(res["cases"])} casos · {es(res["n_frames"])} tramos · σ {es(t["sigma"])} · sesgo {es(t["bias"])}</p>')
         for scope, title in (("zone_day", "Por zona de aviso y día"), ("cell", "Por celda y tramo")):
             rows = "".join(
-                f'<tr><td>{LV[L]}</td><td class="n">{pc(float(tau[L])) if tau else "—"}</td><td class="n">{v["hits"]}</td><td class="n">{v["misses"]}</td>'
-                f'<td class="n">{v["false_alarms"]}</td><td class="n">{pc(v["POD"])}</td><td class="n">{pc(v["FAR"])}</td></tr>'
+                f'<tr><td>{LV[L]}</td><td class="n">{pc(float(tau[L])) if tau else "—"}</td><td class="n">{es(v["hits"])}</td><td class="n">{es(v["misses"])}</td>'
+                f'<td class="n">{es(v["false_alarms"])}</td><td class="n">{pc(v["POD"])}</td><td class="n">{pc(v["FAR"])}</td></tr>'
                 for L, v in block[scope].items())
             out.append(f"<h3>{title}</h3><table><tr><th>Nivel</th><th>Mínimo P</th><th>Aciertos</th><th>Fallos</th>"
                        f"<th>Falsas alarmas</th><th>Detectado</th><th>Falsa alarma</th></tr>{rows}</table>")
@@ -49,17 +85,25 @@ def html() -> str:
     if h:
         run = next((x for x in h["runs"] if x["p0_mm"] == 25.0), h["runs"][0])
         out.append("<h2>Rambla del Poyo, 29-oct-2024</h2><table><tr><th>Punto</th><th>Punta calculada</th><th>Medido</th></tr>"
-                   f'<tr><td>A-3 (aforo SAIH)</td><td class="n">{run["poyo-ribarroja"]["peak_m3s"]} m³/s</td><td class="n">2283 m³/s (sensor perdido)</td></tr>'
-                   f'<tr><td>Paiporta</td><td class="n">{run["poyo-paiporta"]["peak_m3s"]} m³/s</td><td class="n">≈ 3000–3500 (estimaciones)</td></tr></table>'
-                   "<p>La hora de la punta no se puede comprobar: el radar de Cullera quedó atenuado durante el máximo y no hay datos horarios abiertos de pluviómetros de 2024.</p>")
+                   f'<tr><td>A-3 (aforo SAIH)</td><td class="n">{es(run["poyo-ribarroja"]["peak_m3s"])} m³/s</td>'
+                   f'<td class="n">{es(POYO_MEASURED)} m³/s al perderse el sensor · punta real ≈ {es(POYO_PEAK)} (CEDEX)</td></tr>'
+                   f'<tr><td>Paiporta</td><td class="n">{es(run["poyo-paiporta"]["peak_m3s"])} m³/s</td><td class="n">sin aforo</td></tr></table>'
+                   "<p>La hora de la punta no se puede comprobar: radar de Cullera atenuado durante el máximo y sin datos horarios abiertos de pluviómetros de 2024.</p>")
     fit = ROOT / "hindcast" / "hydro_fit.json"
     if fit.exists():
         hf = json.loads(fit.read_text(encoding="utf-8"))
-        rows = "".join(f'<tr><td>{e["point"]}</td><td class="n">{e["case"][:7]}</td><td class="n">{e["rain_mm"] or "—"}</td>'
-                       f'<td class="n">{e["observed"]:g}</td><td class="n">{e["after"]:g}</td><td class="n">{e["before"]:g}</td></tr>'
+
+        def measured(e):
+            # the 2024 flood of the Poyo: the gauge was lost on the way up, so what was measured is a lower bound
+            if e["point"] == "poyo-ribarroja" and e["case"].startswith("2024-10"):
+                return f"&gt; {es(POYO_MEASURED)}"
+            return es(e["observed"])
+
+        rows = "".join(f'<tr><td>{point_name(e["point"])}</td><td class="n">{month(e["case"])}</td><td class="n">{es(e["rain_mm"]) if e["rain_mm"] else "—"}</td>'
+                       f'<td class="n">{measured(e)}</td><td class="n">{es(e["after"])}</td><td class="n">{es(e["before"])}</td></tr>'
                        for e in hf["events"])
         out.append("<h2>Caudal: medido y calculado</h2>"
-                   f'<p class="n">{hf["n"]} crecidas · aforos SAIH Júcar · umbral de escorrentía {hf["p0_mm"]:g} mm · retención {hf["s_mm"]:g} mm</p>'
+                   f'<p class="n">{hf["n"]} crecidas · aforos SAIH Júcar · umbral de escorrentía {es(hf["p0_mm"])} mm · retención {es(hf["s_mm"])} mm</p>'
                    "<table><tr><th>Punto</th><th>Episodio</th><th>Lluvia (mm)</th><th>Medido (m³/s)</th><th>Calculado</th>"
                    f"<th>Antes (25 mm)</th></tr>{rows}</table>")
     out.append("<h2>Límites</h2><ul><li>Pocos casos de nivel 5: las cifras de ese nivel son orientativas.</li>"

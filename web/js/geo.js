@@ -11,10 +11,18 @@ export const geo = {
   failed: [],
 };
 
+/** One retry after a short wait: a dropped request on a phone must not leave the map without its coast. */
 async function json(url) {
-  const r = await fetch(url);
-  if (!r.ok) throw new Error(`${url}: ${r.status}`);
-  return r.json();
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error(`${url}: ${r.status}`);
+      return await r.json();
+    } catch (e) {
+      if (attempt >= 1) throw e;
+      await new Promise((done) => setTimeout(done, 1500));
+    }
+  }
 }
 
 function bboxOf(rings) {
@@ -197,13 +205,34 @@ export function loadPoints() {
           const s = await json(`${GEO_DIR}streams.geojson`);
           geo.streams = s.features.map((f) => ({ ...shape(ringsOf(f.geometry)), name: f.properties.name || f.properties.stream || '' }));
         }
-        if (d.catchments) {
-          const c = await json(`${GEO_DIR}catchments.geojson`);
-          geo.catchments = c.features.map((f) => ({ ...shape(ringsOf(f.geometry)), id: f.properties.id || f.properties.point_id }));
-        }
+        hasCatchments = !!d.catchments;
       } catch (e) { /* no control points: that part of the page stays hidden */ }
       return geo.points;
     })();
   }
   return pointsAsked;
+}
+
+let hasCatchments = false, catchmentsAsked = null;
+
+/** The area that drains to each control point: only fetched when a point is first selected (166 KB). */
+export function loadCatchments() {
+  if (!catchmentsAsked) {
+    catchmentsAsked = (async () => {
+      try {
+        await loadPoints();
+        if (!hasCatchments) return null;
+        const c = await json(`${GEO_DIR}catchments.geojson`);
+        const list = new Map();
+        for (const f of c.features) {
+          const id = f.properties.id || f.properties.point_id;
+          // below a dam the model only uses the unregulated part of the basin: that is the one to show
+          if (!list.has(id) || f.properties.scope === 'unregulated') list.set(id, shape(ringsOf(f.geometry)));
+        }
+        geo.catchments = list;
+      } catch (e) { /* asked once: without the file the selected point simply has no outline */ }
+      return geo.catchments;
+    })();
+  }
+  return catchmentsAsked;
 }

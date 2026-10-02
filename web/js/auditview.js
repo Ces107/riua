@@ -3,10 +3,10 @@
 
 import { DEFAULT_THR, HORIZONS, HZ_LABEL, LEVEL } from './config.js';
 import { cellCentre, cellFrame, loadExplain, mmOrNull, prob } from './data.js';
-import { auditCell, normCdf, weightedStats } from './maths.js';
+import { auditCell, dressCell, weightedStats } from './maths.js';
 import { esc, frameExact, frameLabel, num, pct } from './time.js';
 
-const FAMILY = { radar: 'radar (extrapolación)', cp: 'alta resolución', regional: 'regional', global: 'global', ens: 'conjunto (ensemble)' };
+const FAMILY = { radar: 'radar (extrapolación)', cp: 'alta resolución', regional: 'regional', global: 'global', ens: 'conjunto (ensemble)', eps: 'conjunto regional' };
 const AEMET_NAME = ['amarillo', 'naranja', 'rojo', 'extremo'];
 const fx = (v, d = 3) => (v == null || !Number.isFinite(v) ? '—' : v.toFixed(d).replace('.', ',').replace('-', '−'));
 const mmv = (v) => (v == null ? 'n/d' : fx(v, 1));
@@ -25,9 +25,16 @@ export function scenarios(h, ex, f, n) {
   return h.members.map((m, k) => ({
     name: m.name, family: m.family, model: m.model, run: m.run, step_h: m.step_h, neigh_km: m.neigh_km, w_raw: m.w_raw,
     w: Array.isArray(m.w) ? m.w[f] : null,
-    a1: k < ex.M ? mmOrNull(ex.a1[k * FN + o]) : null,
+    // the 1-h block only holds the scenarios that have a 1-h amount (ex.slot, -1 = none)
+    a1: k < ex.M && ex.slot[k] >= 0 ? mmOrNull(ex.a1[ex.slot[k] * FN + o]) : null,
     a12: k < ex.M ? mmOrNull(ex.a12[k * FN + o]) : null,
   }));
+}
+
+/** The dressing of one cell and frame from its scenario rows (maths.js::dressCell with this horizon's numbers). */
+export function dressing(h, rows, c, thr) {
+  const famOf = (family) => (h.fam && h.fam[family]) || { s1h: 1, s12h: 1 };
+  return { famOf, ...dressCell(rows, famOf, c.o12 || 0, h.kernel, thr, h.tau, h.levelCap) };
 }
 
 function calTable(a, names) {
@@ -63,10 +70,40 @@ function levelBlock(l, a) {
     + `  publicado en el snapshot: ${l.published == null ? 'n/d' : fx(l.published, 3)}     tau = ${fx(l.tau, 2)}     ${l.reached ? 'SE ALCANZA' : 'no se alcanza'}\n`;
 }
 
+const GROUP_FROM = 5;       // this many scenarios of one model and run are shown as one row (an ensemble)
+
 /**
- * Scenario-based probabilities (what the backend uses until a calibration is fitted):
- *   r_m,L = max(s1h·a1/T1h_L, s12h·a12/T12h_L)
- *   P(>=L) = Σ w_m Φ(ln(b·r_m,L)/σ) / Σ w_m
+ * Rows for the scenario tables: the members of an ensemble become one group, everything else stays alone.
+ * Members are recognised by their name, "ENS m07 · 01/10 12Z", "Radar STEPS m03 → AROME-HD …": the name
+ * without the member number is the group (the radar members carry the family and model of the run they
+ * blend into, so the family cannot tell them apart from that run).
+ * -> [{label|null, items:[{r, k}]}] in the order of first appearance.
+ */
+export function grouped(rows) {
+  const keyOf = (r) => { const name = String(r.name); return /\sm\d+\b/.test(name) ? name.replace(/\s+m\d+\b/, '') : null; };
+  const by = new Map();
+  rows.forEach((r, k) => { const key = keyOf(r); if (key == null) return; if (!by.has(key)) by.set(key, []); by.get(key).push({ r, k }); });
+  const out = [], done = new Set();
+  rows.forEach((r, k) => {
+    const key = keyOf(r), g = key == null ? null : by.get(key);
+    if (!g || g.length < GROUP_FROM) out.push({ label: null, items: [{ r, k }] });
+    else if (!done.has(key)) { done.add(key); out.push({ label: key, items: g }); }
+  });
+  return out;
+}
+
+/** "12,3 0,0–48,1": median and range of the members' amounts (mm). */
+function spread(vals) {
+  const v = vals.filter((x) => x != null).sort((a, b) => a - b);
+  if (!v.length) return 'n/d';
+  const med = v.length % 2 ? v[(v.length - 1) / 2] : (v[v.length / 2 - 1] + v[v.length / 2]) / 2;
+  return `${fx(med, 1)} <span class="dim">${fx(v[0], 1)}–${fx(v[v.length - 1], 1)}</span>`;
+}
+
+/**
+ * Scenario-based probabilities (risk.py::dressed_probabilities; formulas in maths.js::dressScenario):
+ * each scenario gives P₁ from its 1-h amount and P₁₂ from its 12-h amount, the larger of the two counts,
+ * and the weighted mean over the scenarios is the probability of the level.
  */
 async function auditDressing(ctx) {
   const { snap, hzKey, f, n } = ctx;
@@ -74,40 +111,43 @@ async function auditDressing(ctx) {
   const fr = h.frames[f];
   const c = cellFrame(h, f, n);
   const thr = thresholdsFor(snap, ctx.zone);
-  const sigma = Number(h.sigma), bias = Number(h.bias || 1);
+  const k = h.kernel;
   const rows = scenarios(h, await loadExplain(snap, hzKey), f, n).filter((r) => r.w > 0);
-  const P = [0, 0, 0, 0];
-  let W = 0;
-  const body = rows.map((r, k) => {
-    const fam = (h.fam && h.fam[r.family]) || { s1h: 1, s12h: 1 };
-    const ps = [0, 1, 2, 3].map((L) => {
-      const r1 = r.a1 == null ? 0 : (fam.s1h * r.a1) / thr.t1[L];
-      const r12 = r.a12 == null ? 0 : (fam.s12h * r.a12) / thr.t12[L];
-      const rr = Math.max(r1, r12);
-      return rr > 0 ? normCdf(Math.log(bias * rr) / sigma) : 0;
-    });
-    if (r.a1 != null || r.a12 != null) { W += r.w; ps.forEach((p, L) => { P[L] += r.w * p; }); }
-    return `<tr><td>${k + 1}</td><th class="wrap">${esc(r.name)}</th><td>${pct(r.w, 1)}</td><td>${mmv(r.a1)}</td><td>${mmv(r.a12)}</td>`
-      + `<td>${fam.s1h === 1 && fam.s12h === 1 ? '1' : `${fx(fam.s1h, 1)}/${fx(fam.s12h, 1)}`}</td>${ps.map((p) => `<td>${fx(p, 2)}</td>`).join('')}</tr>`;
+  // the sum runs over every scenario; only the table groups the members of an ensemble
+  const d = dressing(h, rows, c, thr);
+  const sTxt = (fam) => (fam.s1h === 1 && fam.s12h === 1 ? '1' : `${fx(fam.s1h, 1)}/${fx(fam.s12h, 1)}`);
+  const phiTxt = (v) => (v > 0 ? fx(v, 2) : '0');
+  const line = (r, i, of) => `<tr${of ? ` class="mem" data-of="${of}" hidden` : ''}><td>${i + 1}</td><th class="wrap">${esc(r.name)}</th><td>${pct(r.w, 1)}</td><td>${mmv(r.a1)}</td><td>${mmv(r.a12)}</td>`
+    + `<td>${sTxt(d.famOf(r.family))}</td><td>${phiTxt(d.per[i].phi)}</td>${d.per[i].p.map((p) => `<td>${fx(p, 2)}</td>`).join('')}</tr>`;
+  const body = grouped(rows).map((g, gi) => {
+    if (!g.label) return line(g.items[0].r, g.items[0].k, null);
+    const w = g.items.reduce((s, it) => s + it.r.w, 0);
+    const mean = (get) => (w > 0 ? g.items.reduce((s, it) => s + it.r.w * get(d.per[it.k]), 0) / w : 0);
+    return `<tr class="grp"><td>${g.items.length}</td><th class="wrap"><button type="button" class="link" data-grp="g${gi}" aria-expanded="false" title="ver los ${g.items.length} miembros">${esc(g.label)}</button></th>`
+      + `<td>${pct(w, 1)}</td><td>${spread(g.items.map((it) => it.r.a1))}</td><td>${spread(g.items.map((it) => it.r.a12))}</td><td>${sTxt(d.famOf(g.items[0].r.family))}</td><td>${phiTxt(mean((x) => x.phi))}</td>`
+      + `${[0, 1, 2, 3].map((L) => `<td>${fx(mean((x) => x.p[L]), 2)}</td>`).join('')}</tr>${g.items.map((it) => line(it.r, it.k, `g${gi}`)).join('')}`;
   }).join('');
-  const Pn = P.map((p) => (W > 0 ? p / W : 0));
-  for (let L = 1; L < 4; L++) Pn[L] = Math.min(Pn[L], Pn[L - 1]);
-  let level = 1;
-  [2, 3, 4, 5].forEach((L, k) => { if (Pn[k] >= Number(h.tau[String(L)])) level = L; });
-  const blank = '<td></td><td></td><td></td><td></td>';
-  const head = `<tr><th>#</th><th class="wrap">Escenario</th><th>Peso</th><th>1 h</th><th>12 h</th><th title="factor de representatividad 1 h / 12 h">s</th>${[2, 3, 4, 5].map((L) => `<th>P≥${L}</th>`).join('')}</tr>`;
-  const tot = `<tr><th></th><th class="wrap"><b>Total</b></th>${blank}${Pn.map((p) => `<td><b>${fx(p, 2)}</b></td>`).join('')}</tr>`
-    + `<tr><th></th><th class="wrap">publicado</th>${blank}${c.p.map((p) => `<td>${fx(p, 2)}</td>`).join('')}</tr>`
+  const blank = '<td></td><td></td><td></td><td></td><td></td>';
+  const head = `<tr><th title="número del escenario, o cuántos miembros tiene el conjunto">n.º</th><th class="wrap">Escenario</th><th>Peso</th><th>1 h</th><th>12 h</th><th title="factor de representatividad 1 h / 12 h">s</th>`
+    + `<th title="parte ya medida de la cantidad en 12 h del escenario">φ</th>${[2, 3, 4, 5].map((L) => `<th>P≥${L}</th>`).join('')}</tr>`;
+  const tot = `<tr><th></th><th class="wrap"><b>Total</b></th>${blank}${d.P.map((p) => `<td><b>${fx(p, 3)}</b></td>`).join('')}</tr>`
+    + `<tr><th></th><th class="wrap">publicado</th>${blank}${c.p.map((p) => `<td>${fx(p, 3)}</td>`).join('')}</tr>`
     + `<tr><th></th><th class="wrap">mínimo τ</th>${blank}${[2, 3, 4, 5].map((L) => `<td>${fx(Number(h.tau[String(L)]), 2)}</td>`).join('')}</tr>`;
   const cc = cellCentre(snap, n);
   const sw = (L) => `<span class="lv lv${L}">${L || '–'}</span>`;
   return `<p class="num">${fx(cc.lat, 3)}° N ${fx(cc.lon, 3)}° · ${esc(frameExact(fr))}</p>
-<pre class="calc">r = max(s₁·lluvia1h / U₁ , s₁₂·lluvia12h / U₁₂)
-P(≥nivel) = Σ peso · Φ( ln(r) / σ )        σ = ${fx(sigma, 2)}
-U₁  = ${thr.t1.map((v) => fx(v, 0)).join(' / ')} mm      (niveles 2 / 3 / 4 / 5)
+<pre class="calc">A₁ = s₁·lluvia1h     A₁₂ = s₁₂·lluvia12h
+φ = min(1, medido / A₁₂)     medido = ${fx(c.o12 || 0, 1)} mm
+P₁  = Φ( ln(b₁·A₁ / U₁) / σ₁ )
+P₁₂ = Φ( ln(b₁₂·A₁₂ / U₁₂) / σ₁₂ )
+b₁₂ = φ·${fx(k.obs12Factor, 2)} + (1 − φ)·b
+σ₁₂ = max(σ·(1 − φ), ${fx(Math.min(k.sigma, k.sigmaObs), 2)})
+b = ${fx(k.bias, 2)}  σ = ${fx(k.sigma, 2)}  b₁ = ${fx(k.bias1h, 2)}  σ₁ = ${fx(k.sigma1h, 2)}
+P(≥nivel) = Σ peso · max(P₁, P₁₂)
+U₁  = ${thr.t1.map((v) => fx(v, 0)).join(' / ')} mm
 U₁₂ = ${thr.t12.map((v) => fx(v, 0)).join(' / ')} mm</pre>
 <div class="scroll tall"><table class="data"><thead>${head}</thead><tbody>${body}${tot}</tbody></table></div>
-<p style="margin-top:.4rem">Nivel: el más alto con P ≥ τ → ${sw(level)} <span class="dim">publicado</span> ${sw(c.level)}</p>`;
+<p style="margin-top:.4rem">Nivel: el más alto con P ≥ τ${h.levelCap != null ? `, como mucho ${h.levelCap} en este plazo` : ''} → ${sw(d.level)} <span class="dim">publicado</span> ${sw(c.level)}</p>`;
 }
 
 /** HTML of the audit. ctx = {snap, hzKey, f, n, zone, cellInfo} */
@@ -142,8 +182,16 @@ y la mayor acumulación en 12 h que termina dentro del tramo (la ventana de 12 h
 «n/d» en 1 h: ese escenario no informa de la intensidad horaria. El peso es el del tramo, ya normalizado.</p>
 <div class="scroll tall"><table class="data"><thead><tr><th scope="col">n.º</th><th scope="col">Escenario</th><th scope="col">Familia</th><th scope="col">Pasada (UTC)</th>
 <th scope="col">Paso</th><th scope="col">Vecindad</th><th scope="col">1 h (mm)</th><th scope="col">12 h (mm)</th><th scope="col">Peso</th></tr></thead><tbody>`
-      + rows.map((r, k) => `<tr><td>${k + 1}</td><th scope="row">${esc(r.name)}</th><td>${esc(FAMILY[r.family] || r.family)}</td><td>${esc((r.run || '').replace('T', ' ').replace('Z', ''))}</td>`
-        + `<td>${r.step_h} h</td><td>${r.neigh_km ? `${num(r.neigh_km)} km` : '—'}</td><td>${mmv(r.a1)}</td><td>${mmv(r.a12)}</td><td>${r.w == null ? '—' : pct(r.w, 2)}</td></tr>`).join('')
+      + grouped(rows).map((g, gi) => {
+        const one = (r, k, of) => `<tr${of ? ` class="mem" data-of="${of}" hidden` : ''}><td>${k + 1}</td><th scope="row">${esc(r.name)}</th><td>${esc(FAMILY[r.family] || r.family)}</td><td>${esc((r.run || '').replace('T', ' ').replace('Z', ''))}</td>`
+          + `<td>${r.step_h} h</td><td>${r.neigh_km ? `${num(r.neigh_km)} km` : '—'}</td><td>${mmv(r.a1)}</td><td>${mmv(r.a12)}</td><td>${r.w == null ? '—' : pct(r.w, 2)}</td></tr>`;
+        if (!g.label) return one(g.items[0].r, g.items[0].k, null);
+        const r0 = g.items[0].r;
+        return `<tr class="grp"><td>${g.items.length}</td><th scope="row"><button type="button" class="link" data-grp="e${gi}" aria-expanded="false" title="ver los ${g.items.length} miembros">${esc(g.label)}</button></th>`
+          + `<td>${esc(FAMILY[r0.family] || r0.family)}</td><td>${esc((r0.run || '').replace('T', ' ').replace('Z', ''))}</td><td>${r0.step_h} h</td><td>${r0.neigh_km ? `${num(r0.neigh_km)} km` : '—'}</td>`
+          + `<td>${spread(g.items.map((it) => it.r.a1))}</td><td>${spread(g.items.map((it) => it.r.a12))}</td><td>${pct(g.items.reduce((s, it) => s + (it.r.w || 0), 0), 2)}</td></tr>`
+          + g.items.map((it) => one(it.r, it.k, `e${gi}`)).join('');
+      }).join('')
       + '</tbody></table></div>';
   } else {
     out += `<p class="warn">No se ha podido cargar la tabla de escenarios (${esc(exErr.message)}). El resto del cálculo se muestra con el resumen publicado.</p>`;
@@ -235,18 +283,39 @@ export async function cellExport(ctx) {
     let ex = null, exErr = null;
     try { ex = await loadExplain(snap, key); } catch (e) { exErr = e.message; }
     out.horizons[key] = {
-      tau: h.tau,
-      scenarios_note: ex ? 'a1_mm / a12_mm: per-scenario amounts after neighbourhood; null = not available' : `scenario table not available: ${exErr}`,
+      tau: h.tau, level_cap: h.levelCap,
+      kernel: { sigma: h.kernel.sigma, bias: h.kernel.bias, sigma1h: h.kernel.sigma1h, bias1h: h.kernel.bias1h, sigma_obs: h.kernel.sigmaObs, obs12_factor: h.kernel.obs12Factor },
+      family_factors: h.fam,
+      scenarios_note: ex ? 'a1_mm / a12_mm: per-scenario amounts after neighbourhood; null = not available. phi = measured share of the 12-h amount; p_1h, p_12h, p = probability of levels 2..5 from that scenario (scenarios with weight only)'
+        : `scenario table not available: ${exErr}`,
       frames: h.frames.map((fr, f) => {
         const c = cellFrame(h, f, n);
-        const a = auditCell(c, fr, thr, h.tau);
+        const rows = ex ? scenarios(h, ex, f, n) : null;
+        // the method of the frame decides which calculation is repeated here, as in the audit view
+        const dressed = fr.method === 'dressing' || !fr.cal;
+        let recomputed = null, levelRe = null, per = null;
+        if (dressed && rows) {
+          const used = rows.map((r, k) => ({ r, k })).filter((x) => x.r.w > 0);
+          const d = dressing(h, used.map((x) => x.r), c, thr);
+          recomputed = Object.fromEntries(d.P.map((p, L) => [`>=${L + 2}`, { p }]));
+          levelRe = d.level;
+          per = new Map(used.map((x, i) => [x.k, d.per[i]]));
+        } else if (!dressed) {
+          const a = auditCell(c, fr, thr, h.tau);
+          recomputed = Object.fromEntries(a.levels.map((l) => [`>=${l.L}`, { p_1h: l.pa, p_12h: l.pb, both: l.both, p: l.p }]));
+          levelRe = h.levelCap != null ? Math.min(a.level, h.levelCap) : a.level;
+        }
         return {
-          t0: fr.t0, t1: fr.t1, label: frameLabel(key, fr), ok: fr.ok, has_1h: fr.has_1h, cal: fr.cal,
+          t0: fr.t0, t1: fr.t1, label: frameLabel(key, fr), ok: fr.ok, has_1h: fr.has_1h, method: dressed ? 'dressing' : 'emos', cal: fr.cal,
           level: c.level, p_published: { '>=2': c.p[0], '>=3': c.p[1], '>=4': c.p[2], '>=5': c.p[3] },
-          p_recomputed: Object.fromEntries(a.levels.map((l) => [`>=${l.L}`, { p_1h: l.pa, p_12h: l.pb, both: l.both, p: l.p }])),
+          p_recomputed: recomputed, level_recomputed: levelRe,
+          measured_in_12h_mm: c.o12,
           ensemble_mm: { m1: c.m1, q1: c.q1, m12: c.m12, q12: c.q12 },
           expected_mm: { '1h': { median: c.e1[0], high_1_in_10: c.e1[1] }, '12h': { median: c.e12[0], high_1_in_10: c.e12[1] } },
-          scenarios: ex ? scenarios(h, ex, f, n).map((r) => ({ name: r.name, family: r.family, run: r.run, weight: r.w, a1_mm: r.a1, a12_mm: r.a12 })) : null,
+          scenarios: rows ? rows.map((r, k) => {
+            const x = per && per.get(k);
+            return { name: r.name, family: r.family, run: r.run, weight: r.w, a1_mm: r.a1, a12_mm: r.a12, ...(x ? { phi: x.phi, p_1h: x.p1, p_12h: x.p12, p: x.p } : {}) };
+          }) : null,
         };
       }),
     };

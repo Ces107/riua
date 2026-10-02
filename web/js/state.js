@@ -1,7 +1,8 @@
 // The view as a URL hash, so that any view is a link:
-//   #h=mid&f=5&m=cuencas&p=39.428,-0.418&pt=poyo-paiporta&v=39.40,-0.60,9.5
-// h horizon (now|mid|long) · f frame index or "max" · m map mode (celdas|cuencas) · p selected place (lat,lon)
-// pt selected control point · v map centre and zoom
+//   #h=mid&t=202610020300&m=cuencas&p=39.428,-0.418&pt=poyo-paiporta&v=39.40,-0.60,9.5
+// h horizon (now|mid|long) · f=max (worst of the period) or t = start of the frame, UTC yyyymmddhhmm
+// (a time, not an index: the link still means the same hours after the next update; f=<index> is still read)
+// m map mode (celdas|cuencas) · p selected place (lat,lon) · pt selected control point · v map centre and zoom
 
 import { HORIZONS } from './config.js';
 
@@ -16,10 +17,12 @@ export const state = {
 
 const r = (v, d) => Number(v).toFixed(d).replace(/\.?0+$/, '');
 
-export function encode(s = state) {
+/** t0: ISO start of the selected frame ("2026-10-02T03:00Z"), needed when s.f is an index. */
+export function encode(s = state, t0 = null) {
   const q = [];
   if (s.hz) q.push(`h=${s.hz}`);
-  q.push(`f=${s.f}`);
+  if (s.f === 'max' || !t0) q.push(`f=${s.f}`);
+  else q.push(`t=${String(t0).replace(/\D/g, '').slice(0, 12)}`);
   if (s.mode !== 'celdas') q.push(`m=${s.mode}`);
   if (s.sel) q.push(`p=${r(s.sel.lat, 4)},${r(s.sel.lon, 4)}`);
   if (s.pt) q.push(`pt=${encodeURIComponent(s.pt)}`);
@@ -27,13 +30,14 @@ export function encode(s = state) {
   return `#${q.join('&')}`;
 }
 
-/** Reads a hash into a partial state; anything malformed is simply left out. */
+/** Reads a hash into a partial state ({hz, f | t, mode, sel, pt, view}); anything malformed is simply left out. */
 export function decode(hash) {
   const out = {};
   const q = new URLSearchParams((hash || '').replace(/^#/, ''));
   if (HORIZONS.includes(q.get('h'))) out.hz = q.get('h');
-  const f = q.get('f');
-  if (f === 'max') out.f = 'max';
+  const f = q.get('f'), t = q.get('t');
+  if (t && /^\d{12}$/.test(t)) out.t = `${t.slice(0, 4)}-${t.slice(4, 6)}-${t.slice(6, 8)}T${t.slice(8, 10)}:${t.slice(10, 12)}Z`;
+  else if (f === 'max') out.f = 'max';
   else if (f != null && /^\d+$/.test(f)) out.f = Number(f);
   if (q.get('m') === 'cuencas' || q.get('m') === 'celdas') out.mode = q.get('m');
   const nums = (key, n) => {
@@ -50,10 +54,10 @@ export function decode(hash) {
 
 let last = '';
 /** Writes the hash without adding history entries. */
-export function writeHash() {
-  const h = encode();
+export function writeHash(t0 = null) {
+  const h = encode(state, t0);
   if (h === last) return;
   last = h;
-  history.replaceState(null, '', location.pathname + location.search + h);
+  try { history.replaceState(null, '', location.pathname + location.search + h); } catch (e) { /* sandboxed frame: the view simply is not linkable */ }
 }
 export const isOwnHash = (h) => h === last;

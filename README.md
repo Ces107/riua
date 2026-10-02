@@ -92,15 +92,15 @@ See `hindcast/results.json` and the Validación page. Method: forecasts that rea
 |---|---|---|---|---|---|---|
 | 2 | 20 % | 167 | 41 | 68 | 80 % | 29 % |
 | 3 | 20 % | 94 | 42 | 40 | 69 % | 30 % |
-| 4 | 20 % | 29 | 34 | 23 | 46 % | 44 % |
-| 5 | 25 % | 7 | 6 | 8 | 54 % | 53 % |
+| 4 | 25 % | 23 | 40 | 21 | 37 % | 48 % |
+| 5 | 40 % | 3 | 10 | 0 | 23 % | 0 % |
 
 **Days 2–7 (issued 3 and 5 days before)** — 6 cases, 34 frames, σ = 1.0, bias = 1.6; per warning zone and day:
 
 | Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |
 |---|---|---|---|---|---|---|
 | 2 | 25 % | 71 | 51 | 20 | 58 % | 22 % |
-| 3 | 25 % | 34 | 52 | 15 | 40 % | 31 % |
+| 3 | 40 % | 14 | 72 | 4 | 16 % | 22 % |
 | 4 | 40 % | 8 | 35 | 6 | 19 % | 43 % |
 | 5 | 40 % | 0 | 12 | 0 | 0 % | — |
 

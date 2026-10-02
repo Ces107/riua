@@ -23,7 +23,7 @@ MIDDLE = {"2": 0.40, "3": 0.30, "4": 0.25, "5": 0.30}
 # AEMET issues any colour from 10 % (bands 10-40 / 40-70 / > 70 %); no service asks 40 % for its
 # severe tier. Day-ahead red: 0.40 detects 13 % of the zone-days, 0.20 detects 43 % for the same
 # false-alarm ratio (50 -> 53 %). Days 2-7 stay stricter: those probabilities are not reliable yet.
-SERVICE = {"mid": {"2": 0.20, "3": 0.20, "4": 0.20, "5": 0.25}, "long": {"2": 0.25, "3": 0.25, "4": 0.40, "5": 0.40}}
+SERVICE = {"mid": {"2": 0.20, "3": 0.20, "4": 0.25, "5": 0.40}, "long": {"2": 0.25, "3": 0.40, "4": 0.40, "5": 0.40}}
 out = {"version": f"hindcast-{res['generated'][:10]}-{policy}", "sigma": {}, "bias": {}, "tau": {}}
 for hz in ("now", "mid", "long"):
     if hz not in res:

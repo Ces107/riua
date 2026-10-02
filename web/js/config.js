@@ -7,7 +7,10 @@ export const GEO_DIR = 'geo/';
 export const POINTS_URL = DEV ? 'dev/data/points.json' : 'geo/points.json';
 
 export const TZ = 'Europe/Madrid';
-export const STALE_MIN = 90;            // older than this: the update line becomes a warning
+// The pipeline publishes every ~10 min. Older than LATE_MIN: the update line stops being discreet;
+// older than STALE_MIN: it becomes a warning.
+export const LATE_MIN = 30;
+export const STALE_MIN = 90;
 
 export const HORIZONS = ['now', 'mid', 'long'];
 export const HZ_LABEL = { now: 'Ahora', mid: '48 h', long: 'Días 2–7' };

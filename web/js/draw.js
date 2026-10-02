@@ -45,17 +45,30 @@ function strokeShapes(ctx, P, shapes, style, width, dash) {
   ctx.setLineDash([]);
 }
 
+/**
+ * The sheet: sea, land and a half-degree graticule, only inside the rectangle the cartography covers
+ * (geo.land's box), closed by a neatline. Outside it nothing is known, so nothing is drawn: plain paper,
+ * not a sea that would lie over Albacete or Tarragona.
+ */
 function drawBase(ctx, P) {
-  const [w, s, e, n] = P.view;
-  ctx.fillStyle = geo.land ? SEA : PAPER;
-  ctx.fillRect(P.x(w) - 2, P.y(n) - 2, P.x(e) - P.x(w) + 4, P.y(s) - P.y(n) + 4);
-  if (geo.land) { ctx.beginPath(); trace(ctx, P, geo.land.rings, true); ctx.fillStyle = LAND_OUT; ctx.fill('evenodd'); }
+  if (!geo.land) return;
+  const [w, s, e, n] = geo.land.bbox;
+  const x0 = Math.round(P.x(w)), x1 = Math.round(P.x(e)), y0 = Math.round(P.y(n)), y1 = Math.round(P.y(s));
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0); ctx.clip();
+  ctx.fillStyle = SEA;
+  ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+  ctx.beginPath(); trace(ctx, P, geo.land.rings, true); ctx.fillStyle = LAND_OUT; ctx.fill('evenodd');
   if (geo.region) { ctx.beginPath(); trace(ctx, P, geo.region.rings, true); ctx.fillStyle = PAPER; ctx.fill('evenodd'); }
-  // graticule every half degree, like the frame of a chart
+  const v = P.view;
+  const a = Math.max(w, v[0]), b = Math.min(e, v[2]), c = Math.max(s, v[1]), d = Math.min(n, v[3]);
   ctx.beginPath();
-  for (let lon = Math.ceil(w * 2) / 2; lon <= e; lon += 0.5) { ctx.moveTo(Math.round(P.x(lon)) + 0.5, P.y(n)); ctx.lineTo(Math.round(P.x(lon)) + 0.5, P.y(s)); }
-  for (let lat = Math.ceil(s * 2) / 2; lat <= n; lat += 0.5) { ctx.moveTo(P.x(w), Math.round(P.y(lat)) + 0.5); ctx.lineTo(P.x(e), Math.round(P.y(lat)) + 0.5); }
+  for (let lon = Math.ceil(a * 2) / 2; lon <= b; lon += 0.5) { ctx.moveTo(Math.round(P.x(lon)) + 0.5, y0); ctx.lineTo(Math.round(P.x(lon)) + 0.5, y1); }
+  for (let lat = Math.ceil(c * 2) / 2; lat <= d; lat += 0.5) { ctx.moveTo(x0, Math.round(P.y(lat)) + 0.5); ctx.lineTo(x1, Math.round(P.y(lat)) + 0.5); }
   ctx.strokeStyle = 'rgba(27,26,23,0.10)'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle = INK; ctx.lineWidth = 1;
+  ctx.strokeRect(x0 + 0.5, y0 + 0.5, x1 - x0 - 1, y1 - y0 - 1);
 }
 
 /** Cells of one frame. Runs of equal level along a row are painted as one rectangle on whole pixels: no seams. */
@@ -99,6 +112,9 @@ function drawBasins(ctx, P, levels, alpha) {
     ctx.fill('evenodd');
   }
   ctx.globalAlpha = 1;
+}
+
+function drawBasinEdges(ctx, P) {
   ctx.beginPath();
   for (const b of geo.basins) if (seen(b.bbox, P.view)) trace(ctx, P, b.rings, true);
   ctx.strokeStyle = 'rgba(27,26,23,0.2)'; ctx.lineWidth = 0.6; ctx.stroke();
@@ -119,7 +135,7 @@ function drawRivers(ctx, P, more) {
 }
 
 /** Greedy label placement: a label is drawn only where it does not cover one already drawn. */
-function labeller(ctx) {
+function labeller(ctx, frame) {
   const boxes = [];
   const free = (x, y, w, h) => !boxes.some((b) => x < b[0] + b[2] && x + w > b[0] && y < b[1] + b[3] && y + h > b[1]);
   return {
@@ -131,6 +147,9 @@ function labeller(ctx) {
         const bx = side === 'r' ? x + 5 : side === 'l' ? x - 5 - w : x - w / 2;
         const by = side === 't' ? y - 5 - h : side === 'b' ? y + 5 : y - h / 2;
         if (!free(bx - 1, by - 1, w + 2, h + 2)) continue;
+        // a label of something that is in sight is never cut by the edge of the map: it goes on another side
+        if (frame && x >= frame[0] && x <= frame[0] + frame[2] && y >= frame[1] && y <= frame[1] + frame[3]
+          && (bx < frame[0] + 2 || bx + w > frame[0] + frame[2] - 2 || by < frame[1] + 2 || by + h > frame[1] + frame[3] - 2)) continue;
         boxes.push([bx - 1, by - 1, w + 2, h + 2]);
         ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
         ctx.lineJoin = 'round'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(243,239,230,0.9)';
@@ -181,27 +200,40 @@ function drawRiverNames(ctx, P, lab, k) {
   }
 }
 
+/**
+ * Control points. With the whole region in view the sixty of them would be a heap of squares: there, only
+ * the points with a level (2+) and the selected one are numbered squares, the rest are small marks.
+ * Higher levels are drawn last, so they are never hidden.
+ */
 function drawPoints(ctx, P, o, lab, k) {
   if (!geo.points) return;
-  if (geo.streams) strokeShapes(ctx, P, geo.streams, RIVER, 2.2);
+  const far = P.zoom < 9;
+  const sel0 = o.selPoint && geo.catchments ? geo.catchments.get(o.selPoint) : null;
+  if (sel0) {                                          // the land that drains to the selected point
+    ctx.beginPath(); trace(ctx, P, sel0.rings, true);
+    ctx.fillStyle = 'rgba(59,106,143,0.10)'; ctx.fill('evenodd');
+    ctx.strokeStyle = PAPER; ctx.lineWidth = 3.5; ctx.stroke();
+    ctx.strokeStyle = INK; ctx.lineWidth = 1.2; ctx.setLineDash([5, 3]); ctx.stroke(); ctx.setLineDash([]);
+  }
   const pat = hatch(ctx);
-  geo.points.forEach((pt, i) => {
-    if (pt.lon < P.view[0] || pt.lon > P.view[2] || pt.lat < P.view[1] || pt.lat > P.view[3]) return;
-    const L = o.pointLevels ? o.pointLevels[i] || 0 : 0;
-    const sel = o.selPoint === pt.id;
-    const s = Math.round((sel ? 17 : 13) * k), x = Math.round(P.x(pt.lon) - s / 2), y = Math.round(P.y(pt.lat) - s / 2);
+  const order = geo.points.map((pt, i) => ({ pt, L: o.pointLevels ? o.pointLevels[i] || 0 : 0, sel: o.selPoint === pt.id }))
+    .filter(({ pt }) => !(pt.lon < P.view[0] || pt.lon > P.view[2] || pt.lat < P.view[1] || pt.lat > P.view[3]))
+    .sort((a, b) => (a.sel - b.sel) || (a.L - b.L));
+  for (const { pt, L, sel } of order) {
+    const small = far && L < 2 && !sel;
+    const s = Math.round((sel ? 17 : small ? 6 : 13) * k), x = Math.round(P.x(pt.lon) - s / 2), y = Math.round(P.y(pt.lat) - s / 2);
     ctx.fillStyle = L >= 2 ? LEVEL[L].color : PAPER;
     ctx.fillRect(x, y, s, s);
     if (L === 5) { ctx.globalAlpha = 0.6; ctx.fillStyle = pat; ctx.fillRect(x, y, s, s); ctx.globalAlpha = 1; }
-    ctx.strokeStyle = INK; ctx.lineWidth = sel ? 2.5 : 1.5;
+    ctx.strokeStyle = INK; ctx.lineWidth = sel ? 2.5 : small ? 1 : 1.5;
     ctx.strokeRect(x + 0.5, y + 0.5, s - 1, s - 1);
-    if (L >= 1) {
+    if (L >= 1 && !small) {
       ctx.font = `700 ${Math.round(10 * k)}px ${MONO}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillStyle = L >= 2 ? LEVEL[L].text : INK;
       ctx.fillText(String(L), x + s / 2, y + s / 2 + 1);
     }
     lab.block(x - 2, y - 2, s + 4, s + 4);
-  });
+  }
   if (P.zoom >= 9.5 || o.selPoint) {
     for (const pt of geo.points) {
       if (P.zoom < 9.5 && pt.id !== o.selPoint) continue;
@@ -216,8 +248,9 @@ function drawSelection(ctx, P, o) {
   const s = o.selection;
   if (!s) return;
   const twice = (fn) => { ctx.strokeStyle = PAPER; ctx.lineWidth = 5; fn(); ctx.strokeStyle = INK; ctx.lineWidth = 2; fn(); };
-  if (o.mode === 'cuencas' && s.basin) {
-    twice(() => { ctx.beginPath(); trace(ctx, P, s.basin.rings, true); ctx.stroke(); });
+  if (o.mode === 'cuencas') {
+    // a selected control point is shown by its own catchment (drawPoints); otherwise the basin unit of the place
+    if (s.basin && !(o.selPoint && geo.catchments && geo.catchments.has(o.selPoint))) twice(() => { ctx.beginPath(); trace(ctx, P, s.basin.rings, true); ctx.stroke(); });
   } else if (s.cell && o.snap) {
     const g = o.snap.grid;
     const x0 = Math.round(P.x(g.lon0 + s.cell.i * g.d)), x1 = Math.round(P.x(g.lon0 + (s.cell.i + 1) * g.d));
@@ -228,35 +261,77 @@ function drawSelection(ctx, P, o) {
   twice(() => { ctx.beginPath(); ctx.moveTo(x - a, y); ctx.lineTo(x + a, y); ctx.moveTo(x, y - a); ctx.lineTo(x, y + a); ctx.stroke(); });
 }
 
-/**
+/*
+ * The scene is four layers, bottom to top. Only `levels` changes from one frame to the next, so the
+ * map keeps the other three as bitmaps (map.js) and stepping through the frames repaints almost nothing.
+ *
  * o = { snap, mode:'celdas'|'cuencas', cellLevels:Uint8Array|null, basinLevels:Array|null, pointLevels:Array|null,
- *       selection:{lat,lon,cell:{i,j}|null,basin}|null, selPoint:id|null, base:bool, labels:bool, k:label scale }
+ *       selection:{lat,lon,cell:{i,j}|null,basin}|null, selPoint:id|null, base:bool, labels:bool, k:label scale,
+ *       blocked:[[x,y,w,h]] rectangles where no label may be written }
  */
-export function drawScene(ctx, P, o) {
-  const k = o.k || 1;
+
+/** 1. The sheet: sea, land, graticule (nothing over the street map). */
+export function drawUnder(ctx, P, o) {
   if (o.base) drawBase(ctx, P);
+}
+
+/** 2. The levels: cells or basin units. */
+export function drawLevels(ctx, P, o) {
   // over the street base map the colours are a little thinner, so that street names stay readable
   const alpha = o.base ? CELL_ALPHA : STREET_ALPHA;
   if (o.mode === 'cuencas') { if (geo.basins.length) drawBasins(ctx, P, o.basinLevels, alpha); }
   else if (o.snap && o.cellLevels) drawCells(ctx, P, o.snap, o.cellLevels, alpha);
+}
+
+/** 3. Line work: basin edges and control-point streams (Cauces), rivers, warning zones, provinces, region, coast. */
+export function drawLines(ctx, P, o) {
+  const k = o.k || 1;
+  if (o.mode === 'cuencas' && geo.basins.length) drawBasinEdges(ctx, P);
   ctx.lineWidth = 1;
   if (geo.rivers.length) drawRivers(ctx, P, false);
   strokeShapes(ctx, P, geo.zones, 'rgba(27,26,23,0.55)', 0.7 * k, [3 * k, 3 * k]);
   strokeShapes(ctx, P, geo.provinces, INK, 0.9 * k);
   strokeShapes(ctx, P, [geo.region], INK, 1.3 * k);
   strokeShapes(ctx, P, [geo.coast], INK, 1.8 * k);
-  const lab = labeller(ctx);
+  if (o.mode === 'cuencas' && geo.points && geo.streams) strokeShapes(ctx, P, geo.streams, RIVER, P.zoom < 9 ? 1.6 : 2.2);
+}
+
+/** 4. Control points, names, selection. */
+export function drawTop(ctx, P, o) {
+  const k = o.k || 1;
+  const lab = labeller(ctx, o.frame || null);      // frame: [x, y, w, h] of what is in sight (the canvas is larger)
+  // nothing is written under the legend or the map buttons (rectangles in canvas pixels, from map.js)
+  for (const b of o.blocked || []) lab.block(b[0], b[1], b[2], b[3]);
   if (o.mode === 'cuencas') drawPoints(ctx, P, o, lab, k);
   if (o.selection) lab.block(P.x(o.selection.lon) - 10, P.y(o.selection.lat) - 10, 20, 20);
   if (o.labels) {
     drawTowns(ctx, P, lab, k);
     drawRiverNames(ctx, P, lab, k);
-    if (o.base && geo.land) {
-      const size = Math.round(13 * k);
-      lab.put('M a r   M e d i t e r r á n e o', P.x(0.38), P.y(39.2), `italic ${size}px ${SERIF}`, RIVER, ['t'], size);
+    if (o.base && geo.land && P.zoom < 9.5) {
+      // starts well off the coast of the Gulf of València and runs east: it can never lie on land
+      // ... and it is only written if it fits in the sea that is in view
+      const size = Math.round(12 * k), font = `italic ${size}px ${SERIF}`;
+      const x = P.x(0.12), room = P.x(Math.min(geo.land.bbox[2], P.view[2])) - x - 12;
+      ctx.font = font;
+      const text = ['M a r   M e d i t e r r á n e o', 'Mediterráneo'].find((t) => ctx.measureText(t).width <= room);
+      if (text) lab.put(text, x, P.y(39.12), font, RIVER, ['r'], size);
     }
   }
   drawSelection(ctx, P, o);
+}
+
+/** The four layers in one go (the share card). */
+export function drawScene(ctx, P, o) {
+  drawUnder(ctx, P, o);
+  drawLevels(ctx, P, o);
+  drawLines(ctx, P, o);
+  drawTop(ctx, P, o);
+}
+
+/** What the three cached layers depend on besides the view: which geodata has arrived, and for the top one, the selection. */
+export function geoStamp() {
+  return [geo.land ? 1 : 0, geo.region ? 1 : 0, geo.coast ? 1 : 0, geo.provinces.length, geo.zones.length, geo.basins.length, geo.rivers.length,
+    geo.places.length, geo.points ? geo.points.length : 0, geo.streams ? geo.streams.length : 0, geo.catchments ? geo.catchments.size : 0].join('.');
 }
 
 /** Web-Mercator projection at a given scale: px per degree of longitude, with (lon0, lat0) at (x0, y0). */

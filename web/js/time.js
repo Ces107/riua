@@ -9,6 +9,19 @@ const utcFmt = new Intl.DateTimeFormat('es-ES', { timeZone: 'UTC', day: '2-digit
 
 /** {wd:'jue', day:2, month:'oct', year:2026, hh:'05', mm:'00', h:5, dayNo: days since epoch in local time} */
 export function parts(d) {
+  // formatToParts is slow (about 0.08 ms) and the same few dozen instants are asked for on every render
+  const ms = d.getTime();
+  let p = seen.get(ms);
+  if (!p) {
+    if (seen.size > 2000) seen.clear();
+    p = compute(d);
+    seen.set(ms, p);
+  }
+  return p;
+}
+const seen = new Map();
+
+function compute(d) {
   const o = {};
   for (const p of partsFmt.formatToParts(d)) o[p.type] = p.value;
   const wd = o.weekday.replace('.', '');
@@ -32,6 +45,23 @@ export function frameLabel(hzKey, fr) {
   const a = parts(fr.d0), b = parts(fr.d1);
   if (hzKey === 'long') return `${a.wd} ${a.day}`;
   return `${a.wd} ${a.day}, ${a.hh}–${b.hh} h`;
+}
+
+/**
+ * A period that may cover several frames: "vie 2, 00–04 h" inside one day (an end at midnight still
+ * belongs to that day), "jue 23 – vie 05 h" across days, "sáb 3" / "sáb 3 – lun 5" for the daily frames.
+ */
+export function span(hzKey, d0, d1) {
+  if (!valid(d0) || !valid(d1)) return 'tramo sin fecha';
+  const a = parts(d0), b = parts(d1);
+  if (hzKey === 'long') {
+    // the daily frames are UTC days (02:00 to 02:00 in summer): the last day is the one its last noon falls in
+    const e = parts(new Date(d1.getTime() - 12 * 3600e3));
+    return e.dayNo === a.dayNo ? `${a.wd} ${a.day}` : `${a.wd} ${a.day} – ${e.wd} ${e.day}`;
+  }
+  if (a.dayNo === b.dayNo || (b.dayNo === a.dayNo + 1 && b.h === 0)) return `${a.wd} ${a.day}, ${a.hh}–${b.hh} h`;
+  // these frames never reach more than two days ahead: the weekday alone says which day
+  return `${a.wd} ${a.hh} – ${b.wd} ${b.hh} h`;
 }
 
 /** Exact window, local and UTC, for the audit: "jue 2 oct 05:00 – 08:00 (03:00–06:00 UTC)". */
@@ -72,7 +102,7 @@ export function stamp(d) {
 export function age(d, now = new Date()) {
   const min = Math.round((now - d) / 60000);
   if (!Number.isFinite(min)) return '';
-  if (min < 1) return 'hace menos de 1 min';
+  if (min < 1) return 'ahora';
   if (min < 60) return `hace ${min} min`;
   if (min < 48 * 60) return `hace ${Math.floor(min / 60)} h${min % 60 && min < 600 ? ` ${min % 60} min` : ''}`;
   return `hace ${Math.floor(min / 1440)} días`;
@@ -83,11 +113,38 @@ export function age(d, now = new Date()) {
 const nf0 = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0 });
 const nf1 = new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
-export const num = (v, dec = 0) => (v == null || Number.isNaN(v) ? '—' : new Intl.NumberFormat('es-ES', { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: Math.abs(v) >= 10000 }).format(v));
+// one formatter per (decimals, grouping): building an Intl.NumberFormat on every call made a 60-row table cost 80 ms
+const nfs = new Map();
+function nf(dec, group) {
+  const key = dec * 2 + (group ? 1 : 0);
+  if (!nfs.has(key)) nfs.set(key, new Intl.NumberFormat('es-ES', { minimumFractionDigits: dec, maximumFractionDigits: dec, useGrouping: group }));
+  return nfs.get(key);
+}
+/** Spanish number: decimal comma, thousands separator only from 10 000 on. */
+export const num = (v, dec = 0) => (v == null || Number.isNaN(v) ? '—' : nf(dec, Math.abs(v) >= 10000).format(v));
 /** Rain amount: one decimal under 10 mm, none above. */
 export const mmTxt = (v) => (v == null || Number.isNaN(v) ? '—' : `${v < 9.95 ? nf1.format(v) : nf0.format(v)} mm`);
 export const pct = (p, dec = 0) => (p == null || Number.isNaN(p) ? '—' : `${num(p * 100, dec)} %`);
 export const sci = (v, sig = 4) => (v == null || Number.isNaN(v) ? '—' : Number(v.toPrecision(sig)).toString().replace('.', ','));
+
+const SMALL = new Set(['de', 'del', 'la', 'las', 'el', 'los', 'en', 'y', 'i', 'sobre', 'd', 'l']);
+const KEEP = /^(?:[IVX]+|[A-Z]{1,2}|\d+[A-Z]*|AEMET|SAIH|CHJ)$/;        // station codes: MC, EA, III, 8325X
+/**
+ * Station and river names as the networks publish them ("MC BARRANCO DE LA CASELLA", "Rambla De Poyo")
+ * in ordinary Spanish capitalisation. Names that already mix cases are only touched in the small words.
+ */
+export function nice(name) {
+  const s = String(name ?? '').trim();
+  if (!s) return '';
+  const shout = s === s.toUpperCase();
+  return s.split(/(\s+|['’(/-])/).map((w, k) => {
+    if (!w || /^(\s+|['’(/-])$/.test(w)) return w;
+    const low = w.toLowerCase();
+    if (SMALL.has(low)) return k > 0 ? low : low.charAt(0).toUpperCase() + low.slice(1);
+    if (!shout || KEEP.test(w)) return w;
+    return low.charAt(0).toUpperCase() + low.slice(1);
+  }).join('');
+}
 
 export function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));

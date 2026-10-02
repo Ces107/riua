@@ -4,7 +4,8 @@ import { loadSnapshots } from './data.js';
 import { age, dayTime, esc, num } from './time.js';
 
 const $ = (id) => document.getElementById(id);
-const FAMILY = { cp: 'alta resolución', regional: 'regional', global: 'global', ens: 'conjunto' };
+const NAME = { aemet: 'AEMET', saih_chj: 'SAIH Júcar', saih_segura: 'SAIH Segura', saih_ebro: 'SAIH Ebro', blend: 'OPERA + AEMET', opera: 'OPERA', rainviewer: 'RainViewer' };
+const FAMILY = { cp: 'alta resolución', regional: 'regional', global: 'global', ens: 'conjunto', eps: 'conjunto regional' };
 
 function runTxt(iso) {                      // "2026-10-01T06:00Z" -> "jue 1 oct 08:00 (06 UTC)"
   const d = new Date(iso);
@@ -19,8 +20,8 @@ function detail(s) {
   if (s.members != null) out.push(`${num(s.members)} miembros`);
   if (s.frames != null) out.push(`${num(s.frames)} imágenes`);
   if (s.last) out.push(`última: ${dayTime(new Date(s.last))}`);
-  if (s.source) out.push(`origen: ${esc(s.source)}`);
-  if (Array.isArray(s.sources)) out.push(`redes: ${s.sources.map(esc).join(', ')}`);
+  if (s.source) out.push(`origen: ${esc(NAME[s.source] || s.source)}`);
+  if (Array.isArray(s.sources)) out.push(`redes: ${s.sources.map((k) => esc(NAME[k] || k)).join(', ')}`);
   if (s.method) out.push(`método: ${esc(s.method)}`);
   if (s.family) out.push(FAMILY[s.family] || esc(s.family));
   if (s.error) out.push(`error: ${esc(s.error)}`);
@@ -36,4 +37,4 @@ function show(snap) {
   $('src-notes').innerHTML = snap.notes.length ? `<p>Notas de esta actualización:</p><ul>${snap.notes.map((n) => `<li class="num">${esc(n)}</li>`).join('')}</ul>` : '';
 }
 
-loadSnapshots(show, () => { $('src-when').textContent = 'No se ha podido cargar la última predicción, así que no se puede mostrar el estado de las fuentes.'; });
+loadSnapshots(show, () => { $('src-when').textContent = 'Sin datos: no se ha podido cargar la última predicción.'; });
