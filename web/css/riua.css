@@ -81,6 +81,14 @@ button.link:disabled { text-decoration: none; }
 .msg:empty { display: none; }
 
 .mapwrap { position: relative; }
+.zi { position: absolute; left: 8px; top: 8px; z-index: 600; display: flex; align-items: center; gap: .4rem; min-height: 32px; padding: 0 .55rem;
+  font: .78rem/1 var(--mono); background: var(--paper); }
+.zi .sw { width: 14px; height: 14px; border: 1.5px solid var(--river); background: transparent; }
+.zi[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.zi[aria-pressed="true"] .sw { background: rgba(59,106,143,.55); border-color: #8fb3cf; }
+.zi .t { color: var(--dim); }
+.zi[aria-pressed="true"] .t { color: #c9c3b6; }
+.riua-zi { image-rendering: auto; }
 #map { height: 46vh; height: 46svh; min-height: 260px; max-height: 420px; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: var(--paper); z-index: 0; }
 #map:focus-visible { outline-offset: -3px; }
 .legend { position: absolute; left: 8px; bottom: 8px; z-index: 500; display: flex; list-style: none; margin: 0; padding: 0; background: var(--paper); border: 1px solid var(--ink); font: .74rem/1 var(--mono); pointer-events: none; }
@@ -232,6 +240,7 @@ main:not(.app) { padding: 0 var(--g); }
 body:has(> main:not(.app)) { padding-bottom: 0; }
 main:not(.app) ~ .bar-fixed { position: sticky; }
 @media (max-width: 640px) {
+  .zi .t { display: none; }
   .page table { display: block; overflow-x: auto; max-width: 100%; }
 }
 

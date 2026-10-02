@@ -2,7 +2,7 @@
 //   #h=mid&t=202610020300&m=cuencas&p=39.428,-0.418&pt=poyo-paiporta&v=39.40,-0.60,9.5
 // h horizon (now|mid|long) · f=max (worst of the period) or t = start of the frame, UTC yyyymmddhhmm
 // (a time, not an index: the link still means the same hours after the next update; f=<index> is still read)
-// m map mode (celdas|cuencas) · p selected place (lat,lon) · pt selected control point · v map centre and zoom
+// m map mode (celdas|cuencas) · zi=1 flood zones on · p selected place (lat,lon) · pt selected control point · v map centre and zoom
 
 import { HORIZONS } from './config.js';
 
@@ -13,6 +13,7 @@ export const state = {
   sel: null,           // {lat, lon}
   pt: null,            // control-point id
   view: null,          // {lat, lon, z}
+  zi: false,           // official 500-year flood zones shown over the map
 };
 
 const r = (v, d) => Number(v).toFixed(d).replace(/\.?0+$/, '');
@@ -26,6 +27,7 @@ export function encode(s = state, t0 = null) {
   if (s.mode !== 'celdas') q.push(`m=${s.mode}`);
   if (s.sel) q.push(`p=${r(s.sel.lat, 4)},${r(s.sel.lon, 4)}`);
   if (s.pt) q.push(`pt=${encodeURIComponent(s.pt)}`);
+  if (s.zi) q.push('zi=1');
   if (s.view) q.push(`v=${r(s.view.lat, 3)},${r(s.view.lon, 3)},${r(s.view.z, 2)}`);
   return `#${q.join('&')}`;
 }
@@ -47,6 +49,7 @@ export function decode(hash) {
   const p = nums('p', 2);
   if (p && Math.abs(p[0]) <= 90 && Math.abs(p[1]) <= 180) out.sel = { lat: p[0], lon: p[1] };
   if (q.get('pt')) out.pt = q.get('pt');
+  if (q.get('zi') === '1') out.zi = true;
   const v = nums('v', 3);
   if (v && v[2] >= 5 && v[2] <= 16) out.view = { lat: v[0], lon: v[1], z: v[2] };
   return out;

@@ -85,6 +85,7 @@ function renderControls() {
   }
   $('mode-celdas').setAttribute('aria-pressed', String(state.mode === 'celdas'));
   $('mode-cuencas').setAttribute('aria-pressed', String(state.mode === 'cuencas'));
+  $('zi').setAttribute('aria-pressed', String(!!state.zi));
   const h = snap && snap.hz[state.hz];
   const range = $('frame'), label = $('frame-label');
   if (!h) { range.disabled = true; $('prev').disabled = true; $('next').disabled = true; label.textContent = snap ? 'sin datos' : ' '; return; }
@@ -208,6 +209,7 @@ function wire() {
   $('next').addEventListener('click', () => { setFrame(state.f === 'max' ? 0 : state.f + 1); if ($('next').disabled) $('prev').focus(); });
   $('mode-celdas').addEventListener('click', () => { state.mode = 'celdas'; render(); });
   $('mode-cuencas').addEventListener('click', () => { state.mode = 'cuencas'; render(); });
+  $('zi').addEventListener('click', () => { state.zi = !state.zi; mapApi.floodZones(state.zi); render(); });
   $('headline').addEventListener('click', (e) => { if (e.target.id === 'retry') { loadFailed = false; render(); refresh(); } });
 
   // panel: zones, timeline cells, control-point links, back to the zones
@@ -331,6 +333,7 @@ function applyHash(p) {
   if (p.hz) state.hz = p.hz;
   if (p.t) { wantT = p.t; if (snap) { state.f = frameAt(wantT); wantT = null; } } else if (p.f != null) state.f = p.f;
   if (p.mode) state.mode = p.mode;
+  state.zi = !!p.zi; if (mapApi) mapApi.floodZones(state.zi);
   state.sel = p.sel || null;
   state.pt = p.pt || null;
   if (p.view && mapApi) { state.view = p.view; mapApi.setView(p.view); }
@@ -372,6 +375,9 @@ function start() {
     onPick: (lat, lon, ptId) => { if (ptId) selectPoint(ptId, false); else select(lat, lon, null); },
     onView: () => { state.view = mapApi.view(); if (snap) writeHash(frameT0()); },
   });
+  // the flood-zone toggle appears only once its tiles are published
+  fetch('geo/zi500/index.json', { method: 'HEAD' }).then((r) => { if (r.ok) $('zi').hidden = false; }).catch(() => {});
+  if (initial.zi) { state.zi = true; mapApi.floodZones(true); }
   if (initial.view) { state.view = initial.view; mapApi.setView(initial.view); }
   wire();
   render();

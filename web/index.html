@@ -86,6 +86,7 @@ if (!/[?&]dev(=|&|$)/.test(location.search)) {
       </div>
     </div>
     <div class="mapwrap">
+      <button type="button" id="zi" class="zi" hidden aria-pressed="false" title="Zonas inundables con periodo de retorno de 500 años (SNCZI, MITECO)"><span class="sw" aria-hidden="true"></span>Inundable<span class="t"> · 500 años</span></button>
       <div id="map" role="application" aria-label="Mapa de riesgo. Flechas: mover. Más y menos: acercar y alejar. Intro: elegir el punto del centro. La misma información está en el panel y en la tabla de cauces."></div>
       <ol class="legend" aria-label="Niveles">
         <li><span class="sw lv2"></span>2<span class="nm"> medio</span></li><li><span class="sw lv3"></span>3<span class="nm"> alto</span></li><li><span class="sw lv4"></span>4<span class="nm"> muy alto</span></li><li><span class="sw lv5"></span>5<span class="nm"> extremo</span></li>
@@ -108,7 +109,7 @@ if (!/[?&]dev(=|&|$)/.test(location.search)) {
 
 <footer class="foot">
   <nav aria-label="Más información"><a href="metodo.html">Método</a> · <a href="validacion.html">Validación</a> · <a href="fuentes.html">Fuentes</a> · <a href="https://github.com/Ces107/riua">Código</a></nav>
-  <p>Datos: Open-Meteo, Météo-France, DWD, ECMWF, EUMETNET OPERA, AEMET, CHJ, CHS, CHE, IGN, ICV.</p>
+  <p>Datos: Open-Meteo, Météo-France, DWD, ECMWF, EUMETNET OPERA, AEMET, CHJ, CHS, CHE, MITECO, IGN, ICV.</p>
 </footer>
 
 <aside id="bar" class="bar-fixed" aria-label="Aviso">

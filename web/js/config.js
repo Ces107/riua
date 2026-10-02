@@ -41,6 +41,10 @@ export const AEMET_URL = 'https://www.aemet.es/es/eltiempo/prediccion/avisos?w=h
 // Layer "Callejero gris". Its identifier in the service's GetCapabilities is IGNBase-gris (IGNBaseTodo-gris answers 400).
 export const IGN_TILES = 'https://www.ign.es/wmts/ign-base?layer=IGNBase-gris&style=default&tilematrixset=GoogleMapsCompatible&Service=WMTS&Request=GetTile&Version=1.0.0&Format=image/jpeg&TileMatrix={z}&TileCol={x}&TileRow={y}';
 export const TILE_MIN_ZOOM = 11;        // the street base map appears from this zoom on
+// official 500-year flood zones (SNCZI, MITECO), pre-rendered: geo/floodzones/build_tiles.py
+export const ZI_TILES = 'geo/zi500/{z}/{x}/{y}.png';
+export const ZI_INDEX = 'geo/zi500/index.json';   // {z: ["x/y", ...]}: tiles that exist (no request for empty sea)
+export const ZI_MAX_NATIVE = 14;
 
 export const SERIF = '"Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif';
 export const MONO = '"Courier Prime", "Courier New", Courier, monospace';

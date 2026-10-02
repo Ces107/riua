@@ -1,7 +1,7 @@
 // The Leaflet map: an optional street base map (only when zoomed in) and one canvas layer of our own
 // that paints the whole scene with draw.js.
 
-import { IGN_TILES, TILE_MIN_ZOOM } from './config.js';
+import { IGN_TILES, TILE_MIN_ZOOM, ZI_INDEX, ZI_MAX_NATIVE, ZI_TILES } from './config.js';
 import { drawLevels, drawLines, drawTop, drawUnder, geoStamp } from './draw.js';
 import { geo } from './geo.js';
 
@@ -209,8 +209,36 @@ export function createMap(el, getScene, handlers) {
   });
   map.on('moveend', () => handlers.onView());
 
+  // flood zones: a tile layer above the painted scene, loaded the first time it is switched on
+  map.createPane('zi').style.zIndex = 450;
+  map.getPane('zi').style.pointerEvents = 'none';
+  let zi = null, ziHave = null, ziOn = false;
+  const ZiLayer = L.TileLayer.extend({
+    createTile(c, done) {
+      const z = Math.min(c.z, ZI_MAX_NATIVE);
+      const k = 2 ** (c.z - z), key = `${Math.floor(c.x / k)}/${Math.floor(c.y / k)}`;
+      if (ziHave && ziHave[z] && !ziHave[z].has(key)) { const d = document.createElement('div'); setTimeout(() => done(null, d), 0); return d; }
+      return L.TileLayer.prototype.createTile.call(this, c, done);
+    },
+  });
+  const floodZones = async (on) => {
+    ziOn = on;
+    if (on && !zi) {
+      try {
+        const idx = await (await fetch(ZI_INDEX)).json();
+        ziHave = Object.fromEntries(Object.entries(idx).map(([z, a]) => [z, new Set(a)]));
+      } catch (e) { ziHave = null; }
+      zi = new ZiLayer(ZI_TILES, { pane: 'zi', maxNativeZoom: ZI_MAX_NATIVE, maxZoom: 15, minZoom: 5, className: 'riua-zi',
+        bounds: [[37.6, -2.4], [41.0, 0.8]], keepBuffer: 2 });
+    }
+    if (!zi) return;
+    if (ziOn && !map.hasLayer(zi)) zi.addTo(map);
+    if (!ziOn && map.hasLayer(zi)) map.removeLayer(zi);
+  };
+
   return {
     map,
+    floodZones,
     redraw: () => layer.redraw(),
     /** The map box changed size: the home view follows it; a view chosen by the reader is kept. */
     invalidate: () => {
