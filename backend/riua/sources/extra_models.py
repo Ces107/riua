@@ -532,7 +532,7 @@ def arome_ifs_member(run: datetime, cache: Path, budget_s: float | None = None, 
             return
         msgs = _arome_ifs_block(_arome_ifs_url(run, block))
         if not msgs:
-            raise FileNotFoundError(f"no tp in {block}")
+            raise Incomplete(f"AROME-IFS {run:%d/%m %H}Z: no rain field yet in {block}")   # falls back to the previous run
         tmp = d / f"tp_{block}.tmp.npz"
         np.savez(tmp, steps=np.array([m[0] for m in msgs], np.int16), acc=np.stack([m[1] for m in msgs]),
                  lat=msgs[0][2], lon=msgs[0][3])
