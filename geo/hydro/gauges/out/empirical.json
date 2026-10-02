@@ -1,0 +1,1036 @@
+{
+ "ravine domain": {
+  "n_events": 380,
+  "n_catchments": 26,
+  "n_respond": 73,
+  "auc": {
+   "rain": 0.785,
+   "rain12": 0.808,
+   "rain1": 0.707,
+   "rain1_cell": 0.698,
+   "rain5d": 0.528,
+   "rain30d": 0.491,
+   "api": 0.498
+  },
+  "spearman_runoff": {
+   "rain": [
+    0.37,
+    0.24,
+    138
+   ],
+   "rain12": [
+    0.21,
+    0.11,
+    138
+   ],
+   "rain1": [
+    0.1,
+    0.02,
+    138
+   ],
+   "rain1_cell": [
+    0.17,
+    0.09,
+    138
+   ],
+   "rain5d": [
+    0.18,
+    0.15,
+    134
+   ],
+   "rain30d": [
+    0.1,
+    0.1,
+    133
+   ],
+   "api": [
+    0.1,
+    0.1,
+    133
+   ]
+  },
+  "response_table": {
+   "intensity_bins": [
+    0,
+    10,
+    20,
+    35,
+    60,
+    500
+   ],
+   "rows": [
+    {
+     "rain": [
+      15,
+      30
+     ],
+     "by_intensity": [
+      [
+       3,
+       81
+      ],
+      [
+       6,
+       65
+      ],
+      [
+       1,
+       32
+      ],
+      [
+       4,
+       14
+      ],
+      [
+       0,
+       2
+      ]
+     ],
+     "rc_median": 0.0016,
+     "rc_p90": 0.022
+    },
+    {
+     "rain": [
+      30,
+      50
+     ],
+     "by_intensity": [
+      [
+       4,
+       33
+      ],
+      [
+       5,
+       25
+      ],
+      [
+       3,
+       14
+      ],
+      [
+       3,
+       5
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "rc_median": 0.0052,
+     "rc_p90": 0.05
+    },
+    {
+     "rain": [
+      50,
+      80
+     ],
+     "by_intensity": [
+      [
+       0,
+       6
+      ],
+      [
+       6,
+       32
+      ],
+      [
+       5,
+       15
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "rc_median": 0.0027,
+     "rc_p90": 0.037
+    },
+    {
+     "rain": [
+      80,
+      120
+     ],
+     "by_intensity": [
+      [
+       2,
+       2
+      ],
+      [
+       4,
+       10
+      ],
+      [
+       4,
+       6
+      ],
+      [
+       4,
+       8
+      ],
+      [
+       1,
+       2
+      ]
+     ],
+     "rc_median": 0.0188,
+     "rc_p90": 0.082
+    },
+    {
+     "rain": [
+      120,
+      200
+     ],
+     "by_intensity": [
+      [
+       0,
+       0
+      ],
+      [
+       3,
+       5
+      ],
+      [
+       6,
+       10
+      ],
+      [
+       1,
+       2
+      ],
+      [
+       1,
+       1
+      ]
+     ],
+     "rc_median": 0.0171,
+     "rc_p90": 0.125
+    },
+    {
+     "rain": [
+      200,
+      1000
+     ],
+     "by_intensity": [
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "rc_median": 0.0574,
+     "rc_p90": 0.148
+    }
+   ]
+  },
+  "loglinear": {
+   "ln rain": {
+    "r2": 0.22,
+    "coef": [
+     -9.08,
+     1.98
+    ]
+   },
+   "ln i1": {
+    "r2": 0.05,
+    "coef": [
+     -2.69,
+     0.75
+    ]
+   },
+   "ln rain + ln i1": {
+    "r2": 0.23,
+    "coef": [
+     -9.09,
+     2.06,
+     -0.11
+    ]
+   },
+   "ln rain + API/100": {
+    "r2": 0.23,
+    "coef": [
+     -9.13,
+     1.97,
+     0.11
+    ]
+   }
+  },
+  "catchments": {
+   "chj-12808": {
+    "name": "MC VILAMARXANT",
+    "area": 925,
+    "n": 6,
+    "responded": 3,
+    "max_dry_mm": 40.3,
+    "min_wet_mm": 18.2,
+    "max_rc": 0.291,
+    "max_q": 1871.8
+   },
+   "chj-12810": {
+    "name": "EA 74 FUENTE DEL BA\u00d1O",
+    "area": 477,
+    "n": 5,
+    "responded": 2,
+    "max_dry_mm": 73.1,
+    "min_wet_mm": 86.3,
+    "max_rc": 0.021,
+    "max_q": 11.9
+   },
+   "chj-12827": {
+    "name": "EA 29 MONTAVERNER",
+    "area": 320,
+    "n": 14,
+    "responded": 10,
+    "max_dry_mm": 45.8,
+    "min_wet_mm": 21.3,
+    "max_rc": 0.057,
+    "max_q": 20.0
+   },
+   "chj-12901": {
+    "name": "MC VILLATOYA",
+    "area": 496,
+    "n": 4,
+    "responded": 2,
+    "max_dry_mm": 66.3,
+    "min_wet_mm": 30.5,
+    "max_rc": 0.117,
+    "max_q": 66.0
+   },
+   "chj-13070": {
+    "name": "EA 89 HUERTO MULET",
+    "area": 2000,
+    "n": 5,
+    "responded": 3,
+    "max_dry_mm": 73.5,
+    "min_wet_mm": 102.9,
+    "max_rc": 0.099,
+    "max_q": 189.6
+   },
+   "chj-13102": {
+    "name": "MC CANALS",
+    "area": 501,
+    "n": 8,
+    "responded": 0,
+    "max_dry_mm": 112.5,
+    "min_wet_mm": null,
+    "max_rc": 0.017,
+    "max_q": 9.3
+   },
+   "chj-13403": {
+    "name": "EA 60 REQUENA",
+    "area": 673,
+    "n": 5,
+    "responded": 1,
+    "max_dry_mm": 49.7,
+    "min_wet_mm": 17.5,
+    "max_rc": 0.015,
+    "max_q": 17.3
+   },
+   "chj-13420": {
+    "name": "MC CERVERA DEL MAESTRE",
+    "area": 286,
+    "n": 12,
+    "responded": 1,
+    "max_dry_mm": 157.1,
+    "min_wet_mm": 242.1,
+    "max_rc": 0.006,
+    "max_q": 87.1
+   },
+   "chj-13431": {
+    "name": "MC TRAIGUERA",
+    "area": 318,
+    "n": 10,
+    "responded": 2,
+    "max_dry_mm": 153.5,
+    "min_wet_mm": 51.6,
+    "max_rc": 0.037,
+    "max_q": 89.7
+   },
+   "chj-13566": {
+    "name": "MC GALLINERA L'ATZ\u00daBIA",
+    "area": 31,
+    "n": 15,
+    "responded": 2,
+    "max_dry_mm": 145.3,
+    "min_wet_mm": 185.8,
+    "max_rc": 0.045,
+    "max_q": 3.4
+   },
+   "chj-13568": {
+    "name": "MC VERNISSA",
+    "area": 112,
+    "n": 14,
+    "responded": 13,
+    "max_dry_mm": 107.4,
+    "min_wet_mm": 23.1,
+    "max_rc": 0.518,
+    "max_q": 34.5
+   },
+   "chj-13617": {
+    "name": "EA 120 CALLES",
+    "area": 418,
+    "n": 4,
+    "responded": 0,
+    "max_dry_mm": 41.6,
+    "min_wet_mm": null,
+    "max_rc": 0.011,
+    "max_q": 7.3
+   },
+   "chj-13707": {
+    "name": "MC ATZENETA DEL MAESTRAT",
+    "area": 440,
+    "n": 9,
+    "responded": 3,
+    "max_dry_mm": 56.3,
+    "min_wet_mm": 104.5,
+    "max_rc": 0.186,
+    "max_q": 156.0
+   },
+   "chj-13722": {
+    "name": "MC MOIXENT",
+    "area": 227,
+    "n": 4,
+    "responded": 0,
+    "max_dry_mm": 79.7,
+    "min_wet_mm": null,
+    "max_rc": 0.038,
+    "max_q": 4.1
+   },
+   "chj-13792": {
+    "name": "MC CARRAIXET B\u00c9TERA",
+    "area": 126,
+    "n": 5,
+    "responded": 1,
+    "max_dry_mm": 58.1,
+    "min_wet_mm": 30.1,
+    "max_rc": 0.044,
+    "max_q": 8.9
+   },
+   "chj-13873": {
+    "name": "MC RAMBLA POYO N-III",
+    "area": 184,
+    "n": 7,
+    "responded": 0,
+    "max_dry_mm": 149.8,
+    "min_wet_mm": null,
+    "max_rc": 0.006,
+    "max_q": 1.7
+   },
+   "chj-13896": {
+    "name": "MC RAMBLA CASTELLANA",
+    "area": 383,
+    "n": 8,
+    "responded": 4,
+    "max_dry_mm": 56.7,
+    "min_wet_mm": 19.3,
+    "max_rc": 0.025,
+    "max_q": 47.2
+   },
+   "chj-13897": {
+    "name": "MC RAMBLA PRIMERA",
+    "area": 157,
+    "n": 5,
+    "responded": 2,
+    "max_dry_mm": 59.3,
+    "min_wet_mm": 26.3,
+    "max_rc": 0.1,
+    "max_q": 10.1
+   },
+   "chj-13917": {
+    "name": "MC VALL D'ALBA",
+    "area": 827,
+    "n": 6,
+    "responded": 2,
+    "max_dry_mm": 65.4,
+    "min_wet_mm": 114.2,
+    "max_rc": 0.091,
+    "max_q": 223.2
+   },
+   "chj-14551": {
+    "name": "MC GUADASSUAR",
+    "area": 508,
+    "n": 8,
+    "responded": 5,
+    "max_dry_mm": 60.8,
+    "min_wet_mm": 31.4,
+    "max_rc": 0.167,
+    "max_q": 53.8
+   },
+   "chj-1523": {
+    "name": "EA 25 AGUAS POTABLES",
+    "area": 1101,
+    "n": 6,
+    "responded": 5,
+    "max_dry_mm": 50.8,
+    "min_wet_mm": 18.8,
+    "max_rc": 0.079,
+    "max_q": 93.7
+   },
+   "chj-16767": {
+    "name": "MC SAX",
+    "area": 930,
+    "n": 4,
+    "responded": 0,
+    "max_dry_mm": 61.5,
+    "min_wet_mm": null,
+    "max_rc": 0.0,
+    "max_q": 0.0
+   },
+   "chj-2443": {
+    "name": "MC MANUEL",
+    "area": 697,
+    "n": 12,
+    "responded": 6,
+    "max_dry_mm": 100.0,
+    "min_wet_mm": 21.6,
+    "max_rc": 0.202,
+    "max_q": 127.5
+   },
+   "chj-2701": {
+    "name": "MC ESTUBENY",
+    "area": 245,
+    "n": 13,
+    "responded": 2,
+    "max_dry_mm": 112.5,
+    "min_wet_mm": 45.3,
+    "max_rc": 0.057,
+    "max_q": 42.3
+   },
+   "chj-2720": {
+    "name": "EA 148 J\u00c9RICA",
+    "area": 328,
+    "n": 6,
+    "responded": 1,
+    "max_dry_mm": 81.0,
+    "min_wet_mm": 124.5,
+    "max_rc": 0.017,
+    "max_q": 42.8
+   },
+   "seg-01O03A1": {
+    "name": "Aforo en r\u00edo Mula (Marco de control)",
+    "area": 221,
+    "n": 5,
+    "responded": 3,
+    "max_dry_mm": 84.2,
+    "min_wet_mm": 53.0,
+    "max_rc": 0.299,
+    "max_q": 156.7
+   }
+  }
+ },
+ "interior headwaters and La Mancha": {
+  "n_events": 279,
+  "n_catchments": 22,
+  "n_respond": 57,
+  "auc": {
+   "rain": 0.793,
+   "rain12": 0.769,
+   "rain1": 0.627,
+   "rain1_cell": 0.539,
+   "rain5d": 0.763,
+   "rain30d": 0.681,
+   "api": 0.658
+  },
+  "spearman_runoff": {
+   "rain": [
+    0.48,
+    0.3,
+    38
+   ],
+   "rain12": [
+    0.17,
+    0.11,
+    38
+   ],
+   "rain1": [
+    0.21,
+    0.14,
+    38
+   ],
+   "rain1_cell": [
+    0.18,
+    0.1,
+    38
+   ],
+   "rain5d": [
+    0.13,
+    0.16,
+    38
+   ],
+   "rain30d": [
+    -0.04,
+    -0.05,
+    38
+   ],
+   "api": [
+    0.08,
+    0.13,
+    38
+   ]
+  },
+  "response_table": {
+   "intensity_bins": [
+    0,
+    10,
+    20,
+    35,
+    60,
+    500
+   ],
+   "rows": [
+    {
+     "rain": [
+      15,
+      30
+     ],
+     "by_intensity": [
+      [
+       19,
+       138
+      ],
+      [
+       2,
+       44
+      ],
+      [
+       3,
+       21
+      ],
+      [
+       0,
+       3
+      ],
+      [
+       0,
+       5
+      ]
+     ],
+     "rc_median": 0.0082,
+     "rc_p90": 0.081
+    },
+    {
+     "rain": [
+      30,
+      50
+     ],
+     "by_intensity": [
+      [
+       10,
+       27
+      ],
+      [
+       3,
+       6
+      ],
+      [
+       0,
+       2
+      ],
+      [
+       1,
+       5
+      ],
+      [
+       0,
+       1
+      ]
+     ],
+     "rc_median": 0.0205,
+     "rc_p90": 0.235
+    },
+    {
+     "rain": [
+      50,
+      80
+     ],
+     "by_intensity": [
+      [
+       1,
+       4
+      ],
+      [
+       2,
+       2
+      ],
+      [
+       3,
+       3
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "rc_median": 0.0615,
+     "rc_p90": 0.198
+    },
+    {
+     "rain": [
+      80,
+      120
+     ],
+     "by_intensity": [
+      [
+       3,
+       6
+      ],
+      [
+       4,
+       4
+      ],
+      [
+       3,
+       4
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "rc_median": 0.0584,
+     "rc_p90": 0.203
+    },
+    {
+     "rain": [
+      120,
+      200
+     ],
+     "by_intensity": [
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       1
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       1,
+       1
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "rc_median": 0.0553,
+     "rc_p90": 0.365
+    },
+    {
+     "rain": [
+      200,
+      1000
+     ],
+     "by_intensity": [
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ],
+      [
+       0,
+       0
+      ]
+     ],
+     "rc_median": NaN,
+     "rc_p90": NaN
+    }
+   ]
+  },
+  "loglinear": {
+   "ln rain": {
+    "r2": 0.28,
+    "coef": [
+     -7.09,
+     1.97
+    ]
+   },
+   "ln i1": {
+    "r2": 0.02,
+    "coef": [
+     0.62,
+     0.3
+    ]
+   },
+   "ln rain + ln i1": {
+    "r2": 0.28,
+    "coef": [
+     -7.15,
+     2.05,
+     -0.1
+    ]
+   },
+   "ln rain + API/100": {
+    "r2": 0.29,
+    "coef": [
+     -8.0,
+     2.09,
+     0.59
+    ]
+   }
+  },
+  "catchments": {
+   "chj-12799": {
+    "name": "EA 139 V\u00cdLLORA",
+    "area": 1240,
+    "n": 2,
+    "responded": 1,
+    "max_dry_mm": 30.2,
+    "min_wet_mm": 113.2,
+    "max_rc": 0.2,
+    "max_q": 872.5
+   },
+   "chj-12924": {
+    "name": "EA 27 TERUEL ALFAMBRA",
+    "area": 1319,
+    "n": 1,
+    "responded": 0,
+    "max_dry_mm": 38.8,
+    "min_wet_mm": null,
+    "max_rc": 0.008,
+    "max_q": 8.8
+   },
+   "chj-12927": {
+    "name": "EA 15 TERUEL TURIA",
+    "area": 1360,
+    "n": 2,
+    "responded": 1,
+    "max_dry_mm": 38.1,
+    "min_wet_mm": 63.1,
+    "max_rc": 0.029,
+    "max_q": 45.6
+   },
+   "chj-13526": {
+    "name": "EA 30 EL TERDE",
+    "area": 661,
+    "n": 1,
+    "responded": 1,
+    "max_dry_mm": null,
+    "min_wet_mm": 24.2,
+    "max_rc": 0.03,
+    "max_q": 20.9
+   },
+   "chj-13670": {
+    "name": "EA 18 ZAGRA",
+    "area": 3044,
+    "n": 3,
+    "responded": 2,
+    "max_dry_mm": 33.7,
+    "min_wet_mm": 19.2,
+    "max_rc": 0.055,
+    "max_q": 150.4
+   },
+   "chj-13683": {
+    "name": "EA 28 VILLALBA ALTA",
+    "area": 487,
+    "n": 3,
+    "responded": 3,
+    "max_dry_mm": null,
+    "min_wet_mm": 19.2,
+    "max_rc": 0.046,
+    "max_q": 20.2
+   },
+   "chj-14051": {
+    "name": "EA 87 MARIMOTA",
+    "area": 186,
+    "n": 2,
+    "responded": 2,
+    "max_dry_mm": null,
+    "min_wet_mm": 27.3,
+    "max_rc": 0.078,
+    "max_q": 8.1
+   },
+   "chj-2679": {
+    "name": "EA 138 BALAZOTE",
+    "area": 648,
+    "n": 4,
+    "responded": 0,
+    "max_dry_mm": 105.7,
+    "min_wet_mm": null,
+    "max_rc": 0.037,
+    "max_q": 7.4
+   },
+   "chj-2680": {
+    "name": "EA 140 RIO HU\u00c9RCEMES",
+    "area": 730,
+    "n": 4,
+    "responded": 0,
+    "max_dry_mm": 108.5,
+    "min_wet_mm": null,
+    "max_rc": 0.04,
+    "max_q": 12.5
+   },
+   "chj-2681": {
+    "name": "EA 141 SAN MART\u00cdN",
+    "area": 68,
+    "n": 5,
+    "responded": 5,
+    "max_dry_mm": null,
+    "min_wet_mm": 25.8,
+    "max_rc": 0.235,
+    "max_q": 53.9
+   },
+   "chj-2683": {
+    "name": "EA 104 LOS SANTOS",
+    "area": 243,
+    "n": 1,
+    "responded": 1,
+    "max_dry_mm": null,
+    "min_wet_mm": 81.7,
+    "max_rc": 0.054,
+    "max_q": 20.3
+   },
+   "chj-2687": {
+    "name": "EA 137 T\u00cdRIEZ",
+    "area": 189,
+    "n": 4,
+    "responded": 1,
+    "max_dry_mm": 66.6,
+    "min_wet_mm": 66.0,
+    "max_rc": 0.025,
+    "max_q": 5.8
+   },
+   "chj-2688": {
+    "name": "EA 149 GEA DE ALBARRAC\u00cdN",
+    "area": 736,
+    "n": 2,
+    "responded": 1,
+    "max_dry_mm": 50.0,
+    "min_wet_mm": 79.5,
+    "max_rc": 0.086,
+    "max_q": 22.5
+   },
+   "chj-2689": {
+    "name": "EA 126 MOLINO DE JUAN ROMERO",
+    "area": 277,
+    "n": 13,
+    "responded": 10,
+    "max_dry_mm": 35.4,
+    "min_wet_mm": 16.8,
+    "max_rc": 1.466,
+    "max_q": 138.5
+   },
+   "chj-2690": {
+    "name": "EA 103 TORREALTA",
+    "area": 2090,
+    "n": 1,
+    "responded": 1,
+    "max_dry_mm": null,
+    "min_wet_mm": 112.3,
+    "max_rc": 0.036,
+    "max_q": 35.7
+   },
+   "chj-2693": {
+    "name": "EA 97 MONTEMAYOR",
+    "area": 74,
+    "n": 5,
+    "responded": 0,
+    "max_dry_mm": 52.8,
+    "min_wet_mm": null,
+    "max_rc": 0.027,
+    "max_q": 1.1
+   },
+   "chj-2695": {
+    "name": "EA 91 SAN LORENZO DE LA PARRILLA",
+    "area": 1526,
+    "n": 8,
+    "responded": 6,
+    "max_dry_mm": 132.6,
+    "min_wet_mm": 16.6,
+    "max_rc": 0.442,
+    "max_q": 287.6
+   },
+   "chj-2725": {
+    "name": "EA 134 LOS CANTOS",
+    "area": 1408,
+    "n": 3,
+    "responded": 1,
+    "max_dry_mm": 39.3,
+    "min_wet_mm": 23.8,
+    "max_rc": 0.046,
+    "max_q": 25.9
+   },
+   "chj-2735": {
+    "name": "EA 90 PAJARONCILLO",
+    "area": 832,
+    "n": 5,
+    "responded": 4,
+    "max_dry_mm": 31.3,
+    "min_wet_mm": 22.5,
+    "max_rc": 0.183,
+    "max_q": 51.3
+   },
+   "chj-2736": {
+    "name": "EA 32 CUENCA",
+    "area": 626,
+    "n": 10,
+    "responded": 8,
+    "max_dry_mm": 30.3,
+    "min_wet_mm": 17.3,
+    "max_rc": 0.351,
+    "max_q": 82.6
+   },
+   "chj-2737": {
+    "name": "EA 14 TRAMACASTILLA",
+    "area": 96,
+    "n": 9,
+    "responded": 9,
+    "max_dry_mm": null,
+    "min_wet_mm": 21.0,
+    "max_rc": 0.294,
+    "max_q": 37.3
+   },
+   "chj-2749": {
+    "name": "EA 98 R\u00cdO JARD\u00cdN",
+    "area": 319,
+    "n": 4,
+    "responded": 0,
+    "max_dry_mm": 49.6,
+    "min_wet_mm": null,
+    "max_rc": 0.024,
+    "max_q": 6.0
+   }
+  }
+ }
+}

@@ -296,6 +296,8 @@ def dressed_probabilities(pred: Predictors, thr: Thresholds, params: dict, horiz
     90th percentile e1, e12 (2, F, NY, NX).
     """
     sigma, bias = params["sigma"][horizon], params["bias"][horizon]
+    # hourly intensities are far less predictable than 12-h totals: their own kernel where one is given
+    sigma1, bias1 = params.get("sigma1h", {}).get(horizon, sigma), params.get("bias1h", {}).get(horizon, bias)
     M, F = pred.w.shape
     shape = (4, F, grid.NY, grid.NX)
     num, num1, num12 = np.zeros(shape), np.zeros(shape), np.zeros(shape)
@@ -313,14 +315,16 @@ def dressed_probabilities(pred: Predictors, thr: Thresholds, params: dict, horiz
             ok1 = np.isfinite(A1[m, f])
             if pred.obs12 is not None:
                 ph = pred.obs12[m, f]
-                b12 = ph + (1.0 - ph) * bias
+                # the measured part is a sum of hourly cell maxima (of different pixels): 13 % above the
+                # largest 12-h total of one pixel, which is what the thresholds are about
+                b12 = ph * params.get("obs12_factor", 1.0) + (1.0 - ph) * bias
                 sg12 = np.maximum(sigma * (1.0 - ph), min(sigma, params.get("sigma_obs", 0.15)))
             else:
                 b12, sg12 = bias, sigma
             for k in range(4):
                 r12 = np.where(ok12, A12[m, f] / thr.t12h[k], 0.0)
                 r1 = np.where(ok1, A1[m, f] / thr.t1h[k], 0.0)
-                pa, pb = np.where(ok1, dress(r1, sigma, bias), 0.0), np.where(ok12, dress(r12, sg12, b12), 0.0)
+                pa, pb = np.where(ok1, dress(r1, sigma1, bias1), 0.0), np.where(ok12, dress(r12, sg12, b12), 0.0)
                 num1[k, f] += w * pa
                 num12[k, f] += w * pb
                 num[k, f] += w * np.maximum(pa, pb)

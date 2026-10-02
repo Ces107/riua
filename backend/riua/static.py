@@ -165,4 +165,25 @@ def hydro_net():
     net = HydroNet.build(ids, [order[i].get("area_unregulated_km2") or order[i]["area_km2"] for i in ids],
                          [order[i].get("t_longest_unregulated_h") or order[i]["tc_h"] for i in ids], pidx, ta["cell"][sel].astype(int),
                          ta["lag_h"][sel].astype(int), ta["area_km2"][sel].astype(float), qb, rq, rh, hb, qT)
+    net.alpha = _loss_alpha_cells(ids, net.area, pidx, ta["cell"][sel].astype(int), ta["area_km2"][sel].astype(float))
     return net, [dict(order[i], section=secs.get(i), capacity=caps.get(i)) for i in ids]
+
+
+def _loss_alpha_cells(ids, areas, point_idx, cell, area_km2, default=0.016):
+    """Per-cell quick-runoff share: each cell takes the alpha of the smallest control-point
+    catchment that covers it substantially, so nested points share the same ground."""
+    f = GEO / "hydro" / "loss_params.json"
+    if not f.exists():
+        return None
+    lp = json.loads(f.read_text(encoding="utf-8"))
+    n = grid.NY * grid.NX
+    A = np.zeros((len(ids), n))
+    np.add.at(A, (point_idx, cell), area_km2)
+    amax = A.max(axis=0)
+    out = np.full(n, default, np.float32)
+    done = np.zeros(n, bool)
+    for k in np.argsort(areas):                         # smallest catchment first
+        m = (A[k] >= 0.5 * amax) & (A[k] > 0) & ~done
+        out[m] = lp[ids[k]]["alpha"]
+        done |= m
+    return out

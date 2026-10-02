@@ -1,0 +1,602 @@
+{
+ "poyo-chiva": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0104,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "inside the catchment of gauge chj-13873 (7 events)"
+ },
+ "poyo-cheste": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0104,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "inside the catchment of gauge chj-13873 (7 events)"
+ },
+ "poyo-ribarroja": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0104,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13873 on the same stream (7 events), shrunk to the regression"
+ },
+ "horteta-torrent": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0357,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "poyo-torrent": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "poyo-paiporta": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "poyo-catarroja": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "saleta-aldaia": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0501,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "picassent-beniparrell": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0324,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "carraixet-betera": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0074,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13792 on the same stream (5 events), shrunk to the regression"
+ },
+ "carraixet-alfara": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.023,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "castellarda-lliria": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0327,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13896 on the same stream (8 events), shrunk to the regression"
+ },
+ "turia-ribarroja": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0566,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-12808 on the same stream (6 events), shrunk to the regression"
+ },
+ "turia-nuevo-cauce": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0566,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "inside the catchment of gauge chj-12808 (6 events)"
+ },
+ "bunol-bunol": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "magro-utiel": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.042,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "inside the catchment of gauge chj-13403 (5 events)"
+ },
+ "magro-requena": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.042,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13403 on the same stream (5 events), shrunk to the regression"
+ },
+ "magro-real": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0764,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "inside the catchment of gauge chj-14551 (8 events)"
+ },
+ "magro-carlet": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0764,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-14551 on the same stream (8 events), shrunk to the regression"
+ },
+ "magro-algemesi": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0764,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "inside the catchment of gauge chj-14551 (8 events)"
+ },
+ "verd-alzira": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0139,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "jucar-alzira": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0764,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "inside the catchment of gauge chj-13070 (5 events)"
+ },
+ "jucar-sueca": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0764,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13070 on the same stream (5 events), shrunk to the regression"
+ },
+ "sellent-carcer": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0049,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-2701 on the same stream (13 events), shrunk to the regression"
+ },
+ "albaida-manuel": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0843,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-2443 on the same stream (12 events), shrunk to the regression"
+ },
+ "canyoles-canals": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0171,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13102 on the same stream (8 events), shrunk to the regression"
+ },
+ "clariano-ontinyent": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0932,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "inside the catchment of gauge chj-12827 (14 events)"
+ },
+ "barxeta-carcaixent": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "casella-alzira": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "vaca-tavernes": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "serpis-alcoi": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "serpis-gandia": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0259,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "vernissa-real": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.178,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13568 on the same stream (14 events), shrunk to the regression"
+ },
+ "beniopa-gandia": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0074,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "gallinera-oliva": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13566 on the same stream (15 events), shrunk to the regression"
+ },
+ "palancia-sagunt": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0109,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-12810 on the same stream (5 events), shrunk to the regression"
+ },
+ "belcaire-vall": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "sec-borriana": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "millars-vilareal": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "viuda-almassora": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.003,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13917 on the same stream (6 events), shrunk to the regression"
+ },
+ "sec-castello": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "chinchilla-orpesa": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.006,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "coves-alcala": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.007,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "cervera-benicarlo": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.003,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13420 on the same stream (12 events), shrunk to the regression"
+ },
+ "aiguaoliva-vinaros": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0417,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "cervol-vinaros": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0035,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-13431 on the same stream (10 events), shrunk to the regression"
+ },
+ "senia-vinaros": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0327,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "girona-verger": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0387,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "gorgos-xabia": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "algar-altea": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0417,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "amadorio-vila": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "monnegre-campello": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "juncaret-alacant": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "ovejas-alacant": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "vinalopo-elda": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0268,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "gauge chj-16767 on the same stream (4 events), shrunk to the regression"
+ },
+ "tarafa-aspe": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "vinalopo-elx": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.06,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "abanilla-benferri": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0102,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "segura-orihuela": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0088,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ },
+ "seco-pilar": {
+  "p0_mm": 150.0,
+  "s_mm": 150.0,
+  "phi_mmh": 45.0,
+  "phi_form": "max(p-phi,0)",
+  "alpha": 0.0306,
+  "p0b_mm": 10.0,
+  "sb_mm": 100.0,
+  "how": "regression on p0i_mm, ln_area"
+ }
+}

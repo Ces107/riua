@@ -1991,21 +1991,21 @@
   "rain_input": "radar-gauge analysis, cell means",
   "runs": [
    {
-    "p0_mm": 120.0,
+    "p0_mm": 150.0,
     "poyo-chiva": {
-     "peak_m3s": 723,
+     "peak_m3s": 763,
      "peak_utc": "2024-10-29T21"
     },
     "poyo-ribarroja": {
-     "peak_m3s": 2185,
+     "peak_m3s": 2266,
      "peak_utc": "2024-10-29T23"
     },
     "poyo-paiporta": {
-     "peak_m3s": 2840,
+     "peak_m3s": 2920,
      "peak_utc": "2024-10-30T01"
     },
     "magro-algemesi": {
-     "peak_m3s": 2122,
+     "peak_m3s": 2108,
      "peak_utc": "2024-10-29T21"
     }
    }

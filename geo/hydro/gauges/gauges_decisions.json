@@ -1,0 +1,410 @@
+{
+ "note": "decisions of agent q7-hydro, 2026-10-01; areas in scratch/q7-hydro/gauge_table_all.txt",
+ "virtual": [
+  {
+   "id": "forata-in",
+   "name": "Forata reservoir inflow",
+   "river": "Río Magro",
+   "lat": 39.3454,
+   "lon": -0.8779,
+   "note": "no live series; 29 Oct 2024: 98 hm3 entered of 219 hm3 of rain (DGA-INPROES-HGM report, q5-science A.3), peak > 2016 m3/s"
+  }
+ ],
+ "gauges": {
+  "13873": {
+   "use": true,
+   "control_point": "poyo-ribarroja",
+   "regulated": false,
+   "note": "sensor rebuilt after the 29 Oct 2024 flood: series starts Dec 2024"
+  },
+  "13792": {
+   "use": true,
+   "control_point": "carraixet-betera",
+   "regulated": false,
+   "note": ""
+  },
+  "13896": {
+   "use": true,
+   "control_point": "castellarda-lliria",
+   "regulated": false,
+   "note": ""
+  },
+  "13897": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "confluence cell: capped at 200 km2 so the 60 km2 western branch (not upstream in the official CEDEX layer) is left out",
+   "amax": 200
+  },
+  "13403": {
+   "use": true,
+   "control_point": "magro-requena",
+   "regulated": false,
+   "note": ""
+  },
+  "2701": {
+   "use": true,
+   "control_point": "sellent-carcer",
+   "regulated": false,
+   "note": ""
+  },
+  "13102": {
+   "use": true,
+   "control_point": "canyoles-canals",
+   "regulated": false,
+   "note": ""
+  },
+  "13722": {
+   "use": true,
+   "control_point": "canyoles-canals",
+   "regulated": false,
+   "note": "upstream gauge of the Cànyoles"
+  },
+  "13568": {
+   "use": true,
+   "control_point": "vernissa-real",
+   "regulated": false,
+   "note": ""
+  },
+  "13566": {
+   "use": true,
+   "control_point": "gallinera-oliva",
+   "regulated": false,
+   "note": ""
+  },
+  "12827": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Albaida above Bellús"
+  },
+  "13420": {
+   "use": true,
+   "control_point": "cervera-benicarlo",
+   "regulated": false,
+   "note": ""
+  },
+  "13431": {
+   "use": true,
+   "control_point": "cervol-vinaros",
+   "regulated": false,
+   "note": "",
+   "bad_periods": [["2025-03-02", "2025-03-09", "level sensor latched at ~235 m3/s for hours with jumps 0.04 -> 235 -> 0.04 within 5 min"]]
+  },
+  "13917": {
+   "use": true,
+   "control_point": "viuda-almassora",
+   "regulated": false,
+   "note": ""
+  },
+  "13707": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Monleón, tributary of the Rambla de la Viuda"
+  },
+  "16767": {
+   "use": true,
+   "control_point": "vinalopo-elda",
+   "regulated": false,
+   "note": ""
+  },
+  "2720": {
+   "use": true,
+   "control_point": "palancia-sagunt",
+   "regulated": false,
+   "note": ""
+  },
+  "12810": {
+   "use": true,
+   "control_point": "palancia-sagunt",
+   "regulated": false,
+   "note": "Regajo dam upstream stores 13 mm: not cutting"
+  },
+  "13617": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Tuéjar"
+  },
+  "2683": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Ebrón"
+  },
+  "2689": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Júcar headwater"
+  },
+  "2725": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Mijares above Arenós; small dams Mora, Valbona, Balagueras not inventoried"
+  },
+  "13526": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Mijares headwater"
+  },
+  "2737": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Guadalaviar headwater"
+  },
+  "2688": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Guadalaviar"
+  },
+  "13683": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Alfambra headwater"
+  },
+  "12924": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Alfambra"
+  },
+  "12799": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Cabriel"
+  },
+  "2735": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Cabriel headwater"
+  },
+  "2680": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Guadazaón"
+  },
+  "2681": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "San Martín"
+  },
+  "14051": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Marimota"
+  },
+  "2687": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Lezuza (La Mancha)"
+  },
+  "2679": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Don Juan (La Mancha)"
+  },
+  "2693": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Mirón (La Mancha)"
+  },
+  "2749": {
+   "use": true,
+   "control_point": null,
+   "regulated": false,
+   "note": "Jardín (La Mancha); area 9 % below the CEDEX bracket"
+  },
+  "2736": {
+   "use": true,
+   "control_point": null,
+   "regulated": true,
+   "note": "La Toba dam (375 km2) cuts; its release is not measured"
+  },
+  "2695": {
+   "use": true,
+   "control_point": null,
+   "regulated": true,
+   "note": "La Toba dam (375 km2 of 1902) cuts; its release is not measured"
+  },
+  "2690": {
+   "use": true,
+   "control_point": null,
+   "regulated": true,
+   "note": "Arquillo dam cuts 814 km2",
+   "release": {
+    "arquillo": "13952"
+   }
+  },
+  "12927": {
+   "use": true,
+   "control_point": null,
+   "regulated": true,
+   "note": "Arquillo dam cuts 814 km2",
+   "release": {
+    "arquillo": "13952"
+   }
+  },
+  "13670": {
+   "use": true,
+   "control_point": null,
+   "regulated": true,
+   "note": "Arquillo dam cuts 814 km2",
+   "release": {
+    "arquillo": "13952"
+   }
+  },
+  "14551": {
+   "use": true,
+   "control_point": "magro-carlet",
+   "regulated": true,
+   "note": "Forata dam cuts 1017 km2 of 1525",
+   "release": {
+    "forata": "16696"
+   }
+  },
+  "2443": {
+   "use": true,
+   "control_point": "albaida-manuel",
+   "regulated": true,
+   "note": "Bellús dam cuts 491 km2 of 1188",
+   "release": {
+    "bellus": "13728"
+   }
+  },
+  "12808": {
+   "use": true,
+   "control_point": "turia-ribarroja",
+   "regulated": true,
+   "note": "Loriguilla cuts 4778 km2; 925 km2 unregulated; irrigation diversions",
+   "release": {
+    "loriguilla": "12905"
+   }
+  },
+  "1523": {
+   "use": true,
+   "control_point": "turia-ribarroja",
+   "regulated": true,
+   "note": "Loriguilla cuts 4778 km2; 1101 km2 unregulated; irrigation diversions",
+   "release": {
+    "loriguilla": "12905"
+   }
+  },
+  "12901": {
+   "use": true,
+   "control_point": null,
+   "regulated": true,
+   "note": "Contreras cuts 3236 km2; 496 km2 unregulated",
+   "release": {
+    "contreras": "12962"
+   }
+  },
+  "13070": {
+   "use": true,
+   "control_point": "jucar-sueca",
+   "regulated": true,
+   "note": "Tous, Bellús and Forata cut; 2000 km2 unregulated",
+   "release": {
+    "tous": "13080",
+    "bellus": "13728",
+    "forata": "16696"
+   }
+  },
+  "01O03A1": {
+   "use": true,
+   "control_point": null,
+   "regulated": true,
+   "note": "SAIH Segura, río Mula: La Cierva and Pliego dams cut 375 of 597 km2, releases not measured; rain only from the truth episodes"
+  },
+  "05A10A1": {
+   "use": false,
+   "note": "SAIH Segura, Rambla de Chirivel: most of the catchment is south of the box (lat < 37.6)"
+  },
+  "16915": {
+   "use": false,
+   "note": "Macastre: 38 km2 unregulated below Forata (used only for the transmission-loss check)"
+  },
+  "2697": {
+   "use": false,
+   "note": "Villalonga: 78 of 543 km2 unregulated (Beniarrés)"
+  },
+  "14099": {
+   "use": false,
+   "note": "Font d'en Carròs: 120 of 584 km2 unregulated, diversion weir"
+  },
+  "14450": {
+   "use": false,
+   "note": "Repartiment: start of the new Turia channel, same water as Aguas Potables"
+  },
+  "13337": {
+   "use": false,
+   "note": "Bugarra: 178 km2 unregulated of 5175"
+  },
+  "2700": {
+   "use": false,
+   "note": "Vila-real: 23 km2 unregulated"
+  },
+  "14761": {
+   "use": false,
+   "note": "La Sénia: 35 of 129 km2 unregulated"
+  },
+  "2696": {
+   "use": false,
+   "note": "Júcar in La Mancha: regulated by Alarcón, groundwater exchange"
+  },
+  "15280": {
+   "use": false,
+   "note": "same"
+  },
+  "2691": {
+   "use": false,
+   "note": "same"
+  },
+  "12836": {
+   "use": false,
+   "note": "same"
+  },
+  "2716": {
+   "use": false,
+   "note": "dam outlet"
+  },
+  "12962": {
+   "use": false,
+   "note": "dam outlet"
+  },
+  "2726": {
+   "use": false,
+   "note": "dam outlet"
+  },
+  "12905": {
+   "use": false,
+   "note": "dam outlet"
+  },
+  "13080": {
+   "use": false,
+   "note": "dam outlet"
+  },
+  "13952": {
+   "use": false,
+   "note": "dam outlet"
+  },
+  "12812": {
+   "use": false,
+   "note": "dam outlet"
+  }
+ }
+}

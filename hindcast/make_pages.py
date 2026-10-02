@@ -101,7 +101,8 @@ def html() -> str:
 
         rows = "".join(f'<tr><td>{point_name(e["point"])}</td><td class="n">{month(e["case"])}</td><td class="n">{es(e["rain_mm"]) if e["rain_mm"] else "—"}</td>'
                        f'<td class="n">{measured(e)}</td><td class="n">{es(e["after"])}</td><td class="n">{es(e["before"])}</td></tr>'
-                       for e in hf["events"])
+                       for e in sorted([e for e in hf["events"] if max(e["observed"], e["after"]) >= 20],
+                                       key=lambda e: -e["observed"])[:30])
         out.append("<h2>Caudal: medido y calculado</h2>"
                    f'<p class="n">{hf["n"]} crecidas · aforos SAIH Júcar · umbral de escorrentía {es(hf["p0_mm"])} mm · retención {es(hf["s_mm"])} mm</p>'
                    "<table><tr><th>Punto</th><th>Episodio</th><th>Lluvia (mm)</th><th>Medido (m³/s)</th><th>Calculado</th>"

@@ -444,7 +444,8 @@ def poyo_check(truth: Truth) -> dict | None:
            "rain_input": "radar-gauge analysis, cell means", "runs": []}
     flat = p.reshape(len(t), -1)
     for p0 in (hp["p0_mm"],):
-        q = H.route(H.net_rain(flat, p0, hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm")), net, hp["clark_k"])
+        q = H.route(H.net_rain(flat, p0, hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm"), alpha=net.alpha,
+                               p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0)), net, hp["clark_k"])
         row = {"p0_mm": p0}
         for pid in ("poyo-chiva", "poyo-ribarroja", "poyo-paiporta", "magro-algemesi"):
             if pid in net.ids:

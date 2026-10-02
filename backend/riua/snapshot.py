@@ -26,7 +26,8 @@ def b64(a: np.ndarray) -> str:
 
 
 def code_prob(p: np.ndarray) -> np.ndarray:
-    return np.clip(np.rint(np.nan_to_num(p) * 200.0), 0, 200).astype(np.uint8)
+    # floor: a published probability never reads as having reached a minimum that the exact value did not
+    return np.clip(np.floor(np.nan_to_num(p) * 200.0 + 1e-6), 0, 200).astype(np.uint8)
 
 
 def code_mm(mm: np.ndarray) -> np.ndarray:

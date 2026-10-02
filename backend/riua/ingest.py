@@ -92,7 +92,11 @@ def load_run(key: str, run: datetime, t_from: datetime, t_to: datetime) -> Membe
 
 def fill_gaps(members: list[Member]) -> None:
     """AROME has no data south of ~38 N. Fill each member's NaN cells with the best
-    available coarser run at the same hour (regional first, then global), else 0."""
+    available coarser run at the same hour (regional first, then global), else 0.
+    The donor's values carry the donor's representativeness factor (a 25-km amount put
+    into a 1.3-km member would otherwise lose it)."""
+    from . import params as P
+    fams = P.load()["families"]
     donors = sorted([m for m in members if m.family in ("regional", "global") and not np.isnan(m.p).any()],
                     key=lambda m: (m.family != "regional", -m.run.timestamp()))
     for m in members:
@@ -104,7 +108,7 @@ def fill_gaps(members: list[Member]) -> None:
             if ok.any():
                 hole = np.isnan(m.p[ok])
                 sub = m.p[ok]
-                sub[hole] = d.p[pos[ok]][hole]
+                sub[hole] = d.p[pos[ok]][hole] * (fams[d.family]["s12h"] / fams[m.family]["s12h"])
                 m.p[ok] = sub
                 m.meta["filled_from"] = d.name
             if not np.isnan(m.p).any():

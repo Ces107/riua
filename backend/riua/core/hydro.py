@@ -7,8 +7,10 @@ Chain, for every rainfall scenario:
    is the marginal runoff coefficient of the loss law E = (W - P0)^2 / (W - P0 + S)
    (the SCS / Norma 5.2-IC law when S = 5 P0):
        c(W) = x (x + 2 S) / (x + S)^2,  x = W - P0,  for W > P0, else 0.
-   P0 and S are fitted to measured flows: these ravines swallow about 120 mm before
-   they run, and shed more than half of what falls once 250 mm have fallen.
+   P0 and S are fitted to measured flows: most of the ground swallows about 150 mm before
+   it sheds anything, while a small share alpha of each catchment (2-18 %, fitted per
+   gauged stream) runs after 10 mm. That share is what makes one ravine run and its
+   neighbour stay dry under the same rain.
 
 2. Routing, time-area (isochrone) method. The catchment of each control point was cut
    from the terrain model into travel-time bands. Net rain falling on the band that is
@@ -55,6 +57,7 @@ class HydroNet:
     rating_h: list[np.ndarray]       # per point, depth above thalweg (m)
     h_bank: np.ndarray               # (P,) bankfull depth above thalweg (m), NaN if unknown
     qT: np.ndarray | None = None     # (P, 6) natural flood peaks for T = 2, 5, 10, 25, 100, 500 years (CAUMAX)
+    alpha: np.ndarray | None = None  # (NY*NX,) share of each cell that runs after p0b mm (geo/hydro/loss_params.json)
 
     @property
     def n(self) -> int:
@@ -82,23 +85,29 @@ def runoff_coefficient(w_mm: np.ndarray, p0: float, s: float | None = None) -> n
     return x * (x + 2.0 * s) / (x + s) ** 2
 
 
-def net_rain(p: np.ndarray, p0: float, tau_h: float, w0: np.ndarray | float = 0.0,
-             phi: float | None = None, s: float | None = None) -> np.ndarray:
+def net_rain(p: np.ndarray, p0: float, tau_h: float, w0: np.ndarray | float = 0.0, phi: float | None = None,
+             s: float | None = None, alpha: np.ndarray | None = None, p0b: float = 10.0, sb: float = 100.0) -> np.ndarray:
     """p (T, ncell) mm/h -> net rain (T, ncell) mm/h.
 
-    Two ways of producing runoff, as in Mediterranean ravines: the ground fills up
-    (saturation excess, share c(W) of the rain) or it rains harder than the ground can
-    take in (infiltration excess: what exceeds phi mm/h runs off even on dry ground).
+    Three ways of producing runoff, as in Mediterranean ravines: the ground fills up
+    (saturation excess, share c(W) of the rain); it rains harder than the ground can take in
+    (infiltration excess: what exceeds phi mm/h runs off even on dry ground); and a share alpha
+    of every cell (paved and compacted ground, valley bottoms, the channels) runs after only
+    p0b mm. alpha (per cell) is what differs between catchments.
     """
     decay = float(np.exp(-1.0 / tau_h))
     w = np.zeros(p.shape[1], np.float32) + w0
     out = np.empty_like(p)
     for t in range(p.shape[0]):
         w_new = w * decay + p[t]
-        c = runoff_coefficient(0.5 * (w * decay + w_new), p0, s)
-        out[t] = p[t] * c
+        wm = 0.5 * (w * decay + w_new)
+        c = runoff_coefficient(wm, p0, s)
+        e = p[t] * c
         if phi is not None:
-            out[t] += (1.0 - c) * np.maximum(p[t] - phi, 0.0)
+            e = e + (1.0 - c) * np.maximum(p[t] - phi, 0.0)
+        if alpha is not None:
+            e = (1.0 - alpha) * e + alpha * p[t] * runoff_coefficient(wm, p0b, sb)
+        out[t] = e
         w = w_new
     return out
 
@@ -206,7 +215,8 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
         for sj, si, share in variants:
             p = np.nan_to_num(grid.shift(m.area, sj, si), nan=0.0).reshape(len(m.t_end), -1)
             p = p * np.where(m.observed(), 1.0, fam["s12h"])[:, None]      # measured rain is not rescaled
-            q = route(net_rain(p, hp["p0_mm"], hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm")),
+            q = route(net_rain(p, hp["p0_mm"], hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm"),
+                               alpha=net_.alpha, p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0)),
                       net_, hp["clark_k"])      # (Tm, P)
             # onto the common axis
             pos = np.searchsorted(t_axis, m.t_end)

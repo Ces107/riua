@@ -70,14 +70,24 @@ DEFAULTS: dict = {
     "lattice_fill_km": 8.0,
     # rain already measured counts fully in a 12-h amount when the scenario still brings this much (mm)
     "obs_gate_mm": 20.0,
+    "obs12_factor": 1.0,      # 0.88 if the measured hours were hourly cell maxima; they are pixel-consistent increments
+    "sigma_obs": 0.15,
+    # the 1-h criterion with its own kernel a day ahead: better in 7 of 7 hindcast cases
+    "sigma1h": {"mid": 1.0}, "bias1h": {"mid": 1.0},
+    # days 2-7: no skill above "alto" outside the 2024 DANA (BSS about 0): the level stops at 3
+    "level_cap": {"long": 3},
     "age_halflife_h": {"now": 3.0, "mid": 12.0, "long": 36.0},
     # --- Hydrology ----------------------------------------------------------------------
     "hydro": {
         # losses E = (W - P0)^2 / (W - P0 + S), fitted to measured SAIH flows in 8 gauged catchments
         # over 10 rain episodes plus the Poyo flood of 29 Oct 2024 (hindcast/calibrate_hydro.py).
         # The design value P0 = 25 mm gave 146 m3/s on the Poyo for an episode that measured 0.5.
-        "p0_mm": 120.0,       # runoff threshold: rain the ground takes in before anything runs off
+        # 26 ravine-like gauged catchments, 200 measured floods in 22 episodes + the 2024 anchors: one regional
+        # threshold cannot be right (the spread is between catchments), a per-catchment quick share is
+        # (leave-one-episode-out error of ln peak 0.58 -> 0.38; floods hit / missed 20 / 53 -> 42 / 31).
+        "p0_mm": 150.0,       # runoff threshold of most of the ground
         "s_mm": 150.0,        # retention still to fill above the threshold
+        "p0b_mm": 10.0, "sb_mm": 100.0,   # the quick share alpha of each catchment (geo/hydro/loss_params.json)
         # intensity excess: rain above this rate on a 5-km cell-hour runs off even on dry ground
         # (flow starts after 10 mm at 139 mm/h, after 72 mm at 57 mm/h: Camarasa-Belmonte 2021).
         # Costs nothing on the ordinary episodes and adds 160-300 m3/s to the Poyo of 2024.
@@ -98,8 +108,8 @@ DEFAULTS: dict = {
         # points without a usable capacity but with CAUMAX flood quantiles (all 60 today):
         # level 2 at the 2-year flood, 3 at 5 years, 4 at 25 years, 5 at 100 years (EFAS-like)
         "rp_levels": [2, 5, 25, 100],
-        # spread of ln(discharge): the fit leaves a residual of 0.86, larger than the rain uncertainty
-        "sigma": {"now": 0.8, "mid": 0.9, "long": 1.0},
+        # spread of ln(discharge): the fit leaves a residual of 0.71, larger than the rain uncertainty
+        "sigma": {"now": 0.7, "mid": 0.8, "long": 0.9},
     },
 }
 

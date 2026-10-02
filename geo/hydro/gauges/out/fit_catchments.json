@@ -1,0 +1,194 @@
+{
+ "bunol-bunol": {
+  "name": "bunol-bunol",
+  "alpha": 0.006,
+  "n_events": 0,
+  "alpha_regression": 0.006
+ },
+ "chj-12808": {
+  "name": "MC VILAMARXANT",
+  "alpha": 0.0566,
+  "n_events": 6,
+  "alpha_regression": 0.0383
+ },
+ "chj-12810": {
+  "name": "EA 74 FUENTE DEL BAÑO",
+  "alpha": 0.0109,
+  "n_events": 5,
+  "alpha_regression": 0.0171
+ },
+ "chj-12827": {
+  "name": "EA 29 MONTAVERNER",
+  "alpha": 0.0932,
+  "n_events": 14,
+  "alpha_regression": 0.0761
+ },
+ "chj-12901": {
+  "name": "MC VILLATOYA",
+  "alpha": 0.0327,
+  "n_events": 4,
+  "alpha_regression": 0.0188
+ },
+ "chj-13070": {
+  "name": "EA 89 HUERTO MULET",
+  "alpha": 0.0764,
+  "n_events": 5,
+  "alpha_regression": 0.0802
+ },
+ "chj-13102": {
+  "name": "MC CANALS",
+  "alpha": 0.0171,
+  "n_events": 8,
+  "alpha_regression": 0.051
+ },
+ "chj-13403": {
+  "name": "EA 60 REQUENA",
+  "alpha": 0.042,
+  "n_events": 5,
+  "alpha_regression": 0.0624
+ },
+ "chj-13420": {
+  "name": "MC CERVERA DEL MAESTRE",
+  "alpha": 0.003,
+  "n_events": 12,
+  "alpha_regression": 0.0064
+ },
+ "chj-13431": {
+  "name": "MC TRAIGUERA",
+  "alpha": 0.0035,
+  "n_events": 10,
+  "alpha_regression": 0.0042
+ },
+ "chj-13566": {
+  "name": "MC GALLINERA L'ATZÚBIA",
+  "alpha": 0.006,
+  "n_events": 15,
+  "alpha_regression": 0.0076
+ },
+ "chj-13568": {
+  "name": "MC VERNISSA",
+  "alpha": 0.178,
+  "n_events": 14,
+  "alpha_regression": 0.0129
+ },
+ "chj-13617": {
+  "name": "EA 120 CALLES",
+  "alpha": 0.0209,
+  "n_events": 4,
+  "alpha_regression": 0.018
+ },
+ "chj-13707": {
+  "name": "MC ATZENETA DEL MAESTRAT",
+  "alpha": 0.0033,
+  "n_events": 9,
+  "alpha_regression": 0.003
+ },
+ "chj-13722": {
+  "name": "MC MOIXENT",
+  "alpha": 0.038,
+  "n_events": 4,
+  "alpha_regression": 0.0394
+ },
+ "chj-13792": {
+  "name": "MC CARRAIXET BÉTERA",
+  "alpha": 0.0074,
+  "n_events": 5,
+  "alpha_regression": 0.0085
+ },
+ "chj-13873": {
+  "name": "MC RAMBLA POYO N-III",
+  "alpha": 0.0104,
+  "n_events": 7,
+  "alpha_regression": 0.0296
+ },
+ "chj-13896": {
+  "name": "MC RAMBLA CASTELLANA",
+  "alpha": 0.0327,
+  "n_events": 8,
+  "alpha_regression": 0.0158
+ },
+ "chj-13897": {
+  "name": "MC RAMBLA PRIMERA",
+  "alpha": 0.0658,
+  "n_events": 5,
+  "alpha_regression": 0.0436
+ },
+ "chj-13917": {
+  "name": "MC VALL D'ALBA",
+  "alpha": 0.003,
+  "n_events": 6,
+  "alpha_regression": 0.003
+ },
+ "chj-14551": {
+  "name": "MC GUADASSUAR",
+  "alpha": 0.0764,
+  "n_events": 8,
+  "alpha_regression": 0.0314
+ },
+ "chj-1523": {
+  "name": "EA 25 AGUAS POTABLES",
+  "alpha": 0.1195,
+  "n_events": 6,
+  "alpha_regression": 0.0614
+ },
+ "chj-16767": {
+  "name": "MC SAX",
+  "alpha": 0.0268,
+  "n_events": 4,
+  "alpha_regression": 0.0836
+ },
+ "chj-2443": {
+  "name": "MC MANUEL",
+  "alpha": 0.0843,
+  "n_events": 12,
+  "alpha_regression": 0.0737
+ },
+ "chj-2701": {
+  "name": "MC ESTUBENY",
+  "alpha": 0.0049,
+  "n_events": 13,
+  "alpha_regression": 0.005
+ },
+ "chj-2720": {
+  "name": "EA 148 JÉRICA",
+  "alpha": 0.0121,
+  "n_events": 6,
+  "alpha_regression": 0.0123
+ },
+ "forata-in": {
+  "name": "Forata reservoir inflow",
+  "alpha": 0.0334,
+  "n_events": 0,
+  "alpha_regression": 0.0334
+ },
+ "horteta-torrent": {
+  "name": "horteta-torrent",
+  "alpha": 0.0357,
+  "n_events": 0,
+  "alpha_regression": 0.0357
+ },
+ "magro-real": {
+  "name": "magro-real",
+  "alpha": 0.0201,
+  "n_events": 0,
+  "alpha_regression": 0.0201
+ },
+ "poyo-chiva": {
+  "name": "poyo-chiva",
+  "alpha": 0.0141,
+  "n_events": 0,
+  "alpha_regression": 0.0141
+ },
+ "poyo-paiporta": {
+  "name": "poyo-paiporta",
+  "alpha": 0.06,
+  "n_events": 0,
+  "alpha_regression": 0.06
+ },
+ "seg-01O03A1": {
+  "name": "Aforo en río Mula (Marco de control)",
+  "alpha": 0.1871,
+  "n_events": 5,
+  "alpha_regression": 0.1967
+ }
+}

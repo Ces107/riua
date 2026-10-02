@@ -46,7 +46,7 @@ def steps_ensemble(rates: list[tuple[datetime, np.ndarray]], n_steps: int = 18, 
     if wet < 0.003 or not regular:
         return dict(t0=t0, rate=np.zeros((1, n_steps, ny, nx), np.float32), motion=np.zeros((2, ny, nx)),
                     method="none (no significant echo)" if regular else "none (irregular scans)", wet_fraction=wet)
-    v = qpe.motion_field([r for _, r in rates])
+    v = qpe.motion_field([r for _, r in rates], coarse=1)      # the caller already works on a 2-km grid
     db, _ = transformation.dB_transform(stack, threshold=RAIN_THR, zerovalue=ZEROVALUE_DB)
     method = "pysteps STEPS"
     try:

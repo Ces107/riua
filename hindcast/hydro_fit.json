@@ -1,223 +1,3679 @@
 {
- "p0_mm": 120.0,
+ "p0_mm": 150.0,
  "s_mm": 150.0,
- "phi_mmh": null,
+ "phi_mmh": 45.0,
  "wet_memory_h": 72.0,
- "score": 0.439,
- "poyo_2024_m3s": 2185,
- "n": 37,
+ "phi_form": "max(p-phi,0)",
+ "alpha_ref": 0.03,
+ "alpha_default": 0.0162,
+ "p0b_mm": 10.0,
+ "sb_mm": 100.0,
+ "clark_k": 0.3,
+ "score": 0.393,
+ "n": 208,
  "residuals": {
-  "mean_ln": -0.02,
-  "sd_ln": 0.86
+  "mean_ln": -0.079,
+  "sd_ln": 0.71,
+  "mae_ln": 0.393,
+  "offset": "c = 5 m3/s * (A / 184 km2)^0.75",
+  "sd_ln_plus5": 0.834,
+  "production_sd_ln": 0.899,
+  "production_mae_ln": 0.579,
+  "production_sd_ln_plus5": 1.068
  },
  "events": [
   {
-   "case": "2024-10-dana",
-   "point": "sellent-carcer",
-   "rain_mm": 52,
-   "observed": 0.3,
-   "before": 15.3,
-   "after": 0.0
+   "case": "2024-11-14",
+   "point": "Aforo en río Mula (Marco de control)",
+   "gauge": "seg-01O03A1",
+   "rain_mm": 84,
+   "observed": 0.5,
+   "before": 496.0,
+   "production": 364.7,
+   "after": 361.2,
+   "rain_source": "truth",
+   "anchor": false
   },
   {
-   "case": "2024-11-13",
-   "point": "vernissa-real",
-   "rain_mm": 146,
+   "case": "2025-03-02",
+   "point": "Aforo en río Mula (Marco de control)",
+   "gauge": "seg-01O03A1",
+   "rain_mm": 55,
    "observed": 14.8,
-   "before": 366.9,
-   "after": 67.1
+   "before": 52.2,
+   "production": 0.0,
+   "after": 1.7,
+   "rain_source": "truth",
+   "anchor": false
   },
   {
-   "case": "2024-11-fill",
+   "case": "2025-03-04",
+   "point": "Aforo en río Mula (Marco de control)",
+   "gauge": "seg-01O03A1",
+   "rain_mm": 53,
+   "observed": 156.7,
+   "before": 45.6,
+   "production": 0.0,
+   "after": 1.1,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-13",
+   "point": "Aforo en río Mula (Marco de control)",
+   "gauge": "seg-01O03A1",
+   "rain_mm": 71,
+   "observed": 29.5,
+   "before": 98.5,
+   "production": 0.0,
+   "after": 1.9,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-01-16",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 83,
+   "observed": 10.4,
+   "before": 115.6,
+   "production": 0.0,
+   "after": 12.0,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-04",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 126,
+   "observed": 17.0,
+   "before": 237.6,
+   "production": 0.5,
+   "after": 18.5,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-10-09",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 131,
+   "observed": 18.5,
+   "before": 275.4,
+   "production": 0.0,
+   "after": 24.6,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-25",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 59,
+   "observed": 17.1,
+   "before": 90.1,
+   "production": 0.0,
+   "after": 14.6,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-02",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 51,
+   "observed": 15.2,
+   "before": 60.5,
+   "production": 0.0,
+   "after": 12.0,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-10",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 44,
+   "observed": 8.2,
+   "before": 42.6,
+   "production": 0.0,
+   "after": 5.6,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-04-12",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 21,
+   "observed": 7.8,
+   "before": 0.0,
+   "production": 0.0,
+   "after": 2.3,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-05-07",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 22,
+   "observed": 9.4,
+   "before": 6.0,
+   "production": 0.0,
+   "after": 6.1,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-05-09",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 27,
+   "observed": 8.8,
+   "before": 64.9,
+   "production": 0.0,
+   "after": 11.4,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-08-20",
+   "point": "EA 29 MONTAVERNER",
+   "gauge": "chj-12827",
+   "rain_mm": 35,
+   "observed": 20.0,
+   "before": 30.5,
+   "production": 0.0,
+   "after": 8.7,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-25",
+   "point": "MC ATZENETA DEL MAESTRAT",
+   "gauge": "chj-13707",
+   "rain_mm": 208,
+   "observed": 156.0,
+   "before": 703.1,
+   "production": 66.9,
+   "after": 37.8,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "MC ATZENETA DEL MAESTRAT",
+   "gauge": "chj-13707",
+   "rain_mm": 190,
+   "observed": 80.5,
+   "before": 344.3,
+   "production": 3.4,
+   "after": 2.3,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-05",
+   "point": "MC ATZENETA DEL MAESTRAT",
+   "gauge": "chj-13707",
+   "rain_mm": 104,
+   "observed": 30.9,
+   "before": 123.5,
+   "production": 0.0,
+   "after": 0.5,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-02",
+   "point": "MC RAMBLA PRIMERA",
+   "gauge": "chj-13897",
+   "rain_mm": 72,
+   "observed": 9.5,
+   "before": 137.4,
+   "production": 0.0,
+   "after": 9.1,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2026-09-16",
+   "point": "MC RAMBLA PRIMERA",
+   "gauge": "chj-13897",
+   "rain_mm": 26,
+   "observed": 10.1,
+   "before": 1.8,
+   "production": 0.0,
+   "after": 0.8,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-25",
+   "point": "MC VILLATOYA",
+   "gauge": "chj-12901",
+   "rain_mm": 30,
+   "observed": 66.0,
+   "before": 5.5,
+   "production": 0.0,
+   "after": 0.8,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-27",
+   "point": "MC VILLATOYA",
+   "gauge": "chj-12901",
+   "rain_mm": 61,
+   "observed": 13.1,
+   "before": 96.6,
+   "production": 0.0,
+   "after": 2.6,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-01-16",
+   "point": "albaida-manuel",
+   "gauge": "chj-2443",
+   "rain_mm": 58,
+   "observed": 20.3,
+   "before": 102.4,
+   "production": 0.0,
+   "after": 11.2,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-04",
+   "point": "albaida-manuel",
+   "gauge": "chj-2443",
+   "rain_mm": 100,
+   "observed": 13.0,
+   "before": 346.3,
+   "production": 8.8,
+   "after": 14.2,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-10-09",
+   "point": "albaida-manuel",
+   "gauge": "chj-2443",
+   "rain_mm": 98,
+   "observed": 41.1,
+   "before": 243.4,
+   "production": 0.4,
+   "after": 16.6,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-25",
+   "point": "albaida-manuel",
+   "gauge": "chj-2443",
+   "rain_mm": 49,
+   "observed": 20.5,
+   "before": 107.4,
+   "production": 0.0,
+   "after": 13.3,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-28",
+   "point": "albaida-manuel",
+   "gauge": "chj-2443",
+   "rain_mm": 22,
+   "observed": 127.5,
+   "before": 316.7,
+   "production": 121.4,
+   "after": 102.0,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-02",
+   "point": "albaida-manuel",
+   "gauge": "chj-2443",
+   "rain_mm": 79,
+   "observed": 19.1,
+   "before": 103.4,
+   "production": 0.0,
+   "after": 13.5,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-08-20",
+   "point": "albaida-manuel",
+   "gauge": "chj-2443",
+   "rain_mm": 34,
+   "observed": 15.6,
+   "before": 28.5,
+   "production": 0.0,
+   "after": 9.7,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-28",
+   "point": "bunol-bunol",
+   "gauge": null,
+   "rain_mm": 375,
+   "observed": 1000.0,
+   "before": 997.9,
+   "production": 887.6,
+   "after": 807.6,
+   "rain_source": "truth",
+   "anchor": true
+  },
+  {
+   "case": "2025-03-04",
+   "point": "canyoles-canals",
+   "gauge": "chj-13102",
+   "rain_mm": 112,
+   "observed": 9.3,
+   "before": 326.1,
+   "production": 8.6,
+   "after": 10.9,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-10-09",
+   "point": "canyoles-canals",
+   "gauge": "chj-13102",
+   "rain_mm": 94,
+   "observed": 9.0,
+   "before": 166.6,
+   "production": 0.0,
+   "after": 5.3,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-04",
+   "point": "carraixet-betera",
+   "gauge": "chj-13792",
+   "rain_mm": 30,
+   "observed": 8.9,
+   "before": 22.3,
+   "production": 0.0,
+   "after": 0.3,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "castellarda-lliria",
+   "gauge": "chj-13896",
+   "rain_mm": 81,
+   "observed": 47.2,
+   "before": 289.3,
+   "production": 0.3,
+   "after": 16.4,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-05-08",
+   "point": "castellarda-lliria",
+   "gauge": "chj-13896",
+   "rain_mm": 19,
+   "observed": 10.3,
+   "before": 0.2,
+   "production": 0.0,
+   "after": 1.0,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-05-10",
+   "point": "castellarda-lliria",
+   "gauge": "chj-13896",
+   "rain_mm": 37,
+   "observed": 20.8,
+   "before": 81.6,
+   "production": 0.0,
+   "after": 10.4,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-09-16",
+   "point": "castellarda-lliria",
+   "gauge": "chj-13896",
+   "rain_mm": 21,
+   "observed": 14.6,
+   "before": 5.5,
+   "production": 5.7,
+   "after": 6.2,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-29",
+   "point": "cervera-benicarlo",
+   "gauge": "chj-13420",
+   "rain_mm": 242,
+   "observed": 87.1,
+   "before": 937.4,
+   "production": 622.1,
+   "after": 498.6,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2024-11-01",
+   "point": "cervera-benicarlo",
+   "gauge": "chj-13420",
+   "rain_mm": 52,
+   "observed": 0.0,
+   "before": 286.7,
+   "production": 137.5,
+   "after": 78.8,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2024-11-12",
+   "point": "cervera-benicarlo",
+   "gauge": "chj-13420",
+   "rain_mm": 88,
+   "observed": 0.0,
+   "before": 234.0,
+   "production": 0.4,
+   "after": 1.0,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "cervera-benicarlo",
+   "gauge": "chj-13420",
+   "rain_mm": 148,
+   "observed": 0.3,
+   "before": 734.8,
+   "production": 146.8,
+   "after": 29.4,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-25",
+   "point": "cervera-benicarlo",
+   "gauge": "chj-13420",
+   "rain_mm": 150,
+   "observed": 0.0,
+   "before": 198.5,
+   "production": 14.1,
+   "after": 0.8,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-05",
+   "point": "cervera-benicarlo",
+   "gauge": "chj-13420",
+   "rain_mm": 157,
+   "observed": 0.0,
+   "before": 197.1,
+   "production": 0.0,
+   "after": 0.8,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-29",
+   "point": "cervol-vinaros",
+   "gauge": "chj-13431",
+   "rain_mm": 234,
+   "observed": 89.7,
+   "before": 849.8,
+   "production": 579.2,
+   "after": 477.4,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2024-11-01",
+   "point": "cervol-vinaros",
+   "gauge": "chj-13431",
+   "rain_mm": 60,
+   "observed": 0.0,
+   "before": 337.2,
+   "production": 157.1,
+   "after": 102.2,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2024-11-03",
+   "point": "cervol-vinaros",
+   "gauge": "chj-13431",
+   "rain_mm": 52,
+   "observed": 32.2,
+   "before": 534.4,
+   "production": 78.6,
+   "after": 11.7,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2024-11-12",
+   "point": "cervol-vinaros",
+   "gauge": "chj-13431",
+   "rain_mm": 84,
+   "observed": 1.2,
+   "before": 193.6,
+   "production": 0.0,
+   "after": 2.4,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-09-28",
+   "point": "cervol-vinaros",
+   "gauge": "chj-13431",
+   "rain_mm": 60,
+   "observed": 0.0,
+   "before": 78.3,
+   "production": 7.5,
+   "after": 7.6,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-25",
+   "point": "cervol-vinaros",
+   "gauge": "chj-13431",
+   "rain_mm": 113,
+   "observed": 0.1,
+   "before": 120.7,
+   "production": 0.0,
+   "after": 0.9,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-04",
+   "point": "cervol-vinaros",
+   "gauge": "chj-13431",
+   "rain_mm": 154,
+   "observed": 2.9,
+   "before": 179.9,
+   "production": 0.0,
+   "after": 1.2,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-27",
+   "point": "forata-in",
+   "gauge": null,
+   "rain_mm": 238,
+   "observed": 2016.0,
+   "before": 2261.9,
+   "production": 1131.2,
+   "after": 1006.9,
+   "rain_source": "truth",
+   "anchor": true
+  },
+  {
+   "case": "2025-01-16",
+   "point": "gallinera-oliva",
+   "gauge": "chj-13566",
+   "rain_mm": 82,
+   "observed": 0.0,
+   "before": 12.8,
+   "production": 0.0,
+   "after": 0.1,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "gallinera-oliva",
+   "gauge": "chj-13566",
+   "rain_mm": 186,
+   "observed": 3.0,
+   "before": 61.5,
+   "production": 22.1,
+   "after": 1.6,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-04",
+   "point": "gallinera-oliva",
+   "gauge": "chj-13566",
+   "rain_mm": 213,
+   "observed": 3.4,
+   "before": 86.1,
+   "production": 28.6,
+   "after": 17.0,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-10-09",
+   "point": "gallinera-oliva",
+   "gauge": "chj-13566",
+   "rain_mm": 110,
+   "observed": 0.2,
+   "before": 36.1,
+   "production": 0.0,
+   "after": 0.3,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-25",
+   "point": "gallinera-oliva",
+   "gauge": "chj-13566",
+   "rain_mm": 145,
+   "observed": 0.6,
+   "before": 63.9,
+   "production": 7.0,
+   "after": 0.5,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-01-03",
+   "point": "gallinera-oliva",
+   "gauge": "chj-13566",
+   "rain_mm": 128,
+   "observed": 0.8,
+   "before": 24.6,
+   "production": 0.0,
+   "after": 0.3,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-28",
+   "point": "horteta-torrent",
+   "gauge": null,
+   "rain_mm": 320,
+   "observed": 1500.0,
+   "before": 808.3,
+   "production": 610.3,
+   "after": 571.7,
+   "rain_source": "truth",
+   "anchor": true
+  },
+  {
+   "case": "2025-03-01",
+   "point": "jucar-sueca",
+   "gauge": "chj-13070",
+   "rain_mm": 161,
+   "observed": 144.1,
+   "before": 760.5,
+   "production": 103.2,
+   "after": 48.8,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-10-09",
+   "point": "jucar-sueca",
+   "gauge": "chj-13070",
+   "rain_mm": 112,
+   "observed": 63.1,
+   "before": 544.8,
+   "production": 16.0,
+   "after": 31.7,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-25",
+   "point": "jucar-sueca",
+   "gauge": "chj-13070",
+   "rain_mm": 103,
+   "observed": 189.6,
+   "before": 1092.8,
+   "production": 232.6,
+   "after": 173.4,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-28",
+   "point": "magro-carlet",
+   "gauge": null,
+   "rain_mm": 388,
+   "observed": 3200.0,
+   "before": 3225.4,
+   "production": 2549.8,
+   "after": 2297.8,
+   "rain_source": "truth",
+   "anchor": true
+  },
+  {
+   "case": "2025-03-01",
+   "point": "magro-carlet",
+   "gauge": "chj-14551",
+   "rain_mm": 170,
+   "observed": 53.8,
+   "before": 250.8,
+   "production": 35.9,
+   "after": 17.1,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-16",
+   "point": "magro-carlet",
+   "gauge": "chj-14551",
+   "rain_mm": 31,
+   "observed": 31.6,
+   "before": 16.5,
+   "production": 0.0,
+   "after": 3.2,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-10-09",
+   "point": "magro-carlet",
+   "gauge": "chj-14551",
+   "rain_mm": 90,
+   "observed": 29.2,
+   "before": 141.6,
+   "production": 0.0,
+   "after": 14.0,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-27",
+   "point": "magro-carlet",
+   "gauge": "chj-14551",
+   "rain_mm": 105,
+   "observed": 44.7,
+   "before": 434.6,
+   "production": 7.5,
+   "after": 33.3,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2026-09-16",
+   "point": "magro-carlet",
+   "gauge": "chj-14551",
+   "rain_mm": 38,
+   "observed": 16.2,
+   "before": 70.4,
+   "production": 0.0,
+   "after": 11.1,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-28",
+   "point": "magro-real",
+   "gauge": null,
+   "rain_mm": 420,
+   "observed": 2800.0,
+   "before": 2743.5,
+   "production": 2337.9,
+   "after": 2165.2,
+   "rain_source": "truth",
+   "anchor": true
+  },
+  {
+   "case": "2025-10-13",
+   "point": "magro-requena",
+   "gauge": "chj-13403",
+   "rain_mm": 18,
+   "observed": 17.3,
+   "before": 8.8,
+   "production": 0.0,
+   "after": 4.2,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-27",
+   "point": "palancia-sagunt",
+   "gauge": "chj-2720",
+   "rain_mm": 124,
+   "observed": 42.8,
+   "before": 395.9,
+   "production": 5.6,
+   "after": 6.0,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-27",
+   "point": "palancia-sagunt",
+   "gauge": "chj-12810",
+   "rain_mm": 131,
+   "observed": 11.9,
+   "before": 474.0,
+   "production": 32.5,
+   "after": 8.9,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "palancia-sagunt",
+   "gauge": "chj-2720",
+   "rain_mm": 81,
+   "observed": 3.0,
+   "before": 191.7,
+   "production": 0.0,
+   "after": 4.1,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "palancia-sagunt",
+   "gauge": "chj-12810",
+   "rain_mm": 86,
+   "observed": 11.9,
+   "before": 327.8,
+   "production": 17.6,
+   "after": 12.7,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-28",
+   "point": "poyo-chiva",
+   "gauge": null,
+   "rain_mm": 477,
+   "observed": 1100.0,
+   "before": 818.3,
+   "production": 795.1,
+   "after": 775.3,
+   "rain_source": "truth",
+   "anchor": true
+  },
+  {
+   "case": "2024-10-28",
+   "point": "poyo-paiporta",
+   "gauge": null,
+   "rain_mm": 397,
+   "observed": 3400.0,
+   "before": 3226.5,
+   "production": 3056.9,
+   "after": 2971.4,
+   "rain_source": "truth",
+   "anchor": true
+  },
+  {
+   "case": "2024-10-28",
+   "point": "poyo-ribarroja",
+   "gauge": null,
+   "rain_mm": 431,
+   "observed": 3200.0,
+   "before": 2489.2,
+   "production": 2378.4,
+   "after": 2309.0,
+   "rain_source": "truth",
+   "anchor": true
+  },
+  {
+   "case": "2025-03-01",
+   "point": "poyo-ribarroja",
+   "gauge": "chj-13873",
+   "rain_mm": 150,
+   "observed": 0.5,
+   "before": 148.4,
+   "production": 3.9,
+   "after": 2.1,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-10-09",
+   "point": "poyo-ribarroja",
+   "gauge": "chj-13873",
+   "rain_mm": 82,
+   "observed": 0.8,
+   "before": 44.8,
+   "production": 0.0,
+   "after": 1.0,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-04",
+   "point": "sellent-carcer",
+   "gauge": "chj-2701",
+   "rain_mm": 209,
+   "observed": 42.3,
+   "before": 335.4,
+   "production": 114.9,
+   "after": 53.3,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-18",
+   "point": "sellent-carcer",
+   "gauge": "chj-2701",
+   "rain_mm": 45,
+   "observed": 6.5,
+   "before": 125.7,
+   "production": 0.0,
+   "after": 1.3,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-10-09",
+   "point": "sellent-carcer",
+   "gauge": "chj-2701",
+   "rain_mm": 112,
+   "observed": 1.9,
+   "before": 204.7,
+   "production": 43.7,
+   "after": 45.6,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-15",
+   "point": "turia-ribarroja",
+   "gauge": "chj-1523",
+   "rain_mm": 19,
+   "observed": 56.6,
+   "before": 0.0,
+   "production": 0.0,
+   "after": 2.0,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-15",
+   "point": "turia-ribarroja",
+   "gauge": "chj-12808",
+   "rain_mm": 18,
+   "observed": 73.5,
+   "before": 0.0,
+   "production": 0.0,
+   "after": 1.9,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-10-27",
+   "point": "turia-ribarroja",
+   "gauge": "chj-12808",
+   "rain_mm": 165,
+   "observed": 1871.8,
+   "before": 1777.3,
+   "production": 1035.1,
+   "after": 884.6,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "turia-ribarroja",
+   "gauge": "chj-1523",
+   "rain_mm": 86,
+   "observed": 93.7,
+   "before": 649.6,
+   "production": 3.0,
+   "after": 44.3,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "turia-ribarroja",
+   "gauge": "chj-12808",
+   "rain_mm": 92,
+   "observed": 81.2,
+   "before": 666.0,
+   "production": 3.3,
+   "after": 43.9,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2025-05-08",
+   "point": "turia-ribarroja",
+   "gauge": "chj-1523",
+   "rain_mm": 20,
+   "observed": 36.7,
+   "before": 0.3,
+   "production": 0.0,
+   "after": 2.9,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-12-28",
+   "point": "turia-ribarroja",
+   "gauge": "chj-1523",
+   "rain_mm": 38,
+   "observed": 31.0,
+   "before": 108.9,
+   "production": 0.0,
+   "after": 12.6,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2026-09-16",
+   "point": "turia-ribarroja",
+   "gauge": "chj-1523",
+   "rain_mm": 27,
+   "observed": 59.9,
+   "before": 24.3,
+   "production": 10.8,
+   "after": 15.6,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2024-11-12",
    "point": "vernissa-real",
-   "rain_mm": 106,
-   "observed": 4.4,
-   "before": 304.4,
-   "after": 5.2
+   "gauge": "chj-13568",
+   "rain_mm": 141,
+   "observed": 14.7,
+   "before": 337.0,
+   "production": 136.6,
+   "after": 102.7,
+   "rain_source": "truth",
+   "anchor": false
   },
   {
    "case": "2024-12-11",
    "point": "vernissa-real",
-   "rain_mm": 106,
+   "gauge": "chj-13568",
+   "rain_mm": 107,
    "observed": 0.0,
-   "before": 284.9,
-   "after": 82.3
+   "before": 242.4,
+   "production": 69.4,
+   "after": 60.1,
+   "rain_source": "truth",
+   "anchor": false
   },
   {
-   "case": "2025-03-03",
-   "point": "poyo-ribarroja",
-   "rain_mm": 148,
-   "observed": 0.5,
-   "before": 145.7,
-   "after": 3.6
-  },
-  {
-   "case": "2025-03-03",
-   "point": "carraixet-betera",
-   "rain_mm": 82,
-   "observed": 9.4,
-   "before": 68.7,
-   "after": 0.0
-  },
-  {
-   "case": "2025-03-03",
-   "point": "castellarda-lliria",
-   "rain_mm": 96,
-   "observed": 47.4,
-   "before": 288.8,
-   "after": 0.2
-  },
-  {
-   "case": "2025-03-03",
-   "point": "magro-requena",
-   "rain_mm": 49,
-   "observed": 0.8,
-   "before": 15.9,
-   "after": 0.0
-  },
-  {
-   "case": "2025-03-03",
-   "point": "sellent-carcer",
-   "rain_mm": 276,
-   "observed": 42.7,
-   "before": 324.0,
-   "after": 108.0
-  },
-  {
-   "case": "2025-03-03",
-   "point": "canyoles-canals",
-   "rain_mm": 138,
-   "observed": 9.2,
-   "before": 315.0,
-   "after": 8.4
-  },
-  {
-   "case": "2025-03-03",
+   "case": "2025-01-16",
    "point": "vernissa-real",
-   "rain_mm": 275,
+   "gauge": "chj-13568",
+   "rain_mm": 114,
+   "observed": 17.2,
+   "before": 74.0,
+   "production": 10.0,
+   "after": 14.8,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-02",
+   "point": "vernissa-real",
+   "gauge": "chj-13568",
+   "rain_mm": 305,
    "observed": 34.5,
-   "before": 206.8,
-   "after": 71.1
+   "before": 188.9,
+   "production": 62.3,
+   "after": 69.3,
+   "rain_source": "truth",
+   "anchor": false
   },
   {
-   "case": "2025-03-03",
-   "point": "magro-carlet",
-   "rain_mm": 166,
-   "observed": 56.4,
-   "before": 251.5,
-   "after": 34.1
-  },
-  {
-   "case": "2025-09-28",
-   "point": "poyo-ribarroja",
-   "rain_mm": 73,
-   "observed": 0.8,
-   "before": 54.2,
-   "after": 0.0
-  },
-  {
-   "case": "2025-09-28",
-   "point": "carraixet-betera",
-   "rain_mm": 51,
-   "observed": 0.0,
-   "before": 10.0,
-   "after": 0.0
-  },
-  {
-   "case": "2025-09-28",
-   "point": "castellarda-lliria",
-   "rain_mm": 58,
-   "observed": 0.0,
-   "before": 58.3,
-   "after": 0.0
-  },
-  {
-   "case": "2025-09-28",
-   "point": "sellent-carcer",
-   "rain_mm": 49,
-   "observed": 0.2,
-   "before": 37.5,
-   "after": 0.0
-  },
-  {
-   "case": "2025-09-28",
+   "case": "2025-03-17",
    "point": "vernissa-real",
-   "rain_mm": 113,
+   "gauge": "chj-13568",
+   "rain_mm": 47,
+   "observed": 18.4,
+   "before": 29.8,
+   "production": 0.0,
+   "after": 9.7,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-09-29",
+   "point": "vernissa-real",
+   "gauge": "chj-13568",
+   "rain_mm": 97,
    "observed": 8.7,
-   "before": 229.4,
-   "after": 109.1
+   "before": 205.3,
+   "production": 142.4,
+   "after": 128.9,
+   "rain_source": "truth",
+   "anchor": false
   },
   {
-   "case": "2025-09-28",
-   "point": "magro-carlet",
-   "rain_mm": 61,
-   "observed": 3.7,
-   "before": 77.9,
-   "after": 0.0
-  },
-  {
-   "case": "2025-12-14",
-   "point": "sellent-carcer",
-   "rain_mm": 44,
-   "observed": 0.2,
-   "before": 24.3,
-   "after": 0.0
-  },
-  {
-   "case": "2025-12-14",
+   "case": "2025-10-09",
    "point": "vernissa-real",
-   "rain_mm": 100,
-   "observed": 5.9,
-   "before": 178.7,
-   "after": 3.6
+   "gauge": "chj-13568",
+   "rain_mm": 170,
+   "observed": 22.2,
+   "before": 188.3,
+   "production": 20.4,
+   "after": 37.9,
+   "rain_source": "gauges",
+   "anchor": false
   },
   {
-   "case": "2025-12-28",
-   "point": "poyo-ribarroja",
-   "rain_mm": 79,
-   "observed": 1.8,
-   "before": 143.4,
-   "after": 0.0
-  },
-  {
-   "case": "2025-12-28",
-   "point": "carraixet-betera",
-   "rain_mm": 33,
-   "observed": 0.0,
-   "before": 7.1,
-   "after": 0.0
-  },
-  {
-   "case": "2025-12-28",
-   "point": "magro-requena",
-   "rain_mm": 53,
-   "observed": 8.0,
-   "before": 107.0,
-   "after": 0.0
-  },
-  {
-   "case": "2025-12-28",
+   "case": "2025-12-25",
    "point": "vernissa-real",
-   "rain_mm": 102,
-   "observed": 61.2,
-   "before": 280.5,
-   "after": 58.0
+   "gauge": "chj-13568",
+   "rain_mm": 96,
+   "observed": 31.3,
+   "before": 76.6,
+   "production": 2.8,
+   "after": 17.9,
+   "rain_source": "gauges",
+   "anchor": false
   },
   {
-   "case": "2025-12-28",
-   "point": "magro-carlet",
-   "rain_mm": 105,
-   "observed": 45.8,
-   "before": 401.4,
-   "after": 2.6
+   "case": "2026-01-03",
+   "point": "vernissa-real",
+   "gauge": "chj-13568",
+   "rain_mm": 46,
+   "observed": 20.5,
+   "before": 13.8,
+   "production": 0.0,
+   "after": 4.9,
+   "rain_source": "gauges",
+   "anchor": false
   },
   {
-   "case": "2024-10-dana",
+   "case": "2026-01-19",
+   "point": "vernissa-real",
+   "gauge": "chj-13568",
+   "rain_mm": 27,
+   "observed": 9.4,
+   "before": 1.8,
+   "production": 0.0,
+   "after": 2.0,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-03",
+   "point": "vernissa-real",
+   "gauge": "chj-13568",
+   "rain_mm": 77,
+   "observed": 31.1,
+   "before": 114.4,
+   "production": 0.0,
+   "after": 29.6,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-10",
+   "point": "vernissa-real",
+   "gauge": "chj-13568",
+   "rain_mm": 46,
+   "observed": 20.0,
+   "before": 38.9,
+   "production": 0.0,
+   "after": 10.2,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-04-12",
+   "point": "vernissa-real",
+   "gauge": "chj-13568",
+   "rain_mm": 23,
+   "observed": 6.7,
+   "before": 0.0,
+   "production": 0.0,
+   "after": 1.6,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2026-05-09",
+   "point": "vernissa-real",
+   "gauge": "chj-13568",
+   "rain_mm": 32,
+   "observed": 10.8,
+   "before": 11.4,
+   "production": 0.0,
+   "after": 8.1,
+   "rain_source": "gauges",
+   "anchor": false
+  },
+  {
+   "case": "2025-03-01",
+   "point": "viuda-almassora",
+   "gauge": "chj-13917",
+   "rain_mm": 209,
+   "observed": 223.2,
+   "before": 936.2,
+   "production": 92.4,
+   "after": 34.6,
+   "rain_source": "truth",
+   "anchor": false
+  },
+  {
+   "case": "2026-03-05",
+   "point": "viuda-almassora",
+   "gauge": "chj-13917",
+   "rain_mm": 114,
+   "observed": 19.3,
+   "before": 201.4,
+   "production": 0.0,
+   "after": 0.9,
+   "rain_source": "gauges",
+   "anchor": false
+  }
+ ],
+ "generated": "2026-10-02 09:10",
+ "n_catchments": 26,
+ "n_episodes": 22,
+ "model": "net = (1 - alpha) [p c(W; P0, S) + (1 - c) excess(p, phi)] + alpha p c(W; P0b, Sb);  W(t) = W(t-1) exp(-1/tau) + p(t)",
+ "families": [
+  {
+   "family": "in production: P0 120, S 150, hard phi 45",
+   "n_par": 0,
+   "p0": 120.0,
+   "s": 150.0,
+   "tau": 72.0,
+   "phi": 45.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "max(p-phi,0)",
+   "in_sample": {
+    "mae": 0.579,
+    "sd": 0.899,
+    "bias": -0.244,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.579,
+    "sd": 0.899,
+    "bias": -0.244,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.579,
+    "sd": 0.899,
+    "bias": -0.244,
+    "n": 208
+   },
+   "anchors_ratio": 0.83
+  },
+  {
+   "family": "regional P0, S (no intensity term)",
+   "n_par": 2,
+   "p0": 150.0,
+   "s": 75.0,
+   "tau": 72.0,
+   "phi": 0.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "none",
+   "in_sample": {
+    "mae": 0.574,
+    "sd": 0.824,
+    "bias": -0.366,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.604,
+    "sd": 0.819,
+    "bias": -0.377,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.622,
+    "sd": 0.921,
+    "bias": -0.311,
+    "n": 208
+   },
+   "anchors_ratio": 0.8
+  },
+  {
+   "family": "+ memory tau (72 or 144 h)",
+   "n_par": 3,
+   "p0": 150.0,
+   "s": 75.0,
+   "tau": 72.0,
+   "phi": 0.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "none",
+   "in_sample": {
+    "mae": 0.574,
+    "sd": 0.824,
+    "bias": -0.366,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.604,
+    "sd": 0.819,
+    "bias": -0.377,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.622,
+    "sd": 0.921,
+    "bias": -0.311,
+    "n": 208
+   },
+   "anchors_ratio": 0.8
+  },
+  {
+   "family": "+ hard excess max(p - phi, 0)",
+   "n_par": 3,
+   "p0": 150.0,
+   "s": 150.0,
+   "tau": 72.0,
+   "phi": 30.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "max(p-phi,0)",
+   "in_sample": {
+    "mae": 0.565,
+    "sd": 0.89,
+    "bias": -0.26,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.636,
+    "sd": 0.924,
+    "bias": -0.275,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.605,
+    "sd": 0.955,
+    "bias": -0.213,
+    "n": 208
+   },
+   "anchors_ratio": 0.86
+  },
+  {
+   "family": "+ soft excess p exp(-phi/p)",
+   "n_par": 3,
+   "p0": 150.0,
+   "s": 75.0,
+   "tau": 72.0,
+   "phi": 100.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "p*exp(-phi/p)",
+   "in_sample": {
+    "mae": 0.55,
+    "sd": 0.859,
+    "bias": -0.241,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.609,
+    "sd": 0.883,
+    "bias": -0.261,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.609,
+    "sd": 0.943,
+    "bias": -0.195,
+    "n": 208
+   },
+   "anchors_ratio": 0.86
+  },
+  {
+   "family": "hard excess 45 + antecedent state (API on P0)",
+   "n_par": 3,
+   "p0": 100.0,
+   "s": 300.0,
+   "tau": 72.0,
+   "phi": 45.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "max(p-phi,0)",
+   "in_sample": {
+    "mae": 0.577,
+    "sd": 0.874,
+    "bias": -0.227,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.604,
+    "sd": 0.904,
+    "bias": -0.26,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.643,
+    "sd": 0.959,
+    "bias": -0.271,
+    "n": 208
+   },
+   "anchors_ratio": 0.74
+  },
+  {
+   "family": "q5 rule: P0 dry 100-120, wet/dry 0.19, hard 45",
+   "n_par": 2,
+   "p0": 120.0,
+   "s": 300.0,
+   "tau": 72.0,
+   "phi": 45.0,
+   "ratio": 0.19,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "max(p-phi,0)",
+   "in_sample": {
+    "mae": 0.763,
+    "sd": 1.138,
+    "bias": 0.29,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.763,
+    "sd": 1.138,
+    "bias": 0.29,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.763,
+    "sd": 1.138,
+    "bias": 0.29,
+    "n": 208
+   },
+   "anchors_ratio": 0.8
+  },
+  {
+   "family": "+ Clark K 0.15 or 0.3",
+   "n_par": 4,
+   "p0": 150.0,
+   "s": 150.0,
+   "tau": 72.0,
+   "phi": 100.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.15,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "p*exp(-phi/p)",
+   "in_sample": {
+    "mae": 0.546,
+    "sd": 0.846,
+    "bias": -0.236,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.574,
+    "sd": 0.86,
+    "bias": -0.239,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.591,
+    "sd": 0.926,
+    "bias": -0.191,
+    "n": 208
+   },
+   "anchors_ratio": 0.83
+  },
+  {
+   "family": "P0 per cell = k * P0i (CEDEX raster)",
+   "n_par": 3,
+   "p0": 150.0,
+   "s": 150.0,
+   "tau": 72.0,
+   "phi": 100.0,
+   "ratio": 1.0,
+   "pat": "p0i",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "p*exp(-phi/p)",
+   "in_sample": {
+    "mae": 0.551,
+    "sd": 0.84,
+    "bias": -0.233,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.59,
+    "sd": 0.849,
+    "bias": -0.322,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.646,
+    "sd": 0.936,
+    "bias": -0.278,
+    "n": 208
+   },
+   "anchors_ratio": 0.77
+  },
+  {
+   "family": "P0 per cell = k * P0i * beta",
+   "n_par": 3,
+   "p0": 190.0,
+   "s": 75.0,
+   "tau": 72.0,
+   "phi": 100.0,
+   "ratio": 1.0,
+   "pat": "p0i_beta",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "p*exp(-phi/p)",
+   "in_sample": {
+    "mae": 0.596,
+    "sd": 0.866,
+    "bias": -0.3,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.623,
+    "sd": 0.915,
+    "bias": -0.247,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.681,
+    "sd": 1.019,
+    "bias": -0.195,
+    "n": 208
+   },
+   "anchors_ratio": 0.67
+  },
+  {
+   "family": "P0 per cell = k * P0i * beta + state",
+   "n_par": 4,
+   "p0": 190.0,
+   "s": 75.0,
+   "tau": 72.0,
+   "phi": 100.0,
+   "ratio": 1.0,
+   "pat": "p0i_beta",
+   "kf": 0.3,
+   "alpha": 0.0,
+   "p0b": 25.0,
+   "sb": 100.0,
+   "form": "p*exp(-phi/p)",
+   "in_sample": {
+    "mae": 0.596,
+    "sd": 0.866,
+    "bias": -0.3,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.623,
+    "sd": 0.915,
+    "bias": -0.247,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.681,
+    "sd": 1.019,
+    "bias": -0.195,
+    "n": 208
+   },
+   "anchors_ratio": 0.67
+  },
+  {
+   "family": "two components: responsive share alpha",
+   "n_par": 6,
+   "p0": 190.0,
+   "s": 75.0,
+   "tau": 72.0,
+   "phi": 45.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.02,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "form": "max(p-phi,0)",
+   "in_sample": {
+    "mae": 0.519,
+    "sd": 0.751,
+    "bias": -0.17,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.589,
+    "sd": 0.812,
+    "bias": -0.203,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.599,
+    "sd": 0.864,
+    "bias": -0.112,
+    "n": 208
+   },
+   "anchors_ratio": 0.77
+  },
+  {
+   "family": "anything in the grid",
+   "n_par": 8,
+   "p0": 190.0,
+   "s": 75.0,
+   "tau": 72.0,
+   "phi": 45.0,
+   "ratio": 1.0,
+   "pat": "uniform",
+   "kf": 0.3,
+   "alpha": 0.02,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "form": "max(p-phi,0)",
+   "in_sample": {
+    "mae": 0.519,
+    "sd": 0.751,
+    "bias": -0.17,
+    "n": 208
+   },
+   "leave_episode_out": {
+    "mae": 0.618,
+    "sd": 0.84,
+    "bias": -0.257,
+    "n": 208
+   },
+   "leave_catchment_out": {
+    "mae": 0.599,
+    "sd": 0.864,
+    "bias": -0.112,
+    "n": 208
+   },
+   "anchors_ratio": 0.77
+  }
+ ],
+ "joint_search": [
+  {
+   "p0": 150.0,
+   "s": 75.0,
+   "form": 0,
+   "phi": 0.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.3891,
+   "gauges": {
+    "mae": 0.418,
+    "sd": 0.726,
+    "bias": 0.045,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.179,
+    "sd": 0.272,
+    "bias": -0.153,
+    "n": 8
+   },
+   "anchors_ratio": 0.81,
+   "forata_runoff_mm": 54.0
+  },
+  {
+   "p0": 150.0,
+   "s": 75.0,
+   "form": 1,
+   "phi": 60.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.3927,
+   "gauges": {
+    "mae": 0.425,
+    "sd": 0.754,
+    "bias": 0.054,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.165,
+    "sd": 0.244,
+    "bias": -0.121,
+    "n": 8
+   },
+   "anchors_ratio": 0.84,
+   "forata_runoff_mm": 59.0
+  },
+  {
+   "p0": 150.0,
+   "s": 150.0,
+   "form": 1,
+   "phi": 45.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.3937,
+   "gauges": {
+    "mae": 0.421,
+    "sd": 0.737,
+    "bias": 0.051,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.192,
+    "sd": 0.221,
+    "bias": -0.192,
+    "n": 8
+   },
+   "anchors_ratio": 0.78,
+   "forata_runoff_mm": 51.6
+  },
+  {
+   "p0": 150.0,
+   "s": 75.0,
+   "form": 1,
+   "phi": 45.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.3964,
+   "gauges": {
+    "mae": 0.433,
+    "sd": 0.77,
+    "bias": 0.073,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.141,
+    "sd": 0.195,
+    "bias": -0.078,
+    "n": 8
+   },
+   "anchors_ratio": 0.88,
+   "forata_runoff_mm": 65.2
+  },
+  {
+   "p0": 190.0,
+   "s": 75.0,
+   "form": 1,
+   "phi": 45.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.3972,
+   "gauges": {
+    "mae": 0.422,
+    "sd": 0.72,
+    "bias": 0.019,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.196,
+    "sd": 0.267,
+    "bias": -0.179,
+    "n": 8
+   },
+   "anchors_ratio": 0.77,
+   "forata_runoff_mm": 40.9
+  },
+  {
+   "p0": 190.0,
+   "s": 75.0,
+   "form": 1,
+   "phi": 60.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.398,
+   "gauges": {
+    "mae": 0.415,
+    "sd": 0.701,
+    "bias": -0.003,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.245,
+    "sd": 0.338,
+    "bias": -0.245,
+    "n": 8
+   },
+   "anchors_ratio": 0.72,
+   "forata_runoff_mm": 33.9
+  },
+  {
+   "p0": 150.0,
+   "s": 150.0,
+   "form": 1,
+   "phi": 60.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.3983,
+   "gauges": {
+    "mae": 0.415,
+    "sd": 0.72,
+    "bias": 0.031,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.262,
+    "sd": 0.276,
+    "bias": -0.262,
+    "n": 8
+   },
+   "anchors_ratio": 0.72,
+   "forata_runoff_mm": 45.0
+  },
+  {
+   "p0": 150.0,
+   "s": 150.0,
+   "form": 0,
+   "phi": 0.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.4025,
+   "gauges": {
+    "mae": 0.409,
+    "sd": 0.69,
+    "bias": 0.021,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.334,
+    "sd": 0.329,
+    "bias": -0.334,
+    "n": 8
+   },
+   "anchors_ratio": 0.66,
+   "forata_runoff_mm": 39.8
+  },
+  {
+   "p0": 150.0,
+   "s": 75.0,
+   "form": 2,
+   "phi": 100.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.4046,
+   "gauges": {
+    "mae": 0.442,
+    "sd": 0.774,
+    "bias": 0.105,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.148,
+    "sd": 0.208,
+    "bias": -0.095,
+    "n": 8
+   },
+   "anchors_ratio": 0.87,
+   "forata_runoff_mm": 65.2
+  },
+  {
+   "p0": 190.0,
+   "s": 150.0,
+   "form": 1,
+   "phi": 45.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.4061,
+   "gauges": {
+    "mae": 0.416,
+    "sd": 0.703,
+    "bias": 0.006,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.298,
+    "sd": 0.276,
+    "bias": -0.298,
+    "n": 8
+   },
+   "anchors_ratio": 0.68,
+   "forata_runoff_mm": 33.5
+  },
+  {
+   "p0": 150.0,
+   "s": 150.0,
+   "form": 1,
+   "phi": 30.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.4068,
+   "gauges": {
+    "mae": 0.45,
+    "sd": 0.802,
+    "bias": 0.104,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.11,
+    "sd": 0.14,
+    "bias": -0.095,
+    "n": 8
+   },
+   "anchors_ratio": 0.87,
+   "forata_runoff_mm": 67.4
+  },
+  {
+   "p0": 150.0,
+   "s": 150.0,
+   "form": 2,
+   "phi": 100.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.4069,
+   "gauges": {
+    "mae": 0.432,
+    "sd": 0.745,
+    "bias": 0.081,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.223,
+    "sd": 0.234,
+    "bias": -0.223,
+    "n": 8
+   },
+   "anchors_ratio": 0.75,
+   "forata_runoff_mm": 51.7
+  },
+  {
+   "p0": 190.0,
+   "s": 150.0,
+   "form": 1,
+   "phi": 30.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.4079,
+   "gauges": {
+    "mae": 0.44,
+    "sd": 0.773,
+    "bias": 0.071,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.175,
+    "sd": 0.186,
+    "bias": -0.175,
+    "n": 8
+   },
+   "anchors_ratio": 0.79,
+   "forata_runoff_mm": 50.9
+  },
+  {
+   "p0": 190.0,
+   "s": 75.0,
+   "form": 0,
+   "phi": 0.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.4088,
+   "gauges": {
+    "mae": 0.415,
+    "sd": 0.686,
+    "bias": -0.02,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.319,
+    "sd": 0.435,
+    "bias": -0.319,
+    "n": 8
+   },
+   "anchors_ratio": 0.66,
+   "forata_runoff_mm": 28.6
+  },
+  {
+   "p0": 190.0,
+   "s": 75.0,
+   "form": 1,
+   "phi": 30.0,
+   "p0b": 10.0,
+   "sb": 100.0,
+   "score": 0.4102,
+   "gauges": {
+    "mae": 0.447,
+    "sd": 0.788,
+    "bias": 0.082,
+    "n": 200
+   },
+   "anchors": {
+    "mae": 0.147,
+    "sd": 0.179,
+    "bias": -0.093,
+    "n": 8
+   },
+   "anchors_ratio": 0.86,
+   "forata_runoff_mm": 57.9
+  }
+ ],
+ "joint_best_by_form": {
+  "none 0": 0.3891,
+  "max(p-phi,0) 30": 0.4068,
+  "max(p-phi,0) 45": 0.3937,
+  "max(p-phi,0) 60": 0.3927,
+  "p*exp(-phi/p) 100": 0.4046
+ },
+ "validation": {
+  "same_alpha_everywhere": {
+   "mae": 0.533,
+   "sd": 0.781,
+   "bias": -0.036,
+   "n": 208
+  },
+  "per_catchment_pooled_to_regional": {
+   "tau": 0.8,
+   "leave_episode_out": {
+    "mae": 0.392,
+    "sd": 0.69,
+    "bias": 0.019,
+    "n": 208
+   },
+   "in_sample": {
+    "mae": 0.36,
+    "sd": 0.666,
+    "bias": 0.025,
+    "n": 208
+   }
+  },
+  "regression": {
+   "attributes": [
+    "p0i_mm",
+    "ln_area"
+   ],
+   "beta": [
+    -0.6179189697304462,
+    -1.9715681568025833,
+    0.5732061986307824
+   ],
+   "mean": [
+    20.323076923076922,
+    5.904457739359984
+   ],
+   "sd": [
+    2.789445450755159,
+    0.8373824818241346
+   ],
+   "leave_catchment_out": {
+    "mae": 0.492,
+    "sd": 0.806,
+    "bias": -0.058,
+    "n": 200
+   },
+   "in_sample": {
+    "mae": 0.478,
+    "sd": 0.798,
+    "bias": -0.058,
+    "n": 200
+   },
+   "search": [
+    {
+     "names": [],
+     "loco": {
+      "mae": 0.604,
+      "sd": 0.863,
+      "bias": -0.139,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.572,
+      "sd": 0.839,
+      "bias": -0.151,
+      "n": 200
+     }
+    },
+    {
+     "names": [
+      "carb_high"
+     ],
+     "loco": {
+      "mae": 0.517,
+      "sd": 0.829,
+      "bias": -0.09,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.498,
+      "sd": 0.815,
+      "bias": -0.107,
+      "n": 200
+     },
+     "beta": [
+      -1.092,
+      1.086
+     ],
+     "sign_ok": false
+    },
+    {
+     "names": [
+      "p0i_mm"
+     ],
+     "loco": {
+      "mae": 0.536,
+      "sd": 0.824,
+      "bias": -0.1,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.514,
+      "sd": 0.811,
+      "bias": -0.108,
+      "n": 200
+     },
+     "beta": [
+      -0.921,
+      -1.879
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "urban"
+     ],
+     "loco": {
+      "mae": 0.559,
+      "sd": 0.851,
+      "bias": -0.071,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.526,
+      "sd": 0.827,
+      "bias": -0.108,
+      "n": 200
+     },
+     "beta": [
+      -0.541,
+      0.658
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "crops"
+     ],
+     "loco": {
+      "mae": 0.565,
+      "sd": 0.839,
+      "bias": -0.013,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.514,
+      "sd": 0.81,
+      "bias": 0.01,
+      "n": 200
+     },
+     "beta": [
+      -0.013,
+      1.704
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "ln_area"
+     ],
+     "loco": {
+      "mae": 0.577,
+      "sd": 0.857,
+      "bias": -0.103,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.545,
+      "sd": 0.833,
+      "bias": -0.129,
+      "n": 200
+     },
+     "beta": [
+      -0.418,
+      0.679
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "slope"
+     ],
+     "loco": {
+      "mae": 0.581,
+      "sd": 0.855,
+      "bias": -0.057,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.539,
+      "sd": 0.821,
+      "bias": -0.048,
+      "n": 200
+     },
+     "beta": [
+      -0.079,
+      -0.853
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "map_mm"
+     ],
+     "loco": {
+      "mae": 0.591,
+      "sd": 0.859,
+      "bias": -0.15,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.548,
+      "sd": 0.828,
+      "bias": -0.134,
+      "n": 200
+     },
+     "beta": [
+      -0.335,
+      -0.815
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "forest"
+     ],
+     "loco": {
+      "mae": 0.604,
+      "sd": 0.876,
+      "bias": -0.031,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.537,
+      "sd": 0.826,
+      "bias": -0.037,
+      "n": 200
+     },
+     "beta": [
+      -0.743,
+      -1.368
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "ln_q2_spec"
+     ],
+     "loco": {
+      "mae": 0.632,
+      "sd": 0.888,
+      "bias": -0.138,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.57,
+      "sd": 0.835,
+      "bias": -0.142,
+      "n": 200
+     },
+     "beta": [
+      -0.419,
+      -0.345
+     ],
+     "sign_ok": false
+    },
+    {
+     "names": [
+      "quaternary"
+     ],
+     "loco": {
+      "mae": 0.636,
+      "sd": 0.899,
+      "bias": -0.07,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.565,
+      "sd": 0.841,
+      "bias": -0.115,
+      "n": 200
+     },
+     "beta": [
+      -0.376,
+      0.557
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "carb"
+     ],
+     "loco": {
+      "mae": 0.654,
+      "sd": 0.929,
+      "bias": -0.091,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.572,
+      "sd": 0.839,
+      "bias": -0.139,
+      "n": 200
+     },
+     "beta": [
+      -0.492,
+      -0.115
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "perm_rank"
+     ],
+     "loco": {
+      "mae": 0.672,
+      "sd": 0.936,
+      "bias": -0.08,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.571,
+      "sd": 0.841,
+      "bias": -0.163,
+      "n": 200
+     },
+     "beta": [
+      -0.668,
+      -0.263
+     ],
+     "sign_ok": false
+    },
+    {
+     "names": [
+      "marl_clay"
+     ],
+     "loco": {
+      "mae": 0.692,
+      "sd": 1.003,
+      "bias": -0.053,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.572,
+      "sd": 0.838,
+      "bias": -0.141,
+      "n": 200
+     },
+     "beta": [
+      -0.515,
+      0.074
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "ln_area"
+     ],
+     "loco": {
+      "mae": 0.492,
+      "sd": 0.806,
+      "bias": -0.058,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.478,
+      "sd": 0.798,
+      "bias": -0.058,
+      "n": 200
+     },
+     "beta": [
+      -0.618,
+      -1.972,
+      0.573
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "carb_high"
+     ],
+     "loco": {
+      "mae": 0.534,
+      "sd": 0.835,
+      "bias": -0.078,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.468,
+      "sd": 0.796,
+      "bias": -0.098,
+      "n": 200
+     },
+     "beta": [
+      -1.441,
+      -1.502,
+      0.982
+     ],
+     "sign_ok": false
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "perm_rank"
+     ],
+     "loco": {
+      "mae": 0.54,
+      "sd": 0.83,
+      "bias": -0.095,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.514,
+      "sd": 0.811,
+      "bias": -0.098,
+      "n": 200
+     },
+     "beta": [
+      -0.857,
+      -1.827,
+      -0.07
+     ],
+     "sign_ok": false
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "ln_q2_spec"
+     ],
+     "loco": {
+      "mae": 0.549,
+      "sd": 0.829,
+      "bias": -0.111,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.513,
+      "sd": 0.81,
+      "bias": -0.1,
+      "n": 200
+     },
+     "beta": [
+      -0.849,
+      -1.848,
+      -0.047
+     ],
+     "sign_ok": false
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "urban"
+     ],
+     "loco": {
+      "mae": 0.552,
+      "sd": 0.846,
+      "bias": -0.049,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.505,
+      "sd": 0.808,
+      "bias": -0.083,
+      "n": 200
+     },
+     "beta": [
+      -0.758,
+      -1.512,
+      0.271
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "carb"
+     ],
+     "loco": {
+      "mae": 0.559,
+      "sd": 0.845,
+      "bias": -0.077,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.513,
+      "sd": 0.812,
+      "bias": -0.108,
+      "n": 200
+     },
+     "beta": [
+      -0.93,
+      -1.905,
+      0.013
+     ],
+     "sign_ok": false
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "crops"
+     ],
+     "loco": {
+      "mae": 0.565,
+      "sd": 0.846,
+      "bias": -0.051,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.507,
+      "sd": 0.802,
+      "bias": -0.073,
+      "n": 200
+     },
+     "beta": [
+      -0.569,
+      -1.09,
+      0.707
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "quaternary"
+     ],
+     "loco": {
+      "mae": 0.57,
+      "sd": 0.855,
+      "bias": -0.057,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.513,
+      "sd": 0.809,
+      "bias": -0.097,
+      "n": 200
+     },
+     "beta": [
+      -0.757,
+      -1.611,
+      0.166
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "slope"
+     ],
+     "loco": {
+      "mae": 0.571,
+      "sd": 0.861,
+      "bias": -0.035,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.499,
+      "sd": 0.805,
+      "bias": -0.105,
+      "n": 200
+     },
+     "beta": [
+      -0.677,
+      -1.286,
+      -0.504
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "marl_clay"
+     ],
+     "loco": {
+      "mae": 0.58,
+      "sd": 0.864,
+      "bias": -0.063,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.512,
+      "sd": 0.807,
+      "bias": -0.101,
+      "n": 200
+     },
+     "beta": [
+      -0.847,
+      -1.766,
+      0.117
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "forest"
+     ],
+     "loco": {
+      "mae": 0.584,
+      "sd": 0.87,
+      "bias": -0.056,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.515,
+      "sd": 0.808,
+      "bias": -0.081,
+      "n": 200
+     },
+     "beta": [
+      -0.748,
+      -1.564,
+      -0.167
+     ],
+     "sign_ok": true
+    },
+    {
+     "names": [
+      "p0i_mm",
+      "map_mm"
+     ],
+     "loco": {
+      "mae": 0.63,
+      "sd": 0.937,
+      "bias": -0.023,
+      "n": 200
+     },
+     "in_sample": {
+      "mae": 0.509,
+      "sd": 0.81,
+      "bias": -0.1,
+      "n": 200
+     },
+     "beta": [
+      -0.738,
+      -1.727,
+      -0.345
+     ],
+     "sign_ok": true
+    }
+   ]
+  },
+  "per_catchment_pooled_to_regression": {
+   "tau": 0.8,
+   "leave_episode_out": {
+    "mae": 0.38,
+    "sd": 0.694,
+    "bias": -0.01,
+    "n": 208
+   },
+   "in_sample": {
+    "mae": 0.355,
+    "sd": 0.679,
+    "bias": -0.01,
+    "n": 208
+   }
+  },
+  "deployed": {
+   "ravine_domain": {
+    "mae": 0.393,
+    "sd": 0.71,
+    "bias": -0.079,
+    "n": 208
+   },
+   "gauges": {
+    "mae": 0.421,
+    "sd": 0.753,
+    "bias": -0.063,
+    "n": 200
+   },
+   "outside_domain": {
+    "mae": 0.88,
+    "sd": 0.808,
+    "bias": -0.818,
+    "n": 92
+   }
+  },
+  "deployed_counts": {
+   "hits": 42,
+   "misses": 31,
+   "false_alarms": 9
+  },
+  "production": {
+   "ravine_domain": {
+    "mae": 0.579,
+    "sd": 0.899,
+    "bias": -0.244,
+    "n": 208
+   },
+   "gauges": {
+    "mae": 0.641,
+    "sd": 0.957,
+    "bias": -0.259,
+    "n": 200
+   },
+   "outside_domain": {
+    "mae": 1.014,
+    "sd": 0.841,
+    "bias": -0.956,
+    "n": 92
+   }
+  },
+  "production_counts": {
+   "hits": 20,
+   "misses": 53,
+   "false_alarms": 9
+  }
+ },
+ "anchors": [
+  {
    "point": "poyo-ribarroja",
-   "rain_mm": 0,
-   "observed": 2700.0,
-   "before": 2472.0,
-   "after": 2184.9
+   "official": 3200.0,
+   "zero_loss_peak": 2723,
+   "target_used": 2397,
+   "new": 2309,
+   "production": 2378,
+   "note": "CEDEX liquid peak at the A-3 (2282 measured when the sensor was lost)",
+   "lower_bound": false
+  },
+  {
+   "point": "poyo-chiva",
+   "official": 1100.0,
+   "zero_loss_peak": 893,
+   "target_used": 786,
+   "new": 775,
+   "production": 795,
+   "note": "CEDEX estimate above Chiva (43 km2)",
+   "lower_bound": false
+  },
+  {
+   "point": "horteta-torrent",
+   "official": 1500.0,
+   "zero_loss_peak": 1010,
+   "target_used": 889,
+   "new": 572,
+   "production": 610,
+   "note": "estimate at the A-7",
+   "lower_bound": false
+  },
+  {
+   "point": "poyo-paiporta",
+   "official": 3400.0,
+   "zero_loss_peak": 3524,
+   "target_used": 3101,
+   "new": 2971,
+   "production": 3057,
+   "note": "CEDEX provisional at Picanya",
+   "lower_bound": false
+  },
+  {
+   "point": "bunol-bunol",
+   "official": 1000.0,
+   "zero_loss_peak": 1170,
+   "target_used": 1000,
+   "new": 808,
+   "production": 888,
+   "note": "estimate, río Buñol at Buñol",
+   "lower_bound": false
+  },
+  {
+   "point": "magro-real",
+   "official": 2800.0,
+   "zero_loss_peak": 3196,
+   "target_used": 2800,
+   "new": 2165,
+   "production": 2338,
+   "note": "DERIVED: 3600 modelled at Montroi minus ~800 of Forata spill (1092-1200 measured later, at 21:00)",
+   "lower_bound": false
+  },
+  {
+   "point": "magro-carlet",
+   "official": 3200.0,
+   "zero_loss_peak": 3858,
+   "target_used": 3200,
+   "new": 2298,
+   "production": 2550,
+   "note": "DERIVED: ~4000 modelled at Carlet minus ~800 of Forata spill",
+   "lower_bound": false
+  },
+  {
+   "point": "forata-in",
+   "official": 2016.0,
+   "zero_loss_peak": 3740,
+   "target_used": 2016,
+   "new": 1007,
+   "production": 1131,
+   "note": "measured inflow to Forata when the sensor range ended (2400 quoted)",
+   "lower_bound": true
+  }
+ ],
+ "catchments": {
+  "bunol-bunol": {
+   "name": "bunol-bunol",
+   "alpha": 0.006,
+   "n_events": 0,
+   "alpha_regression": 0.006
+  },
+  "chj-12808": {
+   "name": "MC VILAMARXANT",
+   "alpha": 0.0566,
+   "n_events": 6,
+   "alpha_regression": 0.0383
+  },
+  "chj-12810": {
+   "name": "EA 74 FUENTE DEL BAÑO",
+   "alpha": 0.0109,
+   "n_events": 5,
+   "alpha_regression": 0.0171
+  },
+  "chj-12827": {
+   "name": "EA 29 MONTAVERNER",
+   "alpha": 0.0932,
+   "n_events": 14,
+   "alpha_regression": 0.0761
+  },
+  "chj-12901": {
+   "name": "MC VILLATOYA",
+   "alpha": 0.0327,
+   "n_events": 4,
+   "alpha_regression": 0.0188
+  },
+  "chj-13070": {
+   "name": "EA 89 HUERTO MULET",
+   "alpha": 0.0764,
+   "n_events": 5,
+   "alpha_regression": 0.0802
+  },
+  "chj-13102": {
+   "name": "MC CANALS",
+   "alpha": 0.0171,
+   "n_events": 8,
+   "alpha_regression": 0.051
+  },
+  "chj-13403": {
+   "name": "EA 60 REQUENA",
+   "alpha": 0.042,
+   "n_events": 5,
+   "alpha_regression": 0.0624
+  },
+  "chj-13420": {
+   "name": "MC CERVERA DEL MAESTRE",
+   "alpha": 0.003,
+   "n_events": 12,
+   "alpha_regression": 0.0064
+  },
+  "chj-13431": {
+   "name": "MC TRAIGUERA",
+   "alpha": 0.0035,
+   "n_events": 10,
+   "alpha_regression": 0.0042
+  },
+  "chj-13566": {
+   "name": "MC GALLINERA L'ATZÚBIA",
+   "alpha": 0.006,
+   "n_events": 15,
+   "alpha_regression": 0.0076
+  },
+  "chj-13568": {
+   "name": "MC VERNISSA",
+   "alpha": 0.178,
+   "n_events": 14,
+   "alpha_regression": 0.0129
+  },
+  "chj-13617": {
+   "name": "EA 120 CALLES",
+   "alpha": 0.0209,
+   "n_events": 4,
+   "alpha_regression": 0.018
+  },
+  "chj-13707": {
+   "name": "MC ATZENETA DEL MAESTRAT",
+   "alpha": 0.0033,
+   "n_events": 9,
+   "alpha_regression": 0.003
+  },
+  "chj-13722": {
+   "name": "MC MOIXENT",
+   "alpha": 0.038,
+   "n_events": 4,
+   "alpha_regression": 0.0394
+  },
+  "chj-13792": {
+   "name": "MC CARRAIXET BÉTERA",
+   "alpha": 0.0074,
+   "n_events": 5,
+   "alpha_regression": 0.0085
+  },
+  "chj-13873": {
+   "name": "MC RAMBLA POYO N-III",
+   "alpha": 0.0104,
+   "n_events": 7,
+   "alpha_regression": 0.0296
+  },
+  "chj-13896": {
+   "name": "MC RAMBLA CASTELLANA",
+   "alpha": 0.0327,
+   "n_events": 8,
+   "alpha_regression": 0.0158
+  },
+  "chj-13897": {
+   "name": "MC RAMBLA PRIMERA",
+   "alpha": 0.0658,
+   "n_events": 5,
+   "alpha_regression": 0.0436
+  },
+  "chj-13917": {
+   "name": "MC VALL D'ALBA",
+   "alpha": 0.003,
+   "n_events": 6,
+   "alpha_regression": 0.003
+  },
+  "chj-14551": {
+   "name": "MC GUADASSUAR",
+   "alpha": 0.0764,
+   "n_events": 8,
+   "alpha_regression": 0.0314
+  },
+  "chj-1523": {
+   "name": "EA 25 AGUAS POTABLES",
+   "alpha": 0.1195,
+   "n_events": 6,
+   "alpha_regression": 0.0614
+  },
+  "chj-16767": {
+   "name": "MC SAX",
+   "alpha": 0.0268,
+   "n_events": 4,
+   "alpha_regression": 0.0836
+  },
+  "chj-2443": {
+   "name": "MC MANUEL",
+   "alpha": 0.0843,
+   "n_events": 12,
+   "alpha_regression": 0.0737
+  },
+  "chj-2701": {
+   "name": "MC ESTUBENY",
+   "alpha": 0.0049,
+   "n_events": 13,
+   "alpha_regression": 0.005
+  },
+  "chj-2720": {
+   "name": "EA 148 JÉRICA",
+   "alpha": 0.0121,
+   "n_events": 6,
+   "alpha_regression": 0.0123
+  },
+  "forata-in": {
+   "name": "Forata reservoir inflow",
+   "alpha": 0.0334,
+   "n_events": 0,
+   "alpha_regression": 0.0334
+  },
+  "horteta-torrent": {
+   "name": "horteta-torrent",
+   "alpha": 0.0357,
+   "n_events": 0,
+   "alpha_regression": 0.0357
+  },
+  "magro-real": {
+   "name": "magro-real",
+   "alpha": 0.0201,
+   "n_events": 0,
+   "alpha_regression": 0.0201
+  },
+  "poyo-chiva": {
+   "name": "poyo-chiva",
+   "alpha": 0.0141,
+   "n_events": 0,
+   "alpha_regression": 0.0141
+  },
+  "poyo-paiporta": {
+   "name": "poyo-paiporta",
+   "alpha": 0.06,
+   "n_events": 0,
+   "alpha_regression": 0.06
+  },
+  "seg-01O03A1": {
+   "name": "Aforo en río Mula (Marco de control)",
+   "alpha": 0.1871,
+   "n_events": 5,
+   "alpha_regression": 0.1967
+  }
+ },
+ "timing": [
+  {
+   "vscale": 0.5,
+   "clark_k": 0.15,
+   "n": 31,
+   "lag_median_h": 0.0,
+   "lag_q25_h": -2.0,
+   "lag_q75_h": 8.5,
+   "lag_over_travel_median": 0.0
+  },
+  {
+   "vscale": 0.5,
+   "clark_k": 0.3,
+   "n": 31,
+   "lag_median_h": -1.0,
+   "lag_q25_h": -3.0,
+   "lag_q75_h": 8.5,
+   "lag_over_travel_median": -0.12
+  },
+  {
+   "vscale": 0.5,
+   "clark_k": 0.6,
+   "n": 31,
+   "lag_median_h": -2.0,
+   "lag_q25_h": -4.5,
+   "lag_q75_h": 5.0,
+   "lag_over_travel_median": -0.25
+  },
+  {
+   "vscale": 0.75,
+   "clark_k": 0.15,
+   "n": 32,
+   "lag_median_h": 2.0,
+   "lag_q25_h": 0.75,
+   "lag_q75_h": 9.25,
+   "lag_over_travel_median": 0.34
+  },
+  {
+   "vscale": 0.75,
+   "clark_k": 0.3,
+   "n": 32,
+   "lag_median_h": 1.5,
+   "lag_q25_h": -0.25,
+   "lag_q75_h": 9.25,
+   "lag_over_travel_median": 0.24
+  },
+  {
+   "vscale": 0.75,
+   "clark_k": 0.6,
+   "n": 32,
+   "lag_median_h": 0.5,
+   "lag_q25_h": -1.0,
+   "lag_q75_h": 8.25,
+   "lag_over_travel_median": 0.04
+  },
+  {
+   "vscale": 1.0,
+   "clark_k": 0.15,
+   "n": 32,
+   "lag_median_h": 3.5,
+   "lag_q25_h": 1.75,
+   "lag_q75_h": 10.25,
+   "lag_over_travel_median": 0.55
+  },
+  {
+   "vscale": 1.0,
+   "clark_k": 0.3,
+   "n": 32,
+   "lag_median_h": 3.5,
+   "lag_q25_h": 1.0,
+   "lag_q75_h": 10.25,
+   "lag_over_travel_median": 0.5
+  },
+  {
+   "vscale": 1.0,
+   "clark_k": 0.6,
+   "n": 32,
+   "lag_median_h": 3.5,
+   "lag_q25_h": 0.0,
+   "lag_q75_h": 10.5,
+   "lag_over_travel_median": 0.4
+  },
+  {
+   "vscale": 1.5,
+   "clark_k": 0.15,
+   "n": 32,
+   "lag_median_h": 5.0,
+   "lag_q25_h": 2.0,
+   "lag_q75_h": 10.5,
+   "lag_over_travel_median": 0.71
+  },
+  {
+   "vscale": 1.5,
+   "clark_k": 0.3,
+   "n": 32,
+   "lag_median_h": 5.0,
+   "lag_q25_h": 2.0,
+   "lag_q75_h": 10.5,
+   "lag_over_travel_median": 0.62
+  },
+  {
+   "vscale": 1.5,
+   "clark_k": 0.6,
+   "n": 32,
+   "lag_median_h": 5.0,
+   "lag_q25_h": 1.75,
+   "lag_q75_h": 11.25,
+   "lag_over_travel_median": 0.6
+  }
+ ],
+ "transmission": [
+  {
+   "pair": "Cànyoles: Moixent (227 km2) -> Canals (501 km2)",
+   "n": 8,
+   "ratio_median": 0.22999999999999998,
+   "events": [
+    {
+     "t": "2025-09-21T17",
+     "v_up_hm3": 0.595,
+     "v_down_hm3": 0.127,
+     "ratio": 0.21,
+     "peak_up": 12.7,
+     "base_down": 0.28
+    },
+    {
+     "t": "2025-09-29T17",
+     "v_up_hm3": 0.598,
+     "v_down_hm3": 0.154,
+     "ratio": 0.26,
+     "peak_up": 2.0,
+     "base_down": 0.49
+    },
+    {
+     "t": "2025-10-10T07",
+     "v_up_hm3": 1.671,
+     "v_down_hm3": 0.906,
+     "ratio": 0.54,
+     "peak_up": 4.2,
+     "base_down": 0.73
+    },
+    {
+     "t": "2025-10-26T12",
+     "v_up_hm3": 0.138,
+     "v_down_hm3": 0.014,
+     "ratio": 0.1,
+     "peak_up": 1.6,
+     "base_down": 0.82
+    },
+    {
+     "t": "2025-12-15T09",
+     "v_up_hm3": 0.792,
+     "v_down_hm3": 0.047,
+     "ratio": 0.06,
+     "peak_up": 2.4,
+     "base_down": 0.6
+    },
+    {
+     "t": "2025-12-25T22",
+     "v_up_hm3": 0.564,
+     "v_down_hm3": 0.138,
+     "ratio": 0.25,
+     "peak_up": 2.5,
+     "base_down": 0.56
+    },
+    {
+     "t": "2026-01-04T03",
+     "v_up_hm3": 0.118,
+     "v_down_hm3": 0.075,
+     "ratio": 0.63,
+     "peak_up": 0.7,
+     "base_down": 0.64
+    },
+    {
+     "t": "2026-01-14T18",
+     "v_up_hm3": 0.061,
+     "v_down_hm3": 0.0,
+     "ratio": 0.0,
+     "peak_up": 0.4,
+     "base_down": 0.66
+    }
+   ]
+  },
+  {
+   "pair": "Monleón at Atzeneta (440 km2) -> Rambla de la Viuda at Vall d'Alba (827 km2)",
+   "n": 3,
+   "ratio_median": 0.72,
+   "events": [
+    {
+     "t": "2025-03-03T15",
+     "v_up_hm3": 36.701,
+     "v_down_hm3": 29.98,
+     "ratio": 0.82,
+     "peak_up": 79.5,
+     "base_down": 0.0
+    },
+    {
+     "t": "2025-12-29T15",
+     "v_up_hm3": 1.497,
+     "v_down_hm3": 1.079,
+     "ratio": 0.72,
+     "peak_up": 2.6,
+     "base_down": 0.0
+    },
+    {
+     "t": "2026-03-07T04",
+     "v_up_hm3": 12.16,
+     "v_down_hm3": 7.714,
+     "ratio": 0.63,
+     "peak_up": 30.0,
+     "base_down": 0.32
+    }
+   ]
+  },
+  {
+   "pair": "Guadalaviar: Tramacastilla (96 km2) -> Gea (736 km2)",
+   "n": 7,
+   "ratio_median": 1.32,
+   "events": [
+    {
+     "t": "2024-10-29T15",
+     "v_up_hm3": 1.096,
+     "v_down_hm3": 2.759,
+     "ratio": 2.52,
+     "peak_up": 37.0,
+     "base_down": 0.87
+    },
+    {
+     "t": "2025-01-27T14",
+     "v_up_hm3": 0.538,
+     "v_down_hm3": 0.698,
+     "ratio": 1.3,
+     "peak_up": 8.1,
+     "base_down": 0.65
+    },
+    {
+     "t": "2025-03-08T19",
+     "v_up_hm3": 1.162,
+     "v_down_hm3": 2.392,
+     "ratio": 2.06,
+     "peak_up": 4.4,
+     "base_down": 2.47
+    },
+    {
+     "t": "2025-03-21T22",
+     "v_up_hm3": 0.647,
+     "v_down_hm3": 0.607,
+     "ratio": 0.94,
+     "peak_up": 4.3,
+     "base_down": 4.88
+    },
+    {
+     "t": "2026-01-27T15",
+     "v_up_hm3": 0.664,
+     "v_down_hm3": 0.874,
+     "ratio": 1.32,
+     "peak_up": 7.4,
+     "base_down": 0.91
+    },
+    {
+     "t": "2026-02-02T17",
+     "v_up_hm3": 0.528,
+     "v_down_hm3": 0.323,
+     "ratio": 0.61,
+     "peak_up": 19.4,
+     "base_down": 2.33
+    },
+    {
+     "t": "2026-02-05T04",
+     "v_up_hm3": 4.9,
+     "v_down_hm3": 6.506,
+     "ratio": 1.33,
+     "peak_up": 19.8,
+     "base_down": 2.65
+    }
+   ]
+  },
+  {
+   "pair": "Alfambra: Villalba Alta (487 km2) -> Teruel (1319 km2)",
+   "n": 6,
+   "ratio_median": 1.4849999999999999,
+   "events": [
+    {
+     "t": "2024-10-30T08",
+     "v_up_hm3": 0.836,
+     "v_down_hm3": 1.512,
+     "ratio": 1.81,
+     "peak_up": 16.0,
+     "base_down": 1.34
+    },
+    {
+     "t": "2025-03-09T13",
+     "v_up_hm3": 0.459,
+     "v_down_hm3": 0.758,
+     "ratio": 1.65,
+     "peak_up": 1.8,
+     "base_down": 1.5
+    },
+    {
+     "t": "2025-06-10T06",
+     "v_up_hm3": 0.057,
+     "v_down_hm3": 0.084,
+     "ratio": 1.47,
+     "peak_up": 5.7,
+     "base_down": 0.43
+    },
+    {
+     "t": "2025-07-12T16",
+     "v_up_hm3": 0.104,
+     "v_down_hm3": 0.073,
+     "ratio": 0.7,
+     "peak_up": 5.4,
+     "base_down": 0.36
+    },
+    {
+     "t": "2026-08-05T20",
+     "v_up_hm3": 0.344,
+     "v_down_hm3": 0.365,
+     "ratio": 1.06,
+     "peak_up": 13.1,
+     "base_down": 0.14
+    },
+    {
+     "t": "2026-08-09T01",
+     "v_up_hm3": 0.277,
+     "v_down_hm3": 0.417,
+     "ratio": 1.5,
+     "peak_up": 11.3,
+     "base_down": 0.31
+    }
+   ]
+  },
+  {
+   "pair": "Mijares: El Terde (661 km2) -> Los Cantos (1408 km2)",
+   "n": 6,
+   "ratio_median": 1.08,
+   "events": [
+    {
+     "t": "2025-03-09T01",
+     "v_up_hm3": 0.857,
+     "v_down_hm3": 2.451,
+     "ratio": 2.86,
+     "peak_up": 8.8,
+     "base_down": 4.61
+    },
+    {
+     "t": "2025-04-14T06",
+     "v_up_hm3": 0.247,
+     "v_down_hm3": 0.214,
+     "ratio": 0.87,
+     "peak_up": 3.4,
+     "base_down": 4.32
+    },
+    {
+     "t": "2025-05-14T20",
+     "v_up_hm3": 0.348,
+     "v_down_hm3": 0.223,
+     "ratio": 0.64,
+     "peak_up": 13.3,
+     "base_down": 5.79
+    },
+    {
+     "t": "2025-06-01T21",
+     "v_up_hm3": 0.099,
+     "v_down_hm3": 0.128,
+     "ratio": 1.29,
+     "peak_up": 4.2,
+     "base_down": 4.78
+    },
+    {
+     "t": "2025-07-12T16",
+     "v_up_hm3": 0.493,
+     "v_down_hm3": 0.666,
+     "ratio": 1.35,
+     "peak_up": 16.9,
+     "base_down": 3.98
+    },
+    {
+     "t": "2026-08-06T18",
+     "v_up_hm3": 0.108,
+     "v_down_hm3": 0.069,
+     "ratio": 0.63,
+     "peak_up": 8.8,
+     "base_down": 3.34
+    }
+   ]
+  },
+  {
+   "pair": "Magro: Requena (673 km2) -> Macastre (1055 km2; Forata dam in between)",
+   "n": 2,
+   "ratio_median": 0.255,
+   "events": [
+    {
+     "t": "2025-12-28T19",
+     "v_up_hm3": 0.271,
+     "v_down_hm3": 0.06,
+     "ratio": 0.22,
+     "peak_up": 7.6,
+     "base_down": 0.18
+    },
+    {
+     "t": "2026-09-28T19",
+     "v_up_hm3": 0.071,
+     "v_down_hm3": 0.021,
+     "ratio": 0.29,
+     "peak_up": 5.6,
+     "base_down": 0.21
+    }
+   ]
+  },
+  {
+   "pair": "Albaida: Montaverner (320 km2) -> Manuel (1188 km2; Bellús dam in between)",
+   "n": 25,
+   "ratio_median": 1.42,
+   "events": [
+    {
+     "t": "2024-10-22T22",
+     "v_up_hm3": 0.246,
+     "v_down_hm3": 0.392,
+     "ratio": 1.59,
+     "peak_up": 6.8,
+     "base_down": 0.34
+    },
+    {
+     "t": "2024-10-29T06",
+     "v_up_hm3": 0.07,
+     "v_down_hm3": 1.908,
+     "ratio": 27.17,
+     "peak_up": 3.9,
+     "base_down": 0.4
+    },
+    {
+     "t": "2025-01-16T23",
+     "v_up_hm3": 1.01,
+     "v_down_hm3": 1.916,
+     "ratio": 1.9,
+     "peak_up": 10.2,
+     "base_down": 0.79
+    },
+    {
+     "t": "2025-03-02T11",
+     "v_up_hm3": 2.285,
+     "v_down_hm3": 3.525,
+     "ratio": 1.54,
+     "peak_up": 15.6,
+     "base_down": 0.84
+    },
+    {
+     "t": "2025-03-14T18",
+     "v_up_hm3": 0.167,
+     "v_down_hm3": 0.134,
+     "ratio": 0.8,
+     "peak_up": 3.9,
+     "base_down": 2.09
+    },
+    {
+     "t": "2025-03-17T13",
+     "v_up_hm3": 0.632,
+     "v_down_hm3": 1.076,
+     "ratio": 1.7,
+     "peak_up": 7.0,
+     "base_down": 1.86
+    },
+    {
+     "t": "2025-04-22T16",
+     "v_up_hm3": 0.108,
+     "v_down_hm3": 0.065,
+     "ratio": 0.6,
+     "peak_up": 3.8,
+     "base_down": 1.88
+    },
+    {
+     "t": "2025-05-08T15",
+     "v_up_hm3": 0.088,
+     "v_down_hm3": 0.284,
+     "ratio": 3.23,
+     "peak_up": 7.4,
+     "base_down": 1.57
+    },
+    {
+     "t": "2025-06-18T03",
+     "v_up_hm3": 0.073,
+     "v_down_hm3": 0.002,
+     "ratio": 0.03,
+     "peak_up": 3.4,
+     "base_down": 0.69
+    },
+    {
+     "t": "2025-08-22T16",
+     "v_up_hm3": 0.176,
+     "v_down_hm3": 0.01,
+     "ratio": 0.06,
+     "peak_up": 8.4,
+     "base_down": 2.12
+    },
+    {
+     "t": "2025-09-21T17",
+     "v_up_hm3": 0.095,
+     "v_down_hm3": 0.006,
+     "ratio": 0.07,
+     "peak_up": 3.6,
+     "base_down": 0.27
+    },
+    {
+     "t": "2025-10-09T20",
+     "v_up_hm3": 1.556,
+     "v_down_hm3": 4.198,
+     "ratio": 2.7,
+     "peak_up": 17.5,
+     "base_down": 0.46
+    },
+    {
+     "t": "2025-12-15T05",
+     "v_up_hm3": 0.153,
+     "v_down_hm3": 0.246,
+     "ratio": 1.61,
+     "peak_up": 4.4,
+     "base_down": 0.99
+    },
+    {
+     "t": "2025-12-25T17",
+     "v_up_hm3": 0.827,
+     "v_down_hm3": 4.333,
+     "ratio": 5.24,
+     "peak_up": 16.3,
+     "base_down": 1.58
+    },
+    {
+     "t": "2026-01-04T07",
+     "v_up_hm3": 0.566,
+     "v_down_hm3": 0.803,
+     "ratio": 1.42,
+     "peak_up": 7.0,
+     "base_down": 2.14
+    },
+    {
+     "t": "2026-01-21T02",
+     "v_up_hm3": 0.098,
+     "v_down_hm3": 0.269,
+     "ratio": 2.73,
+     "peak_up": 2.4,
+     "base_down": 3.64
+    },
+    {
+     "t": "2026-03-05T11",
+     "v_up_hm3": 0.439,
+     "v_down_hm3": 1.481,
+     "ratio": 3.37,
+     "peak_up": 12.9,
+     "base_down": 2.6
+    },
+    {
+     "t": "2026-03-10T12",
+     "v_up_hm3": 1.04,
+     "v_down_hm3": 1.183,
+     "ratio": 1.14,
+     "peak_up": 7.9,
+     "base_down": 4.16
+    },
+    {
+     "t": "2026-04-13T00",
+     "v_up_hm3": 0.249,
+     "v_down_hm3": 0.167,
+     "ratio": 0.67,
+     "peak_up": 7.5,
+     "base_down": 3.61
+    },
+    {
+     "t": "2026-05-04T11",
+     "v_up_hm3": 0.29,
+     "v_down_hm3": 0.335,
+     "ratio": 1.16,
+     "peak_up": 8.1,
+     "base_down": 2.61
+    },
+    {
+     "t": "2026-05-07T20",
+     "v_up_hm3": 0.474,
+     "v_down_hm3": 0.839,
+     "ratio": 1.77,
+     "peak_up": 8.4,
+     "base_down": 3.54
+    },
+    {
+     "t": "2026-05-17T19",
+     "v_up_hm3": 0.139,
+     "v_down_hm3": 0.009,
+     "ratio": 0.07,
+     "peak_up": 5.9,
+     "base_down": 4.57
+    },
+    {
+     "t": "2026-08-15T18",
+     "v_up_hm3": 0.115,
+     "v_down_hm3": 0.051,
+     "ratio": 0.44,
+     "peak_up": 3.7,
+     "base_down": 2.47
+    },
+    {
+     "t": "2026-08-20T16",
+     "v_up_hm3": 0.444,
+     "v_down_hm3": 0.379,
+     "ratio": 0.85,
+     "peak_up": 18.2,
+     "base_down": 2.22
+    },
+    {
+     "t": "2026-09-09T22",
+     "v_up_hm3": 0.123,
+     "v_down_hm3": 0.019,
+     "ratio": 0.15,
+     "peak_up": 4.3,
+     "base_down": 1.09
+    }
+   ]
   }
  ]
 }

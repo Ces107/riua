@@ -138,7 +138,7 @@ def _cache_put(source: str, t: datetime, arr: np.ndarray) -> None:
 
 # ----------------------------------------------------------------- Z-R relations
 def dbz_to_rainrate(dbz: np.ndarray, a: float = 200.0, b: float = 1.6,
-                    cap_dbz: float = 55.0, min_dbz: float = 5.0) -> np.ndarray:
+                    cap_dbz: float = 57.0, min_dbz: float = 5.0) -> np.ndarray:
     """Rain rate in mm/h from reflectivity, Z = a * R**b.
 
     Default is Marshall-Palmer (a=200, b=1.6), the same relation OPERA uses for
@@ -158,7 +158,7 @@ def dbz_to_rainrate(dbz: np.ndarray, a: float = 200.0, b: float = 1.6,
     return np.where(np.isnan(d), np.float32(np.nan), r).astype(np.float32)
 
 
-def dbz_to_rainrate_convective(dbz: np.ndarray, cap_dbz: float = 55.0) -> np.ndarray:
+def dbz_to_rainrate_convective(dbz: np.ndarray, cap_dbz: float = 57.0) -> np.ndarray:
     """Z = 300 R^1.4 (WSR-88D convective)."""
     return dbz_to_rainrate(dbz, a=300.0, b=1.4, cap_dbz=cap_dbz)
 
