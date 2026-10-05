@@ -1,0 +1,68 @@
+name: subhourly
+
+# Sub-hourly radar feature (excess ladder, riua.radar.qpe.burst_ladder) for the flood-model calibration days
+# (hindcast/subhourly/days.json): OPERA archive -> advection-corrected 1-km rain rates -> one npz per UTC day.
+# Public data only (OPERA open radar archive). Results are artifacts, never committed:
+#   gh run download <run id> --dir hindcast/cache/subhourly
+# Manual only.
+
+on:
+  workflow_dispatch:
+    inputs:
+      chunks:
+        description: "number of parallel jobs (the day list is cut into this many blocks)"
+        default: "60"
+      only:
+        description: "optional: comma-separated block indices to run (e.g. 3,17); empty = all"
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.m.outputs.matrix }}
+    steps:
+      - id: m
+        run: |
+          n=${{ github.event.inputs.chunks }}
+          only="${{ github.event.inputs.only }}"
+          if [ -n "$only" ]; then
+            list=$(echo "$only" | tr ',' '\n' | sed 's/ //g' | paste -sd, -)
+          else
+            list=$(seq -s, 0 $((n-1)))
+          fi
+          echo "matrix={\"k\":[${list}]}" >> "$GITHUB_OUTPUT"
+
+  feature:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJson(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install numpy scipy "pysteps>=1.17" opencv-python-headless h5py requests pillow
+
+      - name: Feature for block ${{ matrix.k }}
+        env:
+          MPLBACKEND: Agg
+        run: python hindcast/subhourly/features.py --chunk ${{ matrix.k }}/${{ github.event.inputs.chunks }} --out out --raw /tmp/radar
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: subhourly-${{ matrix.k }}
+          path: out/*.npz
+          retention-days: 30
+          if-no-files-found: warn

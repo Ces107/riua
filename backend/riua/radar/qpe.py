@@ -177,6 +177,87 @@ def accumulate(frames: list[tuple[datetime, np.ndarray]], t0: datetime, t1: date
     return out, (covered / total if total > 0 else 0.0)
 
 
+# Sub-hourly bursts. A flash flood is made by the 10-20 minutes in which it rains at 100-200 mm/h; an hourly
+# total (even the 1-km maximum) averages them away. The "excess ladder" keeps, per 5-km cell and period, how
+# much rain fell above each rate u of the ladder:  X(u) = cell mean of the integral of max(i(t) - u, 0) dt  (mm),
+# with i the 1-km rain rate between scans (advection-corrected, as in `accumulate`). X(0) is the cell-mean
+# accumulation. A multiplicative gauge correction f of the period scales it exactly: X_f(phi) = f X(phi / f).
+LADDER_U = np.array([0.0, 10.0, 14.0, 20.0, 28.0, 40.0, 56.0, 80.0, 113.0, 160.0], np.float32)   # mm/h
+LADDER_TOP = 200.0      # the Z-R laws with the 57 dBZ cap give at most ~200 mm/h: nothing above
+
+
+def burst_ladder(frames: list[tuple[datetime, np.ndarray]], t0: datetime, t1: datetime,
+                 substeps: int = 5, max_gap_min: float = 25.0) -> tuple[np.ndarray, float]:
+    """Excess ladder (len(LADDER_U), 68, 64) mm of the RAW rate frames between t0 and t1, and the coverage.
+
+    Same sub-steps, gaps and NaN rules as `accumulate`; a period that is not fully bracketed by scans is
+    scaled to the whole period by the caller (divide by the coverage). Cells with less than half of their
+    1-km pixels covered are NaN. Cost: nothing on the levels u >= 10 when no pixel of the two scans of an
+    interval reaches 10 mm/h (the blend of two fields never exceeds their maximum); otherwise one optical
+    flow per interval, as `accumulate`."""
+    frames = sorted(frames, key=lambda x: x[0])
+    L = len(LADDER_U)
+    acc = np.zeros((L, RG_NY, RG_NX), np.float64)
+    seen = np.zeros((RG_NY, RG_NX), np.float64)
+    covered = 0.0
+    total = (t1 - t0).total_seconds() / 60.0
+    u = LADDER_U[1:, None, None].astype(np.float64)
+    for k in range(len(frames) - 1):
+        (ta, ra), (tb, rb) = frames[k], frames[k + 1]
+        lo, hi = max(ta, t0), min(tb, t1)
+        if hi <= lo:
+            continue
+        gap = (tb - ta).total_seconds() / 60.0
+        if gap > max_gap_min:
+            continue
+        a0 = np.nan_to_num(np.where(np.isnan(ra), rb, ra), nan=0.0)
+        b0 = np.nan_to_num(np.where(np.isnan(rb), ra, rb), nan=0.0)
+        ok = (np.isfinite(ra) | np.isfinite(rb)).astype(np.float64)
+        covered += (hi - lo).total_seconds() / 60.0
+        if max(a0.max(), b0.max()) < LADDER_U[1]:
+            w = (hi - lo).total_seconds() / 3600.0
+            acc[0] += 0.5 * (a0 + b0) * w
+            seen += ok * w
+            continue
+        v = motion_field([frames[max(k - 1, 0)][1], ra, rb])
+        dt_h = gap / substeps / 60.0
+        for s in range(substeps):
+            tau = (s + 0.5) / substeps
+            ts = ta + timedelta(minutes=gap * tau)
+            if ts < lo or ts > hi:
+                continue
+            f = (1.0 - tau) * _advect(a0, v, tau) + tau * _advect(b0, -v, 1.0 - tau)
+            acc[0] += f * dt_h
+            if f.max() > LADDER_U[1]:
+                acc[1:] += np.maximum(f[None] - u, 0.0) * dt_h
+            seen += ok * dt_h
+    have = (seen > 0).reshape(RG_NY // 5, 5, RG_NX // 5, 5).sum(axis=(1, 3)).astype(np.float64)
+    blocks = np.where(seen[None] > 0, acc, 0.0).reshape(L, RG_NY // 5, 5, RG_NX // 5, 5).sum(axis=(2, 4))
+    out = np.where(have[None] >= 12.5, blocks / np.maximum(have[None], 1.0), np.nan)
+    return out.astype(np.float32), (covered / total if total > 0 else 0.0)
+
+
+def ladder_excess(ladder: np.ndarray, mean_mm: np.ndarray, phi: float) -> np.ndarray:
+    """Rain above phi mm/h (mm) of each cell-period from a RAW excess ladder (L, ...) and the corrected cell
+    mean of the same period (...): f = mean / X(0) (0.2-5), X_f(phi) = f X(phi / f), linear between the rungs
+    of the ladder and 0 at LADDER_TOP. NaN where the ladder is missing or the radar saw (almost) no rain:
+    the caller decides what to do there."""
+    lad = np.asarray(ladder, np.float64)
+    m = np.asarray(mean_mm, np.float64)
+    x0 = lad[0]
+    with np.errstate(invalid="ignore", divide="ignore"):
+        f = np.clip(m / x0, FAC_MIN, FAC_MAX)
+        uf = np.nan_to_num(phi / f, nan=LADDER_TOP)
+        uu = np.concatenate([LADDER_U.astype(np.float64), [LADDER_TOP]])
+        xs = np.nan_to_num(np.concatenate([lad, np.zeros((1,) + lad.shape[1:])], axis=0))
+        j = np.clip(np.searchsorted(uu, uf, side="right") - 1, 0, len(uu) - 2)
+        lo = np.take_along_axis(xs, j[None], axis=0)[0]
+        hi = np.take_along_axis(xs, (j + 1)[None], axis=0)[0]
+        w = np.clip((uf - uu[j]) / (uu[j + 1] - uu[j]), 0.0, 1.0)
+        out = np.where(uf >= LADDER_TOP, 0.0, f * (lo + w * (hi - lo)))
+        return np.where(np.isfinite(x0) & (x0 >= 0.5) & np.isfinite(m), np.minimum(out, m), np.nan)
+
+
 # ------------------------------------------------------------------------------ gauges
 
 def gauge_px(g_lat, g_lon):
