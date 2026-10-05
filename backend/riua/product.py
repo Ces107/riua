@@ -496,6 +496,11 @@ def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: 
     cap = params.get("level_cap", {}).get(hz)
     if cap:
         level = np.minimum(level, cap)
+    # several independent models showing red- or extreme-level rain outright: that level is shown, whatever
+    # the probability kernel and the cap say
+    agree = risk.model_agreement(pred, thr, params) if params.get("agreement", {}).get("on", True) else None
+    if agree is not None:
+        level = np.maximum(level, agree)
     level[~pred.valid] = 0
     acc, acc_total = frame_accumulation(members, frames, params, hz, hnow)
     out = dict(frames=frames, pred=pred, prob=prob, p1=p1, p12=p12, level=level, e1=e1, e12=e12, cals=cals,

@@ -355,6 +355,42 @@ def dress(ratio: np.ndarray, sigma, bias=1.0) -> np.ndarray:
     return ndtr(z).astype(np.float32)
 
 
+def model_agreement(pred: Predictors, thr: Thresholds, params: dict) -> np.ndarray:
+    """(F, NY, NX) highest level (0, 4 or 5) that at least `agree_models` DIFFERENT models forecast outright:
+    their own (representativeness-scaled) 1-h or 12-h amount within the neighbourhood reaches the red or the
+    extreme threshold. Lagged runs of one model, and AROME at 1.3 / 2.5 km or driven by IFS, count once; an
+    ensemble counts as one model when at least `agree_ens_share` of its weight agrees. Independent models
+    agreeing on 200 mm is a signal that no dressing kernel should be allowed to dilute."""
+    if pred.a12 is None:
+        return np.zeros(pred.m12.shape, np.uint8)
+    rule = params.get("agreement", {})
+    need, share = int(rule.get("models", 2)), float(rule.get("ens_share", 0.3))
+    same = {"arome_hd": "arome", "arome": "arome", "arome_ifs": "arome", "arome_pi": "arome", "steps": "radar"}
+    groups = {}
+    for k, a in enumerate(pred.audit):
+        g = same.get(a["model"], a["model"])
+        groups.setdefault((g, a["family"] in ("ens", "eps")), []).append(k)
+    M, F = pred.w.shape
+    out = np.zeros((F, grid.NY, grid.NX), np.uint8)
+    for L, k in ((4, 2), (5, 3)):
+        votes = np.zeros((F, grid.NY, grid.NX), np.int16)
+        for (g, is_ens), ks in groups.items():
+            hit = np.zeros((len(ks), F, grid.NY, grid.NX), bool)
+            for j, m in enumerate(ks):
+                fam = params["families"][pred.audit[m]["family"]]
+                a12 = np.nan_to_num(pred.a12[m]) * fam["s12h"]
+                a1 = np.nan_to_num(pred.a1[m]) * fam["s1h"]
+                hit[j] = (a12 >= thr.t12h[k]) | (a1 >= thr.t1h[k])
+            w = pred.w[ks][:, :, None, None]
+            if is_ens:
+                frac = (hit * w).sum(0) / np.maximum(w.sum(0), 1e-12)
+                votes += (frac >= share)
+            else:
+                votes += hit.any(0)
+        out = np.where(votes >= need, L, out).astype(np.uint8)
+    return out
+
+
 def decide(prob: np.ndarray, tau: dict) -> np.ndarray:
     """prob: (4, ...) P(>=2), P(>=3), P(>=4), P(>=5). Returns levels 1..5 (uint8)."""
     level = np.ones(prob.shape[1:], np.uint8)
