@@ -129,6 +129,10 @@ if __name__ == "__main__":
         print(json.dumps(out, indent=1))
         print("dry run: nothing written")
     else:
+        # days 2-7 are scored per zone and day by long_score.py (q13): the cell scores of this script must not replace them
+        prev = json.loads((R.HC / "results.json").read_text(encoding="utf-8")) if (R.HC / "results.json").exists() else {}
+        if (prev.get("long") or {}).get("scale") == "zone":
+            res["long"] = prev["long"]
         (R.HC / "results.json").write_text(json.dumps(res, indent=1, default=str), encoding="utf-8")
         R.P.save(out)
         print("wrote", R.P.PARAMS_FILE, out["version"], "and", R.HC / "results.json")
