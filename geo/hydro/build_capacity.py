@@ -54,6 +54,23 @@ OBSERVED = {
                 "at Azud de los Huertos (Orihuela) that day (daily mean 120.7). Section value was 286.",
         "url": "https://alicanteplaza.es/la-gota-fria-sigue-y-mantiene-en-vilo-a-la-vega-baja-ante-el-desborde-del-rio-segura",
     },
+    "saleta-aldaia": {
+        "q": 20.0,
+        "note": "CHJ: in Aldaia the ravine loses its channel entirely, causing frequent and serious flooding 'de ocurrencia casi "
+                "anual' (about the 2-year flood, CAUMAX Q2 19.7). The new works are sized for 80 + 15 m3/s.",
+        "url": "https://chj.es/es-es/ciudadano/participacion_publica/Documents/Descripci%C3%B3n%20de%20las%20actuaciones.pdf",
+    },
+    "girona-verger": {
+        "q": 200.0,
+        "note": "CHJ Plan Director Marina Alta: 'desbordamientos generalizados para caudales superiores a 200 m3/s'. Section value was 269.",
+        "url": "https://www.chj.es",
+    },
+    "barxeta-carcaixent": {
+        "q": 40.0,
+        "note": "CHJ/MITECO viability report: 'no cuenta con un cauce definido, mas alla de una acequia'; the planned channel "
+                "carries about 40 m3/s. The LiDAR section value (265) was not a channel.",
+        "url": "https://www.chj.es",
+    },
 }
 for i, o in OBSERVED.items():
     prev = out.get(i, {})

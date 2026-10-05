@@ -288,11 +288,17 @@
   "qT_how": "caumax + presas"
  },
  "barxeta-carcaixent": {
-  "q": 264.8,
-  "source": "sección LiDAR + Manning",
-  "kind": "section",
+  "q": 40.0,
+  "source": "desbordamiento observado",
+  "kind": "observed",
   "confidence": "medium",
   "rating": true,
+  "url": "https://www.chj.es",
+  "note": "CHJ/MITECO viability report: 'no cuenta con un cauce definido, mas alla de una acequia'; the planned channel carries about 40 m3/s. The LiDAR section value (265) was not a channel.",
+  "replaces": {
+   "q": 264.8,
+   "kind": "section"
+  },
   "qT": {
    "T2": 30.8,
    "T5": 74.3,
@@ -544,11 +550,17 @@
   "qT_how": "caumax"
  },
  "girona-verger": {
-  "q": 268.7,
-  "source": "sección LiDAR + Manning",
-  "kind": "section",
-  "confidence": "high",
+  "q": 200.0,
+  "source": "desbordamiento observado",
+  "kind": "observed",
+  "confidence": "medium",
   "rating": true,
+  "url": "https://www.chj.es",
+  "note": "CHJ Plan Director Marina Alta: 'desbordamientos generalizados para caudales superiores a 200 m3/s'. Section value was 269.",
+  "replaces": {
+   "q": 268.7,
+   "kind": "section"
+  },
   "qT": {
    "T2": 33.7,
    "T5": 81.2,
@@ -677,6 +689,28 @@
   },
   "qT_how": "caumax + presas"
  },
+ "saleta-aldaia": {
+  "q": 20.0,
+  "source": "desbordamiento observado",
+  "kind": "observed",
+  "confidence": "medium",
+  "rating": false,
+  "url": "https://chj.es/es-es/ciudadano/participacion_publica/Documents/Descripci%C3%B3n%20de%20las%20actuaciones.pdf",
+  "note": "CHJ: in Aldaia the ravine loses its channel entirely, causing frequent and serious flooding 'de ocurrencia casi anual' (about the 2-year flood, CAUMAX Q2 19.7). The new works are sized for 80 + 15 m3/s.",
+  "replaces": {
+   "q": null,
+   "kind": null
+  },
+  "qT": {
+   "T2": 19.7,
+   "T5": 42.4,
+   "T10": 59.2,
+   "T25": 91.4,
+   "T100": 529.3,
+   "T500": 1311.6
+  },
+  "qT_how": "caumax (4 km)"
+ },
  "poyo-ribarroja": {
   "q": null,
   "source": null,
@@ -706,21 +740,6 @@
    "T500": 1857.8
   },
   "qT_how": "caumax"
- },
- "saleta-aldaia": {
-  "q": null,
-  "source": null,
-  "kind": null,
-  "rating": false,
-  "qT": {
-   "T2": 19.7,
-   "T5": 42.4,
-   "T10": 59.2,
-   "T25": 91.4,
-   "T100": 529.3,
-   "T500": 1311.6
-  },
-  "qT_how": "caumax (4 km)"
  },
  "castellarda-lliria": {
   "q": null,
