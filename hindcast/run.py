@@ -51,7 +51,7 @@ BLOCKS = HC / "cache" / "blocks"
 RUNS = HC / "cache" / "openmeteo" / "runs"
 ENS3H = HC / "obs" / "ens3h"
 ENS12 = HC / "cache" / "ens"
-BLOCK_VERSION = 3
+BLOCK_VERSION = 4                               # 4: long blocks carry the IFS runs and AIFS-ENS when archived
 
 PARAMS = P.load()
 ST = static.load()
@@ -335,6 +335,25 @@ def ens12_file(T: datetime) -> Path | None:
     return f if f.exists() and (T - run) >= timedelta(hours=DELAY_H["ens"]) else None
 
 
+def long_extra(T: datetime, run: datetime) -> list[risk.Member]:
+    """Days 2-7, besides the ENS (hindcast/long_data.py fetches them): the IFS 0.25 deg runs production adds as
+    "global" members (its 2 newest complete runs: 00Z of the issue day and 12Z of the day before), and AIFS-ENS
+    (not in production; kept in the block under its own model name so the scoring can test it)."""
+    out = []
+    for r in (run, run - timedelta(hours=12)):
+        f = ENS12 / f"ifsoper_tp_{r:%Y%m%d%H}.npz"
+        if f.exists() and T - r >= timedelta(hours=DELAY_H["ifs"]):
+            for m in product.ens_npz_members(np.load(f, allow_pickle=True), r):
+                m.family, m.model, m.name, m.native_step_h = "global", "ifs", f"IFS 0,25° · {r:%d/%m %H}Z", 6
+                out.append(m)
+    f = ENS12 / f"aifsens_tp_{run:%Y%m%d%H}.npz"
+    if f.exists() and T - run >= timedelta(hours=7):
+        for m in product.ens_npz_members(np.load(f, allow_pickle=True), run):
+            m.model, m.name = "aifs_ens", m.name.replace("ENS", "AIFS-ENS")
+            out.append(m)
+    return out
+
+
 def radar_rates(T: datetime) -> list:
     """The last scans production would have at T, as (ground-arrival time, rain rate) like `update_obs`."""
     from riua.radar import qpe
@@ -378,7 +397,7 @@ def members_at(hz: str, T: datetime, truth: Truth):
         run = T.replace(hour=0, minute=0, second=0, microsecond=0)
         ens = product.ens_npz_members(np.load(f, allow_pickle=True), run)
         info.update(tier="ens", ens=f"{run:%Y-%m-%dT%HZ}")
-        return past(ens), None, info                 # + 2 IFS runs in production: not archived
+        return past(ens + long_extra(T, run)), None, info
     nwp = lagged_runs(T, 66 if hz == "mid" else 8)
     sample = lattice if hz == "mid" else None
     if nwp:

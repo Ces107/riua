@@ -1,0 +1,110 @@
+name: long
+
+# Days 2-7 hindcast at warning-zone scale (hindcast/long_data.py, run.py build long, long_zone.py).
+# Manual only. Never commits: the result is an artifact. Public data only: ECMWF open data (CC BY 4.0) from Google
+# Cloud, and the radar + SAIH truth of the GitHub hindcast (release asset long-truth.tar). No AVAMET / Meteoclimatic,
+# no Open-Meteo HTTP API.
+
+on:
+  workflow_dispatch:
+    inputs:
+      cases:
+        description: "comma-separated case ids (empty = all of cases.json)"
+        required: false
+        default: ""
+      aifs:
+        description: "also fetch AIFS-ENS (runs from 2025-07-02)"
+        type: boolean
+        default: true
+      ingr:
+        description: "also fetch the ingredient fields (5 ENS members)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: long
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      cases: ${{ steps.m.outputs.cases }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        run: |
+          if [ -n "${{ inputs.cases }}" ]; then
+            echo "cases=$(python3 -c "import json,sys; print(json.dumps(sys.argv[1].split(',')))" "${{ inputs.cases }}")" >> "$GITHUB_OUTPUT"
+          else
+            echo "cases=$(python3 hindcast/gha.py matrix)" >> "$GITHUB_OUTPUT"
+          fi
+
+  case:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        case: ${{ fromJson(needs.plan.outputs.cases) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install
+        run: pip install -r backend/requirements.txt
+      - name: Truth (release hindcast-inputs)
+        run: curl -sfL "https://github.com/${{ github.repository }}/releases/download/hindcast-inputs/long-truth.tar" | tar -x
+      - name: Forecast archives
+        run: python -u hindcast/long_data.py fetch "${{ matrix.case }}" ${{ inputs.aifs && ' ' || '--no-aifs' }} ${{ inputs.ingr && ' ' || '--no-ingr' }}
+      - name: Blocks
+        env:
+          MPLBACKEND: Agg
+        run: python -u hindcast/run.py build long --cases "${{ matrix.case }}" --jobs 2
+      - name: Units
+        run: |
+          mkdir -p scratch/out
+          python -u hindcast/long_zone.py units --out "scratch/out/units-${{ matrix.case }}.npz"
+          tar -cf "scratch/out/blocks-long-${{ matrix.case }}.tar" hindcast/cache/blocks/long || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: long-${{ matrix.case }}
+          path: scratch/out/
+          retention-days: 30
+          if-no-files-found: warn
+
+  score:
+    needs: case
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install
+        run: pip install -r backend/requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: long-*
+          path: scratch/in
+      - name: Merge and score
+        run: |
+          mkdir -p scratch/res
+          python -u hindcast/long_zone.py merge scratch/res/long_units.npz $(find scratch/in -name 'units-*.npz')
+          python -u hindcast/long_zone.py score --units scratch/res/long_units.npz --out scratch/res/long_zone.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: long-result
+          path: scratch/res/
+          retention-days: 30
