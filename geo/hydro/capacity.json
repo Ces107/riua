@@ -656,11 +656,17 @@
   "qT_how": "caumax"
  },
  "segura-orihuela": {
-  "q": 286.1,
-  "source": "sección LiDAR + Manning",
-  "kind": "section",
+  "q": 125.0,
+  "source": "desbordamiento observado",
+  "kind": "observed",
   "confidence": "medium",
   "rating": true,
+  "url": "https://alicanteplaza.es/la-gota-fria-sigue-y-mantiene-en-vilo-a-la-vega-baja-ante-el-desborde-del-rio-segura",
+  "note": "13 Sept 2019: the Segura overflowed in Orihuela 'unicamente ... y muy ligeramente entre el puente de Levante y el puente del Rey' (CHS Comisaria de Aguas) at 07:30-07:40 local; CEDEX anuario: 123.4 m3/s at Azud de los Huertos (Orihuela) that day (daily mean 120.7). Section value was 286.",
+  "replaces": {
+   "q": 286.1,
+   "kind": "section"
+  },
   "qT": {
    "T2": 146.9,
    "T5": 252.3,

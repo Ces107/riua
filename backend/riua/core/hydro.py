@@ -171,6 +171,9 @@ def level_thresholds(net_: HydroNet, hp: dict) -> np.ndarray:
     a06 = np.maximum(net_.area, 1.0) ** 0.6
     thr[0] = np.maximum(thr[0], hp.get("min_q2", 0.6) * a06)
     thr[1] = np.maximum(thr[1], hp.get("min_q3", 1.5) * a06)
+    ok = np.isfinite(qb)
+    thr[1, ok] = np.minimum(thr[1, ok], qb[ok])      # a floor never moves the overflow above a known capacity
+    thr[0] = np.minimum(thr[0], thr[1])
     thr[2] = np.maximum(thr[2], thr[1])
     thr[3] = np.maximum(thr[3], thr[2])
     for b in range(net_.n):

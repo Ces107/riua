@@ -43,6 +43,23 @@ for p in cps:
         e = min(cap, key=lambda e: e["value_m3s"])
         out[i] = {"q": float(e["value_m3s"]), "source": "capacidad publicada", "kind": "published",
                   "url": e.get("source_url"), "rating": False}
+# 3. a capacity measured by a real overflow beats both: the flow measured when the water started to leave the
+#    channel at the control point (q9-floods, coord/findings/q9-floods.md). The rating curve of the section is kept for
+#    the depths, only the overflow flow changes.
+OBSERVED = {
+    "segura-orihuela": {
+        "q": 125.0,
+        "note": "13 Sept 2019: the Segura overflowed in Orihuela 'unicamente ... y muy ligeramente entre el puente de "
+                "Levante y el puente del Rey' (CHS Comisaria de Aguas) at 07:30-07:40 local; CEDEX anuario: 123.4 m3/s "
+                "at Azud de los Huertos (Orihuela) that day (daily mean 120.7). Section value was 286.",
+        "url": "https://alicanteplaza.es/la-gota-fria-sigue-y-mantiene-en-vilo-a-la-vega-baja-ante-el-desborde-del-rio-segura",
+    },
+}
+for i, o in OBSERVED.items():
+    prev = out.get(i, {})
+    out[i] = {"q": o["q"], "source": "desbordamiento observado", "kind": "observed", "confidence": "medium",
+              "rating": prev.get("rating", False), "url": o["url"], "note": o["note"],
+              "replaces": {k: prev.get(k) for k in ("q", "kind")}}
 for i, v in cm.items():
     qt = {k: x for k, x in v.items() if k.startswith("T")}
     if qt:
