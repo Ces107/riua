@@ -1095,7 +1095,7 @@ def _tables(net):
 # form 5 of _excess: the excess is precomputed per cell-hour; hours without a ladder keep the production term max(p - 45, 0).
 SUB = ROOT / "hindcast" / "cache" / "subhourly"
 SUB_VARIANTS = [("production: hard 45 on the cell mean", 1, 45.0)] + \
-               [(f"sub-hourly excess, phi {f:g}", 5, f) for f in (30.0, 45.0, 60.0, 80.0, 100.0, 130.0, 160.0)]
+               [(f"sub-hourly excess, phi {f:g}", 5, f) for f in (30.0, 45.0, 60.0, 70.0, 80.0, 90.0, 100.0, 130.0, 160.0)]
 
 
 def sub_ladder(t_end):
@@ -1318,6 +1318,25 @@ def peak_floods(variants=None, out_name="peak_test.json"):
     loo = dict(ordinary=stats(held[:no], np.ones(no)), big=stats(held[no:], np.ones(nb)), big100=stats(held[no:][isbig], np.ones(int(isbig.sum()))),
                overflow=lo, picks=picks)
     print("  leave-one-event-out (variant picked on the other events, pooled MAE):", loo)
+    # q12: the same, but the ordinary floods and the big floods weigh alike in the choice, and a variant that adds
+    # simulated overflows in the ordinary period (the false-alarm guard) cannot be picked
+    guard = ord_over <= ord_over[0]
+    held2 = np.zeros(allr.shape[1]); picks2 = {}; pick2 = {}
+    for e in np.unique(allev):
+        m = allev == e
+        sc = 0.5 * np.abs(r_ord[:, ~m[:no]]).mean(axis=1) + 0.5 * np.abs(r_big[:, ~m[no:]]).mean(axis=1)
+        sc = np.where(guard, sc, np.inf)
+        vi = int(np.argmin(sc))
+        held2[m] = allr[vi, m]; picks2[PKV[vi][0]] = picks2.get(PKV[vi][0], 0) + 1; pick2[e] = vi
+    lo2 = [0, 0, 0, 0]
+    for r in ovr:
+        vi = pick2.get(r["event"], 0)
+        sim_over = r["sims"][vi] >= r["capacity_used"]
+        lo2[(0 if sim_over else 1) if r["documented_overflow"] else (2 if sim_over else 3)] += 1
+    hb = held2[no:][isbig]
+    loo["balanced_guarded"] = dict(ordinary=stats(held2[:no], np.ones(no)), big=stats(held2[no:], np.ones(nb)),
+                                   big100=stats(hb, np.ones(int(isbig.sum()))), overflow=lo2, picks=picks2)
+    print("  leave-one-event-out (balanced choice, guard: no added ordinary-period overflow):", loo["balanced_guarded"])
     print("  floods >= 100 m3/s (measured, then each variant):")
     for r in sorted([r for r in nat if r["documented_peak"] >= 100], key=lambda r: r["event"]):
         print(f"    {r['event']} {r['point']:16s} {r['rain_input']:6s} obs {r['documented_peak']:6.0f} | " + " ".join(f"{v:6.0f}" for v in r["sims"]))
@@ -1325,6 +1344,8 @@ def peak_floods(variants=None, out_name="peak_test.json"):
     for r in sorted(ovr, key=lambda r: (r["event"], r["point"])):
         print(f"    {r['event']} {r['point']:18s} {'yes' if r['documented_overflow'] else 'no ':3s} cap {r['capacity_used']:6.0f} | " + " ".join(f"{v:6.0f}" for v in r["sims"]))
     out = dict(params=base, table=table, leave_one_event_out=loo, n_ordinary=no, n_big=nb, sub_hourly_cover=sub_cover,
+               resid=dict(ordinary=np.round(r_ord, 4).tolist(), big=np.round(r_big, 4).tolist(), ev_ordinary=ev_o.tolist(),
+                          ev_big=ev_b.tolist(), big100=isbig.tolist(), points_big=[r["point"] for r in nat]),
                big_floods=[dict(event=r["event"], point=r["point"], rain=r["rain_input"], obs=r["documented_peak"],
                                 sims={PKV[i][0]: round(v, 1) for i, v in enumerate(r["sims"])}) for r in nat if r["documented_peak"] >= 100],
                overflow_facts=[dict(event=r["event"], point=r["point"], documented=r["documented_overflow"], capacity=r["capacity_used"],
@@ -1337,7 +1358,9 @@ def peak_floods(variants=None, out_name="peak_test.json"):
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "peak":
         peak_floods()
-    elif len(sys.argv) > 1 and sys.argv[1] == "subhourly":       # q12: py -3.11 hindcast/calibrate_hydro.py subhourly
-        peak_floods(SUB_VARIANTS, "subhourly_test.json")
+    elif len(sys.argv) > 1 and sys.argv[1] == "subhourly":       # q12: py -3.11 hindcast/calibrate_hydro.py subhourly [feature dir] [tag]
+        if len(sys.argv) > 2:
+            SUB = Path(sys.argv[2])
+        peak_floods(SUB_VARIANTS, f"subhourly_test{'_' + sys.argv[3] if len(sys.argv) > 3 else ''}.json")
     else:
         main(sys.argv[1] if len(sys.argv) > 1 else "all")

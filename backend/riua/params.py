@@ -111,6 +111,14 @@ DEFAULTS: dict = {
         "rp_levels": [2, 5, 25, 100],
         # spread of ln(discharge): the fit leaves a residual of 0.71, larger than the rain uncertainty
         "sigma": {"now": 0.7, "mid": 0.8, "long": 0.9},
+        # sub-hourly bursts (coord/findings/q12-subhourly.md): OFF. A number turns it on: the intensity excess is then the
+        # rain above phi_sub mm/h inside the hour from the radar rate frames (radar/qpe.py::burst_ladder), not the hourly
+        # mean above phi_mmh. Tested on 200 ordinary floods + q9's big floods: no phi lifts the big floods without
+        # worsening the ordinary ones (best candidate 80: >= 100 m3/s median x0.39 -> x0.43, ordinary error 0.378 -> 0.400).
+        "phi_sub_mmh": None,
+        # forecast hours without a radar ladder: X = p G(phi_sub / p), mean over 1.1 M radar cell-hours 2024-26
+        "burst_rel": [[0.5, 0.7, 1.0, 1.4, 2.0, 2.8, 4.0, 5.6, 8.0, 11.0, 16.0, 22.0, 32.0],
+                      [0.651, 0.553, 0.427, 0.300, 0.183, 0.104, 0.0527, 0.0260, 0.0119, 0.0059, 0.0023, 0.0010, 0.0003]],
     },
 }
 
