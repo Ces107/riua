@@ -1,0 +1,109 @@
+name: hindcast
+
+# Re-runs what production computes on forecasts that existed at the time, for every case of
+# hindcast/cases.json, then fits and scores it (hindcast/run.py, score.py, deploy_params.py).
+# Manual only. Never commits: the result is an artifact (results.json, fit.json, proposed params.json).
+# Data rules: public sources only (OPERA, SAIH Júcar, ECMWF open data, Open-Meteo S3 + the CC BY 4.0
+# archive q4 fetched, published as the release "hindcast-inputs"); no AVAMET / Meteoclimatic here.
+
+on:
+  workflow_dispatch:
+    inputs:
+      cases:
+        description: "comma-separated case ids (empty = all of cases.json)"
+        required: false
+        default: ""
+      fetch_ens:
+        description: "download the missing ECMWF ENS runs from ECMWF open data"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hindcast
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      cases: ${{ steps.m.outputs.cases }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: m
+        run: |
+          if [ -n "${{ inputs.cases }}" ]; then
+            echo "cases=$(python3 -c "import json,sys; print(json.dumps(sys.argv[1].split(',')))" "${{ inputs.cases }}")" >> "$GITHUB_OUTPUT"
+          else
+            echo "cases=$(python3 hindcast/gha.py matrix)" >> "$GITHUB_OUTPUT"
+          fi
+
+  case:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        case: ${{ fromJson(needs.plan.outputs.cases) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install
+        run: pip install -r backend/requirements.txt dask
+      - name: Inputs (release hindcast-inputs)
+        run: python hindcast/gha.py inputs
+      - name: Truth, forecasts, blocks
+        env:
+          MPLBACKEND: Agg
+        run: python -u hindcast/gha.py case "${{ matrix.case }}" ${{ inputs.fetch_ens && ' ' || '--no-ens' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: blocks-${{ matrix.case }}
+          path: scratch/artifact/
+          retention-days: 14
+          if-no-files-found: warn
+
+  score:
+    needs: case
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install
+        run: pip install -r backend/requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: blocks-*
+          path: scratch/in
+      - name: Collect
+        run: python hindcast/gha.py collect scratch/in
+      - name: Fit and score
+        run: |
+          python -u hindcast/score.py check
+          python -u hindcast/score.py
+      - name: Proposed params (recommended policy)
+        run: |
+          cp backend/riua/params.json scratch/params_before.json
+          python -u hindcast/deploy_params.py recommended
+          mkdir -p scratch/out
+          cp hindcast/results.json hindcast/fit.json backend/riua/params.json scratch/out/
+          cp scratch/params_before.json scratch/out/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hindcast-result
+          path: scratch/out/
+          retention-days: 30

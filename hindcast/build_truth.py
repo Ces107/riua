@@ -20,7 +20,13 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 import sys
+
+# One thread per process: the optical flow (OpenCV) and the linear algebra otherwise start one thread per
+# core EACH, and several builds side by side then take 15x longer (measured: motion_field 67 s instead of ~1 s).
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    os.environ.setdefault(_v, "1")
 import warnings
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -34,6 +40,12 @@ warnings.filterwarnings("ignore")
 
 from riua.radar import nowcast, qpe  # noqa: E402
 from riua.sources import radar  # noqa: E402
+
+try:
+    import cv2
+    cv2.setNumThreads(1)
+except Exception:  # noqa: BLE001
+    pass
 
 MAD = ZoneInfo("Europe/Madrid")
 OUT = ROOT / "hindcast" / "truth"
@@ -82,25 +94,185 @@ def load_gauges(day: str):
     return np.array(lat), np.array(lon), np.array(mm)
 
 
-def day_frames(t0: datetime, t1: datetime):
+# ----------------------------------------------------------------------------- OPERA archive, all formats
+# The archive bucket changed format twice (listed 2026-10-02, see coord/findings/q4-hindcast.md):
+#   .. 2024-07-01   OPERA@<t>@0@DBZH_QIND.{h5,tiff}   2 km, every 15 min (the tiff merges "no echo" and "no data")
+#   2024-07-01 ..   OPERA@<t>@0@DBZH.{h5,tiff}        1 km, every 5 min
+#   2026-01-01 ..   OPERA@<t>@0@DBZH.h5 only          1 km, every 5 min (no tiff any more)
+# riua.sources.radar reads the DBZH tiff only, so the h5 files are read here: metadata through h5py over
+# HTTP Range requests, then only the 2-4 gzip chunks that cover the box.
+
+class _HttpFile:
+    """Read-only file object over HTTP Range requests with a block cache (what h5py needs to open a file)."""
+
+    def __init__(self, url: str, block: int = 16384):     # the whole h5 metadata sits in the first ~13 kB
+        self.url, self.block, self.pos, self.cache = url, block, 0, {}
+        r = radar._get(url, headers={"Range": f"bytes=0-{block - 1}"})
+        self.size = int(r.headers["Content-Range"].rsplit("/", 1)[1])
+        self.cache[0] = r.content
+
+    def readable(self): return True
+    def seekable(self): return True
+    def writable(self): return False
+    def tell(self): return self.pos
+    def close(self): pass
+    def flush(self): pass
+    closed = False
+
+    def seek(self, off, whence=0):
+        self.pos = off if whence == 0 else self.pos + off if whence == 1 else self.size + off
+        return self.pos
+
+    def get(self, a: int, size: int) -> bytes:
+        return radar._get(self.url, headers={"Range": f"bytes={a}-{a + size - 1}"}).content
+
+    def _blk(self, k: int) -> bytes:
+        if k not in self.cache:
+            a = k * self.block
+            self.cache[k] = self.get(a, min(self.block, self.size - a))
+        return self.cache[k]
+
+    def read(self, n=-1):
+        n = self.size - self.pos if n is None or n < 0 else min(n, self.size - self.pos)
+        out = bytearray()
+        while len(out) < n:
+            k, o = divmod(self.pos + len(out), self.block)
+            out += self._blk(k)[o:o + n - len(out)]
+        self.pos += n
+        return bytes(out)
+
+    def readinto(self, b):
+        data = self.read(len(b))
+        b[:len(data)] = data
+        return len(data)
+
+
+_H5_INDEX = {}      # (xscale, shape) -> (row, col) of every Riuà radar-grid cell in the composite
+
+
+def opera_h5_list(day: datetime, quantity: str) -> list[datetime]:
+    """Times (UTC) of the archived .h5 composites of one day for 'DBZH' or 'DBZH_QIND'."""
+    import re
+    import requests
+    url = f"{radar.OPERA_S3}/{radar.OPERA_BUCKET_ARCHIVE}/?list-type=2&max-keys=1000&prefix={day:%Y/%m/%d}/OPERA/COMP/"
+    times, token = [], None
+    while True:
+        xml = radar._get(url + (f"&continuation-token={requests.utils.quote(token, safe='')}" if token else "")).text
+        for m in re.finditer(r"<Key>[^<]*OPERA@(\d{8}T\d{4})@0@" + quantity + r"\.h5</Key>", xml):
+            times.append(datetime.strptime(m.group(1), "%Y%m%dT%H%M").replace(tzinfo=timezone.utc))
+        nxt = re.search(r"<NextContinuationToken>([^<]+)</NextContinuationToken>", xml)
+        if not nxt:
+            break
+        token = nxt.group(1)
+    return sorted(times)
+
+
+def fetch_opera_h5(t: datetime, quantity: str = "DBZH") -> np.ndarray:
+    """One archived ODIM-H5 composite on the Riuà 1 km grid: dBZ, NO_ECHO_DBZ where the radar saw nothing,
+    NaN where there is no coverage. Bit-identical to radar.fetch_opera() on a date that has both formats
+    (2025-12-28 12:00Z: 0 of 108 800 cells differ)."""
+    import zlib
+    import h5py
+    url = radar._opera_url(radar.OPERA_BUCKET_ARCHIVE, t, quantity).replace(".tiff", ".h5")
+    f = _HttpFile(url)
+    with h5py.File(f, "r") as h:
+        d = h["dataset1/data1/data"]
+        what = dict(h["dataset1/what"].attrs)
+        if "dataset1/data1/what" in h:
+            what.update(h["dataset1/data1/what"].attrs)
+        if what.get("quantity", b"DBZH") not in (b"DBZH", "DBZH"):
+            raise RuntimeError(f"dataset1 is {what.get('quantity')}, not DBZH")
+        nodata, undetect = float(what.get("nodata", -9999000.0)), float(what.get("undetect", -8888000.0))
+        gain, offset = float(what.get("gain", 1.0)), float(what.get("offset", 0.0))
+        xs, ys = float(h["where"].attrs["xscale"]), float(h["where"].attrs["yscale"])
+        key = (xs, tuple(d.shape))
+        if key not in _H5_INDEX:
+            lon2d, lat2d = np.meshgrid(radar.GRID_LON, radar.GRID_LAT)
+            x, y = radar.laea_forward(lon2d, lat2d)
+            # the first pixel is centred on the projection origin (same half-pixel shift as the tiff tie point)
+            _H5_INDEX[key] = (np.floor((ys / 2 - y) / ys).astype(np.int64), np.floor((x + xs / 2) / xs).astype(np.int64))
+        row, col = _H5_INDEX[key]
+        ch = d.chunks
+        r0, r1, c0, c1 = int(row.min() // ch[0]), int(row.max() // ch[0]), int(col.min() // ch[1]), int(col.max() // ch[1])
+        sub = np.full(((r1 - r0 + 1) * ch[0], (c1 - c0 + 1) * ch[1]), nodata, np.float64)
+        for rr in range(r0, r1 + 1):
+            for cc in range(c0, c1 + 1):
+                info = d.id.get_chunk_info_by_coord((rr * ch[0], cc * ch[1]))
+                if info.byte_offset is None:
+                    continue
+                tile = np.frombuffer(zlib.decompress(f.get(info.byte_offset, info.size)), dtype=d.dtype).reshape(ch)
+                sub[(rr - r0) * ch[0]:(rr - r0 + 1) * ch[0], (cc - c0) * ch[1]:(cc - c0 + 1) * ch[1]] = tile
+    raw = sub[row - r0 * ch[0], col - c0 * ch[1]]
+    out = (raw * gain + offset).astype(np.float32)
+    out[raw == undetect] = radar.NO_ECHO_DBZ
+    out[raw == nodata] = np.nan
+    return out
+
+
+def fetch_radar_day(day: datetime, workers: int = 4) -> list[tuple[datetime, np.ndarray]]:
+    """Every archived composite of one UTC day on the Riuà grid, whatever the archive format of that date:
+    10-min steps of the 1 km product (tiff, else h5), completed with the 15-min 2 km product where the 1 km
+    one does not exist (before 2024-07-01 and the first hours of that day)."""
+    from concurrent.futures import ThreadPoolExecutor
+    jobs = [(t, "tiff") for t in radar.opera_list(day, "DBZH", radar.OPERA_BUCKET_ARCHIVE) if t.minute % 10 == 0]
+    if not jobs:
+        jobs = [(t, "DBZH") for t in opera_h5_list(day, "DBZH") if t.minute % 10 == 0]
+    first = min((t for t, _ in jobs), default=day + timedelta(days=1))
+    if first > day + timedelta(minutes=20):
+        jobs += [(t, "DBZH_QIND") for t in opera_h5_list(day, "DBZH_QIND") if t < first]
+
+    def one(job):
+        t, kind = job
+        for attempt in range(3):
+            try:
+                if kind == "tiff":
+                    return t, radar.fetch_opera(t, "DBZH", radar.OPERA_BUCKET_ARCHIVE)
+                return t, fetch_opera_h5(t, kind)
+            except Exception as e:  # noqa: BLE001  one bad frame must not lose the day
+                err = e
+        print(f"  radar frame {t:%Y-%m-%d %H:%M} ({kind}) skipped: {type(err).__name__} {err}"[:200], flush=True)
+        return None
+
+    with ThreadPoolExecutor(workers) as pool:
+        got = [r for r in pool.map(one, sorted(jobs)) if r is not None]
+    return sorted(got, key=lambda x: x[0])
+
+
+def _load_radar_cache(cache: Path):
+    if not cache.exists():
+        return None
+    with np.load(cache) as z:
+        t, code = z["t"], z["dbz"]
+    if len(t) == 0:
+        return None            # an empty file is a failed download of an earlier version, not "no radar"
+    times = [datetime.fromtimestamp(int(s), timezone.utc) for s in t]
+    dbz = code.astype(np.float32) / 2.0 - 32.0
+    dbz[code == 255] = np.nan
+    return times, dbz
+
+
+def day_frames(t0: datetime, t1: datetime, rates: bool = True):
     """Rain-rate frames in [t0 - 10 min, t1], cached on disk as compressed dBZ."""
     RAW.mkdir(parents=True, exist_ok=True)
     out = []
     day = t0.replace(hour=0, minute=0, second=0, microsecond=0)
     while day <= t1:
         cache = RAW / f"{day:%Y%m%d}.npz"
-        if cache.exists():
-            z = np.load(cache)
-            times = [datetime.fromtimestamp(int(s), timezone.utc) for s in z["t"]]
-            dbz = z["dbz"].astype(np.float32) / 2.0 - 32.0
-            dbz[z["dbz"] == 255] = np.nan
+        got = _load_radar_cache(cache)
+        if got is not None:
+            times, dbz = got
         else:
-            fr = radar.fetch_opera_archive(day, day + timedelta(hours=23, minutes=59), step_min=10)
+            fr = fetch_radar_day(day)
             times = [t for t, _ in fr]
             dbz = np.stack([d for _, d in fr]) if fr else np.zeros((0, qpe.RG_NY, qpe.RG_NX), np.float32)
             code = np.clip(np.rint((np.nan_to_num(dbz, nan=0) + 32.0) * 2.0), 0, 254).astype(np.uint8)
             code[~np.isfinite(dbz)] = 255
-            np.savez_compressed(cache, t=np.array([int(t.timestamp()) for t in times]), dbz=code)
+            if len(times):
+                np.savez_compressed(cache, t=np.array([int(t.timestamp()) for t in times]), dbz=code)
+            print(f"  radar {day:%Y-%m-%d}: {len(times)} frames downloaded", flush=True)
+        if not rates:
+            day += timedelta(days=1)
+            continue
         for t, d in zip(times, dbz):
             if t0 - timedelta(minutes=10) <= t <= t1:
                 if CLUTTER is not None:
@@ -110,20 +282,102 @@ def day_frames(t0: datetime, t1: datetime):
     return out
 
 
+# ------------------------------------------------------------------ hourly radar accumulation, cached per UTC day
+# The advection-corrected accumulation is ~99 % of the cost of a build (optical flow for every pair of scans)
+# and does not depend on the gauges: it is kept in hindcast/cache/acc/<yyyymmdd>.npz so that a change in the
+# gauge merging rebuilds a case in seconds, and an interrupted batch resumes at the day it stopped.
+ACC = ROOT / "hindcast" / "cache" / "acc"
+_TAG = None
+
+
+def qpe_tag() -> str:
+    """Fingerprint of the code that turns scans into hourly rain: a cached day is reused only if it matches."""
+    global _TAG
+    if _TAG is None:
+        import hashlib
+        import inspect
+        src = "".join(inspect.getsource(f) for f in (qpe.despeckle, qpe.steiner_convective, qpe.rain_rate,
+                                                     qpe.motion_field, qpe._advect, qpe.accumulate))
+        for c in (CLUTTER, getattr(qpe, "CLUTTER", None)):
+            src += "none" if c is None else str(int(np.asarray(c).sum()))
+        _TAG = hashlib.sha1(src.encode()).hexdigest()[:12]
+    return _TAG
+
+
+def utc_day_acc(day: datetime, need=range(24)) -> tuple[np.ndarray, np.ndarray]:
+    """(acc[24, ny, nx] mm, NaN = no radar or hour not computed; coverage[24]) for the UTC day starting at `day`.
+    Only the hours in `need` are guaranteed; hours already in the cache are not recomputed."""
+    f = ACC / f"{day:%Y%m%d}.npz"
+    # the last hour needs the 00:00 scan of the next day: used when that day is on disk, never downloaded for it
+    nxt = _load_radar_cache(RAW / f"{day + timedelta(days=1):%Y%m%d}.npz") is not None
+    acc = np.full((24, qpe.RG_NY, qpe.RG_NX), np.nan, np.float32)
+    cov = np.zeros(24)
+    done = np.zeros(24, bool)
+    if f.exists():
+        with np.load(f) as z:                   # closed at once: Windows cannot replace an open file
+            if str(z["tag"]) == qpe_tag():
+                code = z["acc"]
+                acc = code.astype(np.float32) / 50.0
+                acc[code == 65535] = np.nan
+                cov, done = z["cov"].copy(), z["done"].copy()
+    todo = [h for h in need if not done[h]]
+    if not todo:
+        return acc, cov
+    frames = day_frames(day + timedelta(hours=todo[0]), min(day + timedelta(hours=todo[-1] + 1),
+                                                           day + (timedelta(hours=24) if nxt else timedelta(hours=23, minutes=59))))
+    for h in todo:
+        a, b = day + timedelta(hours=h), day + timedelta(hours=h + 1)
+        sub = [fr for fr in frames if a - timedelta(minutes=10) <= fr[0] <= b]
+        acc[h], cov[h] = qpe.accumulate(sub, a, b) if len(sub) >= 2 else (np.nan, 0.0)
+        done[h] = h < 23 or nxt                 # the last hour stays open until the next day's first scan is there
+    code = np.where(np.isfinite(acc), np.clip(np.rint(np.nan_to_num(acc) * 50.0), 0, 65534), 65535).astype(np.uint16)
+    ACC.mkdir(parents=True, exist_ok=True)
+    tmp = f.with_name(f.stem + f".{os.getpid()}.tmp.npz")
+    np.savez_compressed(tmp, acc=code, cov=cov, done=done, tag=qpe_tag())
+    tmp.replace(f)
+    out = code.astype(np.float32) / 50.0          # same 0.02 mm rounding whether the day was cached or not
+    out[code == 65535] = np.nan
+    return out, cov
+
+
+def _acc_job(job) -> str:
+    import time
+    t = time.time()
+    day_iso, need = job
+    day = datetime.fromisoformat(day_iso).replace(tzinfo=timezone.utc)
+    try:
+        a, cov = utc_day_acc(day, need)
+        return (f"acc {day_iso} hours {need[0]}-{need[-1]}: coverage {cov[need].mean():.2f}, "
+                f"max 1 h {np.nanmax(a) if np.isfinite(a).any() else float('nan'):.0f} mm, {time.time() - t:.0f} s")
+    except Exception as e:  # noqa: BLE001
+        return f"acc {day_iso} FAILED {type(e).__name__} {e}"[:300]
+
+
+def case_utc_hours(case: dict) -> dict:
+    """UTC day (iso) -> sorted list of the hours of that day the case needs."""
+    u0 = datetime.fromisoformat(case["days"][0]).replace(tzinfo=MAD).astimezone(timezone.utc)
+    u1 = (datetime.fromisoformat(case["days"][-1]).replace(tzinfo=MAD) + timedelta(days=1)).astimezone(timezone.utc)
+    out = {}
+    while u0 < u1:
+        out.setdefault(u0.strftime("%Y-%m-%d"), []).append(u0.hour)
+        u0 += timedelta(hours=1)
+    return out
+
+
 def build(case: dict) -> None:
     days = case["days"]
     d0 = datetime.fromisoformat(days[0]).replace(tzinfo=MAD)
     d1 = datetime.fromisoformat(days[-1]).replace(tzinfo=MAD) + timedelta(days=1)
     u0, u1 = d0.astimezone(timezone.utc), d1.astimezone(timezone.utc)
-    frames = day_frames(u0, u1)
     hours = int((u1 - u0).total_seconds() // 3600)
     acc = np.full((hours, qpe.RG_NY, qpe.RG_NX), np.nan, np.float32)
     cov = np.zeros(hours)
-    for h in range(hours):
-        a, b = u0 + timedelta(hours=h), u0 + timedelta(hours=h + 1)
-        sub = [f for f in frames if a - timedelta(minutes=10) <= f[0] <= b]
-        if len(sub) >= 2:
-            acc[h], cov[h] = qpe.accumulate(sub, a, b)
+    day_frames(u0, u1, rates=False)             # every radar day on disk before the accumulation starts
+    h = 0
+    for day_iso, need in case_utc_hours(case).items():
+        a, c = utc_day_acc(datetime.fromisoformat(day_iso).replace(tzinfo=timezone.utc), need)
+        acc[h:h + len(need)], cov[h:h + len(need)] = a[need], c[need]
+        h += len(need)
     meta = {"case": case["id"], "days": days, "hour_coverage_mean": float(cov.mean()), "gauge": {}}
     adj = acc.copy()
     day_tot = []
@@ -181,6 +435,36 @@ if __name__ == "__main__":
     cases = json.loads((ROOT / "hindcast" / "cases.json").read_text(encoding="utf-8"))["cases"]
     force = "--force" in sys.argv
     want = {a for a in sys.argv[1:] if not a.startswith("--")}
+    if "--radar-only" in sys.argv:          # download and cache the composites, build nothing
+        for c in cases:
+            if want and c["id"] not in want:
+                continue
+            a = datetime.fromisoformat(c["days"][0]).replace(tzinfo=MAD).astimezone(timezone.utc)
+            b = (datetime.fromisoformat(c["days"][-1]).replace(tzinfo=MAD) + timedelta(days=1)).astimezone(timezone.utc)
+            try:
+                day_frames(a, b, rates=False)
+                print("radar ok", c["id"], flush=True)
+            except Exception as e:  # noqa: BLE001
+                print("radar FAILED", c["id"], type(e).__name__, e, flush=True)
+        sys.exit(0)
+    if "--acc-only" in sys.argv:            # the expensive step alone, one UTC day per job: --acc-only --jobs 6 [case ...]
+        from multiprocessing import Pool
+        jobs = int(sys.argv[sys.argv.index("--jobs") + 1]) if "--jobs" in sys.argv else 4
+        want.discard(str(jobs))
+        todo = {}
+        for c in cases:
+            if want and c["id"] not in want:
+                continue
+            a = datetime.fromisoformat(c["days"][0]).replace(tzinfo=MAD).astimezone(timezone.utc)
+            b = (datetime.fromisoformat(c["days"][-1]).replace(tzinfo=MAD) + timedelta(days=1)).astimezone(timezone.utc)
+            day_frames(a, b, rates=False)       # downloads what is missing, sequentially
+            for d, need in case_utc_hours(c).items():
+                todo[d] = sorted(set(todo.get(d, [])) | set(need))
+        print(f"{len(todo)} UTC days, {jobs} processes, code tag {qpe_tag()}", flush=True)
+        with Pool(jobs) as pool:
+            for line in pool.imap_unordered(_acc_job, sorted(todo.items())):
+                print(line, flush=True)
+        sys.exit(0)
     for c in cases:
         if want and c["id"] not in want:
             continue

@@ -106,7 +106,10 @@ class Quota:
         now = time.time()
         return sum(w for t, w in self.events if now - t < window)
 
-    def wait_for(self, weight: float, allow_long_wait: bool = True):
+    allow_long_wait = True      # set to False (--no-wait) to stop instead of sleeping for hours
+
+    def wait_for(self, weight: float, allow_long_wait: bool | None = None):
+        allow_long_wait = self.allow_long_wait if allow_long_wait is None else allow_long_wait
         if weight > self.lim[60]:
             raise ValueError(f"single request weight {weight:.0f} exceeds per-minute budget {self.lim[60]}")
         while True:
@@ -196,7 +199,7 @@ def _api_get(params: dict, weight: float, quota: Quota, cache_file: Path, max_re
 
 def fetch_previous_runs(lat, lon, start: str, end: str, models: list[str], max_lead: int = 7,
                         variable: str = "precipitation", chunk_points: int = 100, quota: Quota | None = None,
-                        pause: float = 1.0, verbose: bool = True) -> dict:
+                        pause: float = 1.0, verbose: bool = True, combine: bool = False) -> dict:
     """Return dict(precip[model, lead, time, point], time, grid_lat, grid_lon, grid_elev, ...)."""
     lat = np.asarray(lat, float).ravel()
     lon = np.asarray(lon, float).ravel()
@@ -211,6 +214,57 @@ def fetch_previous_runs(lat, lon, start: str, end: str, models: list[str], max_l
     gelev = np.full_like(glat, np.nan)
     times = None
     spent = 0.0
+    if combine:
+        # One request for all models: variables x models <= 10 keeps the documented weight at 1 call per
+        # location (3 models x [day0, day1, day2] = 9), a third of the per-model requests. No snapping:
+        # every model answers with its own nearest cell.
+        mlead = min(max_lead, max(MODELS.get(m, dict(max_lead=7))["max_lead"] for m in models))
+        vars_ = [variable if n == 0 else f"{variable}_previous_day{n}" for n in range(0, mlead + 1)]
+        if len(vars_) * len(models) > 10:
+            raise ValueError(f"{len(vars_)} variables x {len(models)} models > 10: lower --max-lead or drop --combine")
+        qlat, qlon = np.round(lat, 4), np.round(lon, 4)
+        uniq, inverse = np.unique(np.stack([qlat, qlon], 1), axis=0, return_inverse=True)
+        inverse = np.asarray(inverse).ravel()
+        tag = "combined_" + hashlib.sha1(",".join(models).encode()).hexdigest()[:8]
+        vals = np.full((len(models), len(vars_), n_time, len(uniq)), np.nan, np.float32)
+        ug = np.full((3, len(uniq)), np.nan, np.float32)
+        for c0 in range(0, len(uniq), chunk_points):
+            pts = uniq[c0:c0 + chunk_points]
+            params = dict(latitude=",".join(f"{p[0]:g}" for p in pts), longitude=",".join(f"{p[1]:g}" for p in pts),
+                          hourly=",".join(vars_), models=",".join(models), start_date=start, end_date=end,
+                          timezone="GMT", cell_selection="nearest")
+            key = hashlib.sha1(json.dumps(params, sort_keys=True).encode()).hexdigest()[:16]
+            cf = CACHE / "prev" / tag / f"{start}_{end}" / f"{c0:05d}_{key}.json"
+            w = call_weight(len(pts), len(vars_), len(models), n_days)
+            res, fresh = _api_get(params, w, quota, cf)
+            if fresh:
+                spent += w
+                time.sleep(pause)
+                if verbose:
+                    print(f"    combined cells {c0}..{c0 + len(pts) - 1} ok (weight {w:.0f}, session total {spent:.0f})", flush=True)
+            if len(res) != len(pts):
+                raise RuntimeError(f"expected {len(pts)} locations, got {len(res)}")
+            for k, loc in enumerate(res):
+                h = loc.get("hourly")
+                if h is None:
+                    continue
+                if times is None:
+                    times = h["time"]
+                elif h["time"] != times:
+                    raise RuntimeError("time axis mismatch between responses")
+                ug[:, c0 + k] = (loc["latitude"], loc["longitude"], loc.get("elevation") or np.nan)
+                for mi, model in enumerate(models):
+                    for li, v in enumerate(vars_):
+                        a = h.get(f"{v}_{model}", h.get(v) if len(models) == 1 else None)
+                        if a is not None and li <= MODELS.get(model, dict(max_lead=7))["max_lead"]:
+                            vals[mi, li, :, c0 + k] = np.array([np.nan if x is None else x for x in a], np.float32)
+        for mi in range(len(models)):
+            for li in range(len(vars_)):
+                out[mi, li] = vals[mi, li][:, inverse]
+            glat[mi], glon[mi], gelev[mi] = ug[0][inverse], ug[1][inverse], ug[2][inverse]
+        return dict(precip=out, models=np.array(models), lead_days=np.array(leads, np.int16),
+                    time=np.array(times), lat=lat.astype(np.float32), lon=lon.astype(np.float32),
+                    grid_lat=glat, grid_lon=glon, grid_elev=gelev, calls_spent=spent)
     for mi, model in enumerate(models):
         info = MODELS.get(model, dict(max_lead=7, snap=None))
         mleads = [n for n in leads if n <= info["max_lead"]]
@@ -380,6 +434,144 @@ def fetch_s3_box(model: str, variable: str, start: str, end: str, whole_file_max
 
 
 # --------------------------------------------------------------------------------------------
+# S3 complete runs (data_run): the same lead-specific series as the Previous Runs API, no quota
+# --------------------------------------------------------------------------------------------
+# https://openmeteo.s3.amazonaws.com/data_run/<s3model>/YYYY/MM/DD/HHMMZ/precipitation.om holds one complete run
+# as [ny, nx, step] (step k = valid_times[k + 1] of meta.json: the analysis time has no precipitation).
+# The bucket keeps a rolling window of about 94 days (oldest run on 2026-10-01: 2026-06-29 21Z), so this
+# only works for recent cases - and it has to be run before the runs expire.
+
+def _runs_dir(s3model: str) -> Path:
+    return CACHE / "runs" / s3model
+
+
+def list_runs(s3model: str, day: dt.date) -> list[dt.datetime]:
+    """Run folders of one UTC day in data_run (one S3 LIST request)."""
+    r = session().get(f"{S3_URL}/", params={"list-type": "2", "delimiter": "/",
+                                            "prefix": f"data_run/{s3model}/{day:%Y/%m/%d}/"}, timeout=60)
+    r.raise_for_status()
+    return sorted(dt.datetime(day.year, day.month, day.day, int(h), int(m))
+                  for h, m in re.findall(r"<Prefix>data_run/[^<]*/(\d{2})(\d{2})Z/</Prefix>", r.text))
+
+
+def fetch_run_box(s3model: str, run: dt.datetime, variable: str = "precipitation") -> dict | None:
+    """Box of one complete run, cached as int16 tenths of mm. Returns dict(data[step, lat, lon], valid, lat, lon)."""
+    cf = _runs_dir(s3model) / f"{variable}_{run:%Y%m%d%H}.npz"
+    if cf.exists():
+        z = np.load(cf)
+        d = z["data"].astype(np.float32) / 10.0
+        d[z["data"] < 0] = np.nan
+        return dict(data=d, valid=z["valid"], lat=z["lat"], lon=z["lon"])
+    import omfiles
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
+    from riua.sources.openmeteo_s3 import RangeHTTP  # tail cache + read-ahead: 2-5 requests per run
+
+    base = f"{S3_URL}/data_run/{s3model}/{run:%Y/%m/%d/%H%MZ}"
+    http = RangeHTTP(read_ahead=262144)
+    try:
+        meta = json.loads(http.get(f"{base}/meta.json"))
+        rd = omfiles.OmFileReader.from_fsspec(http, f"{base}/{variable}.om")
+    except FileNotFoundError:
+        return None
+    s, w, n, e = (float(x) for x in re.findall(r"BBOX\[([^\]]+)\]", meta["crs_wkt"])[0].split(","))
+    ny, nx, nt = (int(x) for x in rd.shape)
+    dy, dx = (n - s) / (ny - 1), (e - w) / (nx - 1)
+    eps = 1e-6
+    y0, y1 = max(0, int(np.ceil((BOX["lat_min"] - s) / dy - eps))), min(ny - 1, int(np.floor((BOX["lat_max"] - s) / dy + eps)))
+    x0, x1 = max(0, int(np.ceil((BOX["lon_min"] - w) / dx - eps))), min(nx - 1, int(np.floor((BOX["lon_max"] - w) / dx + eps)))
+    box = np.moveaxis(np.asarray(rd[y0:y1 + 1, x0:x1 + 1, :], np.float32), 2, 0)
+    rd.close()
+    http.close()
+    valid = sorted(t[:16].replace("Z", "") for t in meta["valid_times"])
+    valid = [v if len(v) == 16 else v + ":00" for v in valid]
+    if len(valid) == nt + 1:
+        valid = valid[1:]
+    elif len(valid) != nt:
+        raise IOError(f"{s3model} {run}: {nt} steps but {len(valid)} valid times")
+    code = np.where(np.isfinite(box), np.clip(np.rint(box * 10.0), 0, 32767), -1).astype(np.int16)
+    lat = (s + np.arange(y0, y1 + 1) * dy).astype(np.float32)
+    lon = (w + np.arange(x0, x1 + 1) * dx).astype(np.float32)
+    cf.parent.mkdir(parents=True, exist_ok=True)
+    tmp = cf.with_name(cf.stem + ".tmp.npz")
+    np.savez_compressed(tmp, data=code, valid=np.array(valid), lat=lat, lon=lon)
+    tmp.replace(cf)
+    d = code.astype(np.float32) / 10.0
+    d[code < 0] = np.nan
+    return dict(data=d, valid=np.array(valid), lat=lat, lon=lon)
+
+
+def fetch_runs_as_previous(lat, lon, start: str, end: str, models: list[str], max_lead: int = 2,
+                           variable: str = "precipitation", verbose: bool = True) -> dict:
+    """Rebuild what the Previous Runs API would return from the complete runs on S3 (same output as
+    fetch_previous_runs). Lead N at valid time V = the latest run initialised at or before V - N*24 h that
+    reaches V (N = 0: the latest run initialised before V), as verified for the API in r2-hindcast-archive."""
+    from concurrent.futures import ThreadPoolExecutor
+    lat = np.asarray(lat, float).ravel()
+    lon = np.asarray(lon, float).ravel()
+    d0, d1 = dt.date.fromisoformat(start), dt.date.fromisoformat(end)
+    hours = [dt.datetime(d0.year, d0.month, d0.day) + dt.timedelta(hours=h) for h in range(((d1 - d0).days + 1) * 24)]
+    times = [t.strftime("%Y-%m-%dT%H:%M") for t in hours]
+    leads = list(range(0, max_lead + 1))
+    out = np.full((len(models), len(leads), len(hours), len(lat)), np.nan, np.float32)
+    glat = np.full((len(models), len(lat)), np.nan, np.float32)
+    glon = np.full_like(glat, np.nan)
+    used = {}
+    for mi, model in enumerate(models):
+        info = MODELS[model]
+        s3model = info["s3"]
+        runs = []
+        day = d0 - dt.timedelta(days=max_lead + 3)
+        while day <= d1:
+            runs += list_runs(s3model, day)
+            day += dt.timedelta(days=1)
+        if verbose:
+            print(f"{model}: {len(runs)} runs listed {runs[0] if runs else None} .. {runs[-1] if runs else None}", flush=True)
+        with ThreadPoolExecutor(4) as pool:
+            got = list(pool.map(lambda r: _safe_run(s3model, r, variable), runs))
+        series = {}
+        for run, g in zip(runs, got):
+            if g is None:
+                continue
+            iy = np.clip(np.rint((lat - g["lat"][0]) / (g["lat"][1] - g["lat"][0])).astype(int), 0, len(g["lat"]) - 1)
+            ix = np.clip(np.rint((lon - g["lon"][0]) / (g["lon"][1] - g["lon"][0])).astype(int), 0, len(g["lon"]) - 1)
+            glat[mi], glon[mi] = g["lat"][iy], g["lon"][ix]
+            series[run] = (dict((v, k) for k, v in enumerate(g["valid"].tolist())), g["data"][:, iy, ix])
+        order = sorted(series, reverse=True)
+        used[model] = len(order)
+        for li, n in enumerate(leads):
+            if n > info["max_lead"]:
+                continue            # keep the same leads as the API archive (AROME: day 1 only)
+            for ti, v in enumerate(hours):
+                limit = v - dt.timedelta(hours=24 * n)
+                for run in order:
+                    if run > limit or (n == 0 and run >= v):
+                        continue
+                    k = series[run][0].get(times[ti])
+                    if k is not None:
+                        out[mi, li, ti] = series[run][1][k]
+                        break
+                    if (limit - run) > dt.timedelta(hours=36):
+                        break       # no older run can be the right one any more
+        if verbose:
+            print(f"  {model}: {len(order)} runs read; non-NaN by lead "
+                  f"{[round(float(np.isfinite(out[mi, li]).mean()), 2) for li in range(len(leads))]}", flush=True)
+    return dict(precip=out, models=np.array(models), lead_days=np.array(leads, np.int16), time=np.array(times),
+                lat=lat.astype(np.float32), lon=lon.astype(np.float32), grid_lat=glat, grid_lon=glon,
+                grid_elev=np.full_like(glat, np.nan), calls_spent=0.0, runs_used=used)
+
+
+def _safe_run(s3model, run, variable):
+    for attempt in range(3):
+        try:
+            return fetch_run_box(s3model, run, variable)
+        except Exception as e:  # noqa: BLE001
+            err = e
+            time.sleep(2 * (attempt + 1))
+    print(f"    run {s3model} {run} failed: {type(err).__name__} {err}"[:200], file=sys.stderr, flush=True)
+    return None
+
+
+# --------------------------------------------------------------------------------------------
 # CLI
 # --------------------------------------------------------------------------------------------
 def box_grid(step: float):
@@ -414,14 +606,50 @@ def main(argv=None):
     p.add_argument("--per-hour", type=float, default=4000)
     p.add_argument("--per-day", type=float, default=8000)
     p.add_argument("--out", default=None)
+    p.add_argument("--combine", action="store_true",
+                   help="ask all models in one request per 100 points (variables x models must be <= 10): "
+                        "1 call per point instead of 1 per point and model")
+    p.add_argument("--no-wait", action="store_true", help="stop instead of sleeping when the local quota budget is used up")
     s = sub.add_parser("s3", help="stitched day-0 series from the S3 bucket (no quota)")
     s.add_argument("--start", required=True)
     s.add_argument("--end", required=True)
     s.add_argument("--models", default="meteofrance_arome_france,icon_eu,meteofrance_arpege_europe,ecmwf_ifs025")
     s.add_argument("--variable", default="precipitation")
     s.add_argument("--outdir", default=None)
+    q = sub.add_parser("runs", help="lead-specific series rebuilt from the complete runs on S3 (no quota, last ~94 days only)")
+    q.add_argument("--start", required=True)
+    q.add_argument("--end", required=True)
+    q.add_argument("--models", default="meteofrance_arome_france,icon_eu,meteofrance_arpege_europe")
+    q.add_argument("--points", required=True, help=".npz with 1-D lat/lon arrays, or csv with header lat,lon")
+    q.add_argument("--max-lead", type=int, default=2)
+    q.add_argument("--variable", default="precipitation")
+    q.add_argument("--out", required=True)
     a = ap.parse_args(argv)
     models = a.models.split(",")
+    if a.cmd == "runs":
+        lat, lon = load_points(a.points)
+        t0 = time.time()
+        r = fetch_runs_as_previous(lat, lon, a.start, a.end, models, a.max_lead, a.variable)
+        out = Path(a.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        meta = dict(source=f"{S3_URL}/data_run/<model>/YYYY/MM/DD/HHMMZ/{a.variable}.om", variable=a.variable,
+                    units="mm (preceding hour)", box=BOX, calls_spent=0, runs_used=r["runs_used"],
+                    lead_definition="lead_day N = value of the latest run initialised at or before valid time - N*24 h "
+                                    "(N = 0: latest run before the valid time); same rule as precipitation_previous_dayN",
+                    created=dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"))
+        tmp = out.with_name(out.stem + ".tmp.npz")
+        np.savez_compressed(tmp, meta=json.dumps(meta), **{k: v for k, v in r.items() if k not in ("calls_spent", "runs_used")})
+        tmp.replace(out)
+        print(f"wrote {out} precip{r['precip'].shape} ({out.stat().st_size / 1e6:.2f} MB); 0 API calls; {time.time() - t0:.0f}s")
+        pr = r["precip"]
+        for d in range(pr.shape[2] // 24):
+            day = r["time"][d * 24][:10]
+            for mi, m in enumerate(models):
+                acc = pr[mi, :, d * 24:(d + 1) * 24, :].sum(axis=1)
+                row = " ".join(f"d{n}:{np.nanmax(acc[li]):6.1f}/{np.nanmean(acc[li]):5.1f}" if np.isfinite(acc[li]).any()
+                               else f"d{n}:   --/   --" for li, n in enumerate(r["lead_days"]))
+                print(f"  {day} {m:28s} {row}")
+        return 0
     if a.cmd == "prev":
         if a.points:
             lat, lon = load_points(a.points)
@@ -429,10 +657,12 @@ def main(argv=None):
         else:
             lat, lon, shape = box_grid(a.grid or 0.1)
         quota = Quota(a.per_minute, a.per_hour, a.per_day)
+        quota.allow_long_wait = not a.no_wait
         print(f"previous runs {a.start}..{a.end}: {len(lat)} points, models {models}; "
               f"ledger: {quota.used(3600):.0f} calls last hour, {quota.used(86400):.0f} last 24 h")
         t0 = time.time()
-        r = fetch_previous_runs(lat, lon, a.start, a.end, models, a.max_lead, a.variable, a.chunk_points, quota)
+        r = fetch_previous_runs(lat, lon, a.start, a.end, models, a.max_lead, a.variable, a.chunk_points, quota,
+                                combine=a.combine)
         out = Path(a.out) if a.out else CACHE / f"prev_{a.variable}_{a.start}_{a.end}_{len(lat)}pts.npz"
         out.parent.mkdir(parents=True, exist_ok=True)
         meta = dict(source=PREV_URL, variable=a.variable, units="mm (preceding hour)", box=BOX,
