@@ -1,13 +1,13 @@
 {
   "version": "hindcast-2026-10-05-recommended",
   "sigma": {
-    "now": 0.4,
+    "now": 0.3,
     "mid": 0.65,
     "long": 1.0
   },
   "bias": {
     "now": 1.6,
-    "mid": 1.35,
+    "mid": 1.15,
     "long": 1.6
   },
   "tau": {
@@ -34,11 +34,11 @@
     "mid": 12.0
   },
   "sigma1h": {
-    "mid": 1.6,
-    "now": 1.3
+    "mid": 1.3,
+    "now": 0.8
   },
   "bias1h": {
-    "mid": 0.5,
+    "mid": 0.75,
     "now": 0.5
   },
   "level_cap": {

@@ -77,34 +77,34 @@ r = max(s1·rain_1h / T_1h , s12·rain_12h / T_12h)        P(≥ level) = Σ wei
 See `hindcast/results.json` and the Validación page. Method: forecasts that really existed at the time (Open-Meteo Previous Runs archive, OPERA radar archive, ECMWF ENS archive) are run through the same code, scored against the radar-gauge analysis, and σ, b and τ are tuned with leave-one-case-out cross-validation.
 
 <!-- VALIDATION-TABLE -->
-**Now (0–6 h)** — 17 cases, 684 frames, σ = 0.4, bias = 1.6; per warning zone and day:
+**Now (0–6 h)** — 31 cases, 2372 frames, σ = 0.3, bias = 1.6; per warning zone and day:
 
 | Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |
 |---|---|---|---|---|---|---|
-| 2 | 15 % | 66 | 147 | 63 | 31 % | 49 % |
-| 3 | 30 % | 16 | 69 | 4 | 18 % | 22 % |
-| 4 | 30 % | 5 | 13 | 0 | 26 % | 5 % |
-| 5 | 40 % | 0 | 4 | 0 | 0 % | — |
+| 2 | 15 % | 284 | 316 | 128 | 47 % | 31 % |
+| 3 | 30 % | 67 | 125 | 9 | 35 % | 12 % |
+| 4 | 30 % | 13 | 38 | 1 | 26 % | 9 % |
+| 5 | 40 % | 0 | 6 | 0 | 0 % | — |
 
-**48 h (day-ahead runs)** — 24 cases, 5150 frames, σ = 0.65, bias = 1.35; per warning zone and day:
-
-| Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |
-|---|---|---|---|---|---|---|
-| 2 | 15 % | 641 | 906 | 390 | 42 % | 38 % |
-| 3 | 15 % | 217 | 511 | 164 | 30 % | 43 % |
-| 4 | 15 % | 38 | 176 | 42 | 18 % | 52 % |
-| 5 | 40 % | 0 | 21 | 0 | 0 % | — |
-
-**Days 2–7 (issued 3 and 5 days before)** — 10 cases, 65 frames, σ = 1.0, bias = 1.6; per warning zone and day:
+**48 h (day-ahead runs)** — 31 cases, 5822 frames, σ = 0.65, bias = 1.15; per warning zone and day:
 
 | Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |
 |---|---|---|---|---|---|---|
-| 2 | 15 % | 53 | 50 | 30 | 51 % | 36 % |
-| 3 | 25 % | 10 | 49 | 9 | 18 % | 46 % |
-| 4 | 40 % | 0 | 15 | 0 | 0 % | — |
-| 5 | 40 % | 0 | 3 | 0 | 0 % | — |
+| 2 | 15 % | 687 | 1085 | 499 | 39 % | 42 % |
+| 3 | 15 % | 156 | 534 | 166 | 23 % | 52 % |
+| 4 | 15 % | 14 | 209 | 19 | 6 % | 57 % |
+| 5 | 40 % | 0 | 28 | 0 | 0 % | — |
 
-**Rambla del Poyo, 29 Oct 2024** (observed rain as input): 2266 m³/s at the A-3 gauge (measured 2283 m³/s when the sensor was lost), 2920 m³/s at Paiporta. Peak timing cannot be verified: the Cullera radar was attenuated during the maximum and no open sub-daily gauge data exist for 2024.
+**Days 2–7 (issued 3 and 5 days before)** — 41 cases, 316 frames, σ = 1.0, bias = 1.6; per warning zone and day:
+
+| Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |
+|---|---|---|---|---|---|---|
+| 2 | 15 % | 185 | 371 | 192 | 33 % | 51 % |
+| 3 | 25 % | 14 | 213 | 32 | 6 % | 69 % |
+| 4 | 40 % | 0 | 66 | 0 | 0 % | — |
+| 5 | 40 % | 0 | 10 | 0 | 0 % | — |
+
+**Rambla del Poyo, 29 Oct 2024** (observed rain as input): 20 m³/s at the A-3 gauge (measured 2283 m³/s when the sensor was lost), 400 m³/s at Paiporta. Peak timing cannot be verified: the Cullera radar was attenuated during the maximum and no open sub-daily gauge data exist for 2024.
 <!-- /VALIDATION-TABLE -->
 
 ## Known limitations
