@@ -135,9 +135,9 @@ def fetch_radar_day(day: datetime, workers: int = 8) -> list[tuple[datetime, np.
     """Every archived composite of one UTC day: 10-min steps of the 1 km product (tiff, else h5), completed with the
     15-min 2 km product where the 1 km one does not exist."""
     from concurrent.futures import ThreadPoolExecutor
-    jobs = [(t, "tiff") for t in radar.opera_list(day, "DBZH", radar.OPERA_BUCKET_ARCHIVE) if t.minute % 10 == 0]
+    jobs = [(t, "tiff") for t in radar.opera_list(day, "DBZH", radar.OPERA_BUCKET_ARCHIVE) if t.minute % STEP_MIN == 0]
     if not jobs:
-        jobs = [(t, "DBZH") for t in opera_h5_list(day, "DBZH") if t.minute % 10 == 0]
+        jobs = [(t, "DBZH") for t in opera_h5_list(day, "DBZH") if t.minute % STEP_MIN == 0]
     first = min((t for t, _ in jobs), default=day + timedelta(days=1))
     if first > day + timedelta(minutes=20):
         jobs += [(t, "DBZH_QIND") for t in opera_h5_list(day, "DBZH_QIND") if t < first]
@@ -193,10 +193,24 @@ def day_frames(t0: datetime, t1: datetime, dirs=None) -> list[tuple[datetime, np
         else:
             times, dbz = got
         for t, d in zip(times, dbz):
-            if t0 - timedelta(minutes=10) <= t <= t1:
-                out.append((t, qpe.rain_rate(qpe.despeckle(d))))
+            if t0 - timedelta(minutes=10) <= t <= t1 and (not DEGRADE or t.minute % STEP_MIN == 0):
+                out.append((t, qpe.rain_rate(qpe.despeckle(degrade_dbz(d) if DEGRADE else d))))
         day += timedelta(days=1)
     return out
+
+
+STEP_MIN = 10           # minutes between the frames used (15 with DEGRADE: the 1 km product has a file every 5 min)
+DEGRADE = False         # True: 2 km reflectivity (linear-Z mean of 2 x 2 px) every 15 min, as the archive before July 2024
+
+
+def degrade_dbz(d: np.ndarray) -> np.ndarray:
+    """1 km dBZ -> the same field at 2 km (mean of linear Z over 2 x 2 pixels, NaN ignored), back on the 1 km grid."""
+    lin = np.where(np.isfinite(d), 10.0 ** (d / 10.0), np.nan).reshape(qpe.RG_NY // 2, 2, qpe.RG_NX // 2, 2)
+    n = np.isfinite(lin).sum(axis=(1, 3))
+    m = np.where(n > 0, np.nansum(lin, axis=(1, 3)) / np.maximum(n, 1), np.nan)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        z = np.where(np.isfinite(m), 10.0 * np.log10(np.maximum(m, 1e-6)), np.nan)
+    return np.repeat(np.repeat(z, 2, axis=0), 2, axis=1).astype(np.float32)
 
 
 def case_utc_hours(case: dict) -> dict:

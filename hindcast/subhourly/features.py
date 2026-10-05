@@ -34,6 +34,9 @@ from riua.radar import qpe  # noqa: E402
 # workstation: reuse the dBZ days q4 and q9 already downloaded (same format)
 LOCAL = [ROOT / "hindcast" / "floods" / "cache" / "radar"]
 
+if "--degrade" in sys.argv:              # the whole period at the resolution of the pre-2024 archive (2 km, 15 min)
+    archive.DEGRADE, archive.STEP_MIN = True, 15
+
 if "--no-advection" in sys.argv:          # no pysteps on this machine: plain interpolation between scans
     qpe.motion_field = lambda rates, coarse=2: np.zeros((2, *rates[-1].shape))
     qpe._advect = lambda field, v, frac: field
@@ -76,6 +79,8 @@ def main():
         # contiguous blocks: a day and the next one usually share a job (the last hour needs the next day's 00:00 scan)
         size = -(-len(alld) // n)
         days = alld[k * size:(k + 1) * size]
+    if archive.DEGRADE:         # before July 2024 the archive is 2 km / 15 min already: the native files are the same thing
+        days = [d for d in days if d >= "2024-07-01"]
     print(f"{len(days)} days -> {out}", flush=True)
     for i, d in enumerate(days):
         f = out / f"{d.replace('-', '')}.npz"
