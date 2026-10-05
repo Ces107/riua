@@ -199,7 +199,9 @@ class HydroProduct:
 
 
 def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, horizon: str,
-                  now: datetime, t_axis: np.ndarray) -> HydroProduct:
+                  now: datetime, t_axis: np.ndarray, extra=None) -> HydroProduct:
+    """extra: (outflow per scenario key (name, sj, si) -> (T, P) m3/s, its hours): dam releases and spills
+    added to the points whose catchment the dam cuts (core/reservoirs.outflow_to_points)."""
     hp = params["hydro"]
     sigma = hp["sigma"][horizon]
     shift_km = params["basin_shift_km"][horizon]
@@ -223,6 +225,11 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
                                alpha=net_.alpha, p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0)),
                       net_, hp["clark_k"])      # (Tm, P)
             q0 = route(p, net_, hp["clark_k"]) if fml is not None else None      # zero-loss: rain arriving at each point
+            if extra is not None and (m.name, sj, si) in extra[0]:
+                add, t_add = extra[0][(m.name, sj, si)], extra[1]          # what the dams above let through
+                k = np.searchsorted(t_add, m.t_end)
+                ok = (k < len(t_add)) & (t_add[np.minimum(k, len(t_add) - 1)] == m.t_end)
+                q[ok] += add[k[ok]]
             # onto the common axis
             pos = np.searchsorted(t_axis, m.t_end)
             inside = (pos < T) & (t_axis[np.minimum(pos, T - 1)] == m.t_end)

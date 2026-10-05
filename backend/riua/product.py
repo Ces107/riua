@@ -412,7 +412,8 @@ def ens_members(state: Path, now: datetime) -> tuple[list[risk.Member], dict]:
 # ------------------------------------------------------------------------------- one horizon
 
 def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: dict, st, thr, bs, net,
-                    sample_mask=None) -> dict:
+                    sample_mask=None, dams=None) -> dict:
+    """dams: (DamNet, live rows) — reservoirs are simulated first and their outflow feeds the points below."""
     hnow = top_of_hour(now)
     frames = frames_for(hz, now)
     pred = risk.predictors(members, frames, params, hz, hnow, sample_mask=sample_mask, keep_members=True)
@@ -451,7 +452,15 @@ def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: 
         t_axis = np.unique(np.concatenate([m.t_end for m in members])) if members else np.array([], "datetime64[h]")
         lo = np.datetime64(hnow, "h") - np.timedelta64(12, "h")
         t_axis = t_axis[(t_axis > lo) & (t_axis <= frames[-1][1])]
-        out["points"] = H.hydro_product(members, frames, net, params, hz, hnow, t_axis)
+        extra = None
+        if dams is not None:
+            try:
+                from .core import reservoirs as RS
+                out["reservoirs"] = RS.reservoir_product(members, frames, dams[0], dams[1], params, hz, hnow, t_axis, keep_sim=True)
+                extra = (RS.outflow_to_points(out["reservoirs"].sim, dams[0], net.ids), out["reservoirs"].sim["t"])
+            except Exception:
+                log.error("reservoirs %s failed: %s", hz, traceback.format_exc())
+        out["points"] = H.hydro_product(members, frames, net, params, hz, hnow, t_axis, extra=extra)
     return out
 
 
@@ -627,6 +636,18 @@ def run_cycle(state: Path, out: Path, now: datetime | None = None, with_radar: b
             "thresholds": {"zones": st.zone_thr, "extreme": params["extreme"], "source": st.thresholds_source},
             "horizons": {}, "explain": {}}
     out.mkdir(parents=True, exist_ok=True)
+    # reservoirs: live state first, so that each horizon can route what the dams let through
+    dams, rprod, rrep = None, {}, None
+    try:
+        from .core import reservoirs as RS
+        from .sources import reservoirs as RL
+        dn = RS.load_dams(base_alpha=net.alpha if net is not None else None)
+        if dn is not None:
+            live, rrep = RL.fetch_reservoirs(dn.meta, state=state, now=now)
+            dams = (dn, live)
+    except Exception as e:
+        log.error("reservoirs failed: %s", traceback.format_exc())
+        notes.append(f"reservoirs: {type(e).__name__}: {e}"[:200])
     for hz in P.HORIZONS:
         t = time.time()
         if hz == "long" and not ens:
@@ -634,7 +655,9 @@ def run_cycle(state: Path, out: Path, now: datetime | None = None, with_radar: b
             continue
         try:
             o = horizon_product(hz, horizon_members[hz], now, params, st, thr, bs, net,
-                                sample_mask=lattice if hz == "mid" else None)
+                                sample_mask=lattice if hz == "mid" else None, dams=dams)
+            if "reservoirs" in o:
+                rprod[hz] = o["reservoirs"]
             blk, blob, head = pack_horizon(hz, o, st.mask, params)
             snap["horizons"][hz] = blk
             (out / f"explain-{hz}.bin").write_bytes(blob)
@@ -647,15 +670,17 @@ def run_cycle(state: Path, out: Path, now: datetime | None = None, with_radar: b
     # ---- reservoirs (q10-dams): live state, filling and spill per horizon; a failure never stops the cycle ----
     t = time.time()
     try:
-        from .core import reservoirs as RS
-        from .sources import reservoirs as RL
-        dn = RS.load_dams(base_alpha=net.alpha if net is not None else None)
-        if dn is not None:
-            live, rrep = RL.fetch_reservoirs(dn.meta, state=state, now=now)
-            sources.append(rrep)
+        if dams is not None:
+            from .core import reservoirs as RS
+            dn, live = dams
+            if rrep:
+                sources.append(rrep)
             rblk = RS.static_block(dn, live, [c["id"] for c in cps], hnow)
             for hz in snap["horizons"]:
                 try:
+                    if hz in rprod:
+                        rblk["horizons"][hz] = RS.pack(rprod[hz], dn)
+                        continue
                     ms, frs = horizon_members[hz], frames_for(hz, now)
                     ta = np.unique(np.concatenate([x.t_end for x in ms])) if ms else np.array([], "datetime64[h]")
                     ta = ta[(ta > np.datetime64(hnow, "h") - np.timedelta64(12, "h")) & (ta <= frs[-1][1])]
