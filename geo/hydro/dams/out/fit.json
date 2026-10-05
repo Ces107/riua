@@ -1,0 +1,380 @@
+{
+ "ulldecona": {
+  "alpha": 0.2028,
+  "alpha_unshrunk": 0.35,
+  "episodes": 8,
+  "informative": 7,
+  "dry_noise_hm3": 0.036,
+  "rms_ln_default": 2.301,
+  "rms_ln_fit": 1.182
+ },
+ "valbona": {
+  "alpha": 0.0448,
+  "alpha_unshrunk": 0.1,
+  "episodes": 3,
+  "informative": 1,
+  "dry_noise_hm3": 0.009,
+  "rms_ln_default": 2.904,
+  "rms_ln_fit": 2.901
+ },
+ "mora": {
+  "alpha": 0.0243,
+  "alpha_unshrunk": 0.016,
+  "episodes": 3,
+  "informative": 1,
+  "dry_noise_hm3": 0.004,
+  "rms_ln_default": 0.513,
+  "rms_ln_fit": 0.514
+ },
+ "balagueras": {
+  "alpha": 0.033,
+  "alpha_unshrunk": 0.04,
+  "episodes": 5,
+  "informative": 1,
+  "dry_noise_hm3": 0.002,
+  "rms_ln_default": 0.233,
+  "rms_ln_fit": 0.141
+ },
+ "arenos": {
+  "alpha": 0.1543,
+  "alpha_unshrunk": 0.35,
+  "episodes": 6,
+  "informative": 4,
+  "dry_noise_hm3": 1.107,
+  "rms_ln_default": 1.572,
+  "rms_ln_fit": 1.034
+ },
+ "sichar": {
+  "alpha": 0.0714,
+  "alpha_unshrunk": 0.17,
+  "episodes": 8,
+  "informative": 2,
+  "dry_noise_hm3": 0.191,
+  "rms_ln_default": 1.016,
+  "rms_ln_fit": 0.59
+ },
+ "alcora": {
+  "alpha": 0.0406,
+  "alpha_unshrunk": 0.055,
+  "episodes": 6,
+  "informative": 2,
+  "dry_noise_hm3": 0.016,
+  "rms_ln_default": 1.039,
+  "rms_ln_fit": 0.857
+ },
+ "maria-cristina": {
+  "alpha": 0.0474,
+  "alpha_unshrunk": 0.075,
+  "episodes": 7,
+  "informative": 2,
+  "dry_noise_hm3": 0.097,
+  "rms_ln_default": 0.839,
+  "rms_ln_fit": 0.51
+ },
+ "onda": {
+  "alpha": 0.019,
+  "alpha_unshrunk": 0.012,
+  "episodes": 6,
+  "informative": 2,
+  "dry_noise_hm3": 0.005,
+  "rms_ln_default": 0.253,
+  "rms_ln_fit": 0.263
+ },
+ "regajo": {
+  "alpha": 0.0548,
+  "alpha_unshrunk": 0.1,
+  "episodes": 8,
+  "informative": 2,
+  "dry_noise_hm3": 0.028,
+  "rms_ln_default": 0.752,
+  "rms_ln_fit": 0.389
+ },
+ "algar": {
+  "alpha": 0.033,
+  "alpha_unshrunk": 0.04,
+  "episodes": 8,
+  "informative": 1,
+  "dry_noise_hm3": 0.019,
+  "rms_ln_default": 0.645,
+  "rms_ln_fit": 0.577
+ },
+ "arquillo": {
+  "alpha": 0.0448,
+  "alpha_unshrunk": 0.1,
+  "episodes": 3,
+  "informative": 1,
+  "dry_noise_hm3": 0.083,
+  "rms_ln_default": 0.693,
+  "rms_ln_fit": 0.466
+ },
+ "benageber": {
+  "alpha": 0.0812,
+  "alpha_unshrunk": 0.22,
+  "episodes": 5,
+  "informative": 2,
+  "dry_noise_hm3": 0.706,
+  "rms_ln_default": 0.725,
+  "rms_ln_fit": 0.591
+ },
+ "loriguilla": {
+  "alpha": 0.0249,
+  "alpha_unshrunk": 0.022,
+  "episodes": 7,
+  "informative": 3,
+  "dry_noise_hm3": 0.247,
+  "rms_ln_default": 0.887,
+  "rms_ln_fit": 0.885
+ },
+ "buseo": {
+  "alpha": 0.0624,
+  "alpha_unshrunk": 0.13,
+  "episodes": 6,
+  "informative": 2,
+  "dry_noise_hm3": 0.024,
+  "rms_ln_default": 0.868,
+  "rms_ln_fit": 0.396
+ },
+ "forata": {
+  "alpha": 0.0618,
+  "alpha_unshrunk": 0.1,
+  "episodes": 6,
+  "informative": 3,
+  "dry_noise_hm3": 0.106,
+  "rms_ln_default": 0.685,
+  "rms_ln_fit": 0.486
+ },
+ "la-toba": {
+  "alpha": 0.131,
+  "alpha_unshrunk": 0.35,
+  "episodes": 4,
+  "informative": 3,
+  "dry_noise_hm3": 0.324,
+  "rms_ln_default": 2.327,
+  "rms_ln_fit": 2.072
+ },
+ "alarcon": {
+  "alpha": null,
+  "episodes": 4,
+  "dry_noise_hm3": 10.159,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "contreras": {
+  "alpha": 0.1025,
+  "alpha_unshrunk": 0.35,
+  "episodes": 6,
+  "informative": 2,
+  "dry_noise_hm3": 2.079,
+  "rms_ln_default": 1.266,
+  "rms_ln_fit": 0.984
+ },
+ "escalona": {
+  "alpha": 0.019,
+  "alpha_unshrunk": 0.012,
+  "episodes": 8,
+  "informative": 2,
+  "dry_noise_hm3": 0.028,
+  "rms_ln_default": 0.935,
+  "rms_ln_fit": 0.938
+ },
+ "tous": {
+  "alpha": 0.0548,
+  "alpha_unshrunk": 0.1,
+  "episodes": 5,
+  "informative": 2,
+  "dry_noise_hm3": 6.316,
+  "rms_ln_default": 0.409,
+  "rms_ln_fit": 0.251
+ },
+ "bellus": {
+  "alpha": 0.133,
+  "alpha_unshrunk": 0.28,
+  "episodes": 7,
+  "informative": 4,
+  "dry_noise_hm3": 0.436,
+  "rms_ln_default": 1.133,
+  "rms_ln_fit": 0.872
+ },
+ "beniarres": {
+  "alpha": 0.0407,
+  "alpha_unshrunk": 0.075,
+  "episodes": 7,
+  "informative": 1,
+  "dry_noise_hm3": 0.197,
+  "rms_ln_default": 0.328,
+  "rms_ln_fit": 0.258
+ },
+ "guadalest": {
+  "alpha": 0.03,
+  "alpha_unshrunk": 0.03,
+  "episodes": 6,
+  "informative": 0,
+  "dry_noise_hm3": 0.046,
+  "rms_ln_default": 0.257,
+  "rms_ln_fit": 0.236
+ },
+ "amadorio": {
+  "alpha": 0.03,
+  "alpha_unshrunk": 0.003,
+  "episodes": 6,
+  "informative": 0,
+  "dry_noise_hm3": 0.044,
+  "rms_ln_default": 0.168,
+  "rms_ln_fit": 0.236
+ },
+ "fuensanta": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "cenajo": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "talave": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "camarillas": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "boqueron": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "bayco": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "charcos": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "la-risca": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "moratalla": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "argos": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "alfonso-xiii": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "carcabo": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "judio": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "moro": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "mayes": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "la-cierva": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "dona-ana": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "pliego": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "los-rodeos": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "valdeinfierno": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "puentes": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "algeciras": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "jose-bautista": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "santomera": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "la-pedrera": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ },
+ "crevillente": {
+  "alpha": null,
+  "episodes": 0,
+  "dry_noise_hm3": 0.0,
+  "note": "not fitted: measured balance too noisy"
+ }
+}

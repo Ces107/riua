@@ -7,6 +7,7 @@ import { defaultHorizon, headline } from './headline.js';
 import { createMap } from './map.js';
 import { context, placeTitle, renderPanel } from './panel.js';
 import { renderPoints } from './points.js';
+import { damMarks, damPanel } from './dams.js';
 import { shareCard } from './share.js';
 import { decode, isOwnHash, state, writeHash } from './state.js';
 import { age, dayTime, esc, frameLabel } from './time.js';
@@ -51,6 +52,7 @@ function scene() {
     o.basinLevels = f === 'max' ? mc.basins : h.basins && h.basins.level ? h.basins.level[f] : null;
     o.pointLevels = f === 'max' ? mc.points : h.points && h.points.level ? h.points.level[f] : null;
   }
+  o.dams = snap ? damMarks(snap, state) : null;
   if (state.sel) {
     const ctx = context(snap, state);
     o.selection = { lat: state.sel.lat, lon: state.sel.lon, cell: ctx && ctx.cell ? { i: ctx.cell.i, j: ctx.cell.j } : null, basin: ctx ? ctx.basin : null };
@@ -120,7 +122,10 @@ function render(parts = {}) {
   renderControls();
   if (state.pt && !geo.catchments && !catchmentsAsked) { catchmentsAsked = true; loadCatchments().then((c) => { if (c && mapApi) mapApi.redraw(); }); }
   if (mapApi) mapApi.redraw();
-  if (snap) renderPanel($('place'), snap, state, { auditOpen: () => auditOpen, onAudit: (v) => { auditOpen = v; } });
+  const dp = snap && state.dm ? damPanel(snap, state) : null;
+  $('dam').hidden = !dp; $('place').hidden = !!dp;
+  if (dp) setHtml($('dam'), dp);
+  else if (snap) renderPanel($('place'), snap, state, { auditOpen: () => auditOpen, onAudit: (v) => { auditOpen = v; } });
   renderPoints($('barrancos'), snap, state);
   renderFresh();
   if (snap && state.hz) writeHash(frameT0());
@@ -163,6 +168,7 @@ function select(lat, lon, ptId = null, reveal = 0) {
   const inPanel = $('place').contains(document.activeElement);
   state.sel = { lat, lon };
   state.pt = ptId;
+  state.dm = null;
   say('');
   if (reveal && mapApi) mapApi.reveal(lat, lon, reveal);
   render();
@@ -171,7 +177,7 @@ function select(lat, lon, ptId = null, reveal = 0) {
 }
 
 function clearSelection() {
-  state.sel = null; state.pt = null;
+  state.sel = null; state.pt = null; state.dm = null;
   $('q').value = '';
   render();
 }
@@ -183,10 +189,22 @@ function selectPoint(id, scroll) {
   state.mode = 'cuencas';
   state.sel = { lat: pt.lat, lon: pt.lon };
   state.pt = id;
+  state.dm = null;
   mapApi.reveal(pt.lat, pt.lon, 10.5);
   render({ scrollToPoint: scroll });
   const btn = [...document.querySelectorAll('#barrancos tr.open button[data-pt]')].find((b) => b.dataset.pt === id);
   if (btn && scroll) btn.focus({ preventScroll: true });
+}
+
+function selectDam(id) {
+  const R = snap && snap.reservoirs;
+  const d = R && R.dams.find((x) => x.id === id);
+  if (!d) return;
+  state.mode = 'cuencas';
+  state.dm = id; state.pt = null; state.sel = null;
+  if (mapApi) mapApi.reveal(d.lat, d.lon, 10);
+  render();
+  peek();
 }
 
 function wire() {
@@ -217,6 +235,7 @@ function wire() {
     const b = e.target.closest('button');
     if (!b) return;
     if (b.dataset.act === 'back') { clearSelection(); $('q').focus({ preventScroll: true }); return; }
+    if (b.dataset.dm) { selectDam(b.dataset.dm); return; }
     if (b.dataset.ll) {
       const [la, lo] = b.dataset.ll.split(',').map(Number);
       if (b.dataset.hz && snap.hz[b.dataset.hz]) { state.hz = b.dataset.hz; state.f = 'max'; }
@@ -227,8 +246,17 @@ function wire() {
     else if (b.dataset.pt) selectPoint(b.dataset.pt, true);
   });
   $('barrancos').addEventListener('click', (e) => {
+    const d = e.target.closest('button[data-dm]');
+    if (d) { selectDam(d.dataset.dm); return; }
     const b = e.target.closest('button[data-pt]');
     if (b) selectPoint(b.dataset.pt, false);
+  });
+  $('dam').addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    if (b.dataset.act === 'back') { clearSelection(); return; }
+    if (b.dataset.dm) selectDam(b.dataset.dm);
+    else if (b.dataset.pt) selectPoint(b.dataset.pt, true);
   });
 
   // search: a list of buttons under the box; arrows move through it, Escape closes it
@@ -336,6 +364,7 @@ function applyHash(p) {
   state.zi = !!p.zi; if (mapApi) mapApi.floodZones(state.zi);
   state.sel = p.sel || null;
   state.pt = p.pt || null;
+  state.dm = p.dm || null;
   if (p.view && mapApi) { state.view = p.view; mapApi.setView(p.view); }
 }
 
@@ -370,9 +399,10 @@ function start() {
   if (initial.mode) state.mode = initial.mode;
   if (initial.sel) state.sel = initial.sel;
   if (initial.pt) state.pt = initial.pt;
+  if (initial.dm) state.dm = initial.dm;
 
   mapApi = createMap($('map'), scene, {
-    onPick: (lat, lon, ptId) => { if (ptId) selectPoint(ptId, false); else select(lat, lon, null); },
+    onPick: (lat, lon, ptId, damId) => { if (damId) selectDam(damId); else if (ptId) selectPoint(ptId, false); else select(lat, lon, null); },
     onView: () => { state.view = mapApi.view(); if (snap) writeHash(frameT0()); },
   });
   // the flood-zone toggle appears only once its tiles are published

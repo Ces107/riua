@@ -319,3 +319,39 @@ main:not(.app) ~ .bar-fixed { position: sticky; }
   #map { height: 420px; max-height: none; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* reservoirs: thin fill bar (ink = now, hatched = forecast range, short ink tick = forecast median,
+   red tick = spill level, dashed tick = flood reserve), list, panel */
+.fill { position: relative; display: inline-block; width: 4.8rem; height: .55rem; border: 1px solid var(--ink); background: var(--paper-2); vertical-align: middle; }
+.fill.big { display: block; width: 100%; height: .8rem; margin-top: .35rem; }
+.fill.none { border-style: dashed; border-color: var(--rule); }
+.fill i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--river); }
+.fill s { position: absolute; top: 0; bottom: 0; text-decoration: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath d='M-1 6L6 -1M-1 1L1 -1M4 6L6 4' stroke='%233b6a8f' stroke-width='1.3'/%3E%3C/svg%3E"); }
+.fill u { position: absolute; top: -2px; bottom: -2px; border-left: 2px solid var(--ink); }
+.fill b { position: absolute; top: -4px; bottom: -4px; border-left: 2px solid var(--l4); }
+.fill em { position: absolute; top: -3px; bottom: -3px; border-left: 1px dashed var(--ink); }
+table.dams td.fillcell { white-space: nowrap; }
+table.dams td.fillcell .num { display: inline-block; min-width: 3.4em; margin-left: .4rem; text-align: right; }
+.wide h2.gap2 { margin-top: 1.1rem; }
+.dam-note { display: flex; gap: .4rem; align-items: center; min-height: 0; padding: .15rem 0 0; border: 0; background: none;
+  font: .78rem var(--mono); color: var(--ink); text-align: left; cursor: pointer; }
+.dam-note .lv { font-size: .7em; min-width: 1.4em; height: 1.4em; line-height: calc(1.4em - 2px); }
+.dam-note .fill { width: 3.2rem; height: .45rem; }
+ul.rows li.dam-li { border-bottom: 1px solid var(--rule); }
+ul.rows li.dam-li .dam-note { display: flex; padding: .3rem 0; min-height: 32px; }
+.dampanel { margin-top: .8rem; }
+.dampanel figure.hydro { margin-top: .7rem; }
+table.kv th { text-align: left; color: var(--dim); }
+table.kv td { text-align: right; }
+.dm-mark { display: inline-block; width: 1.3em; height: .5em; border: 1px solid var(--ink); background: var(--paper); }
+p.small { font-size: .74rem; margin-top: .6rem; }
+@container (max-width: 560px) {
+  table.dams .fill { width: 4rem; }
+}
+table.points tr.dam-row td { text-align: left; white-space: normal; padding-top: 0; }
+table.points tr:has(+ tr.dam-row) td, table.points tr:has(+ tr.dam-row) th { border-bottom: 0; }
+@container (max-width: 420px) {
+  table.dams .fill { width: 2.6rem; }
+  table.dams td.fillcell .num { min-width: 2.8em; margin-left: .25rem; }
+}

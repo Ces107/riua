@@ -8,6 +8,7 @@ import { basinAt, cellBasin, cellZone, distKm, downstreamChain, geo, nearest, zo
 import { auditHtml, cellExport } from './auditview.js';
 import { firstRun } from './headline.js';
 import { peakTxt, pointRows, rpTxt } from './points.js';
+import { damNote } from './dams.js';
 import { dayTime, esc, frameLabel, nice, num, parts, pct, span } from './time.js';
 
 export const lv = (L) => `<span class="lv lv${L}">${L === 0 ? '–' : L}</span>`;
@@ -284,7 +285,8 @@ function ravineRow(ctx, st) {
   if (!best) best = rows.map((r) => ({ r, d: distKm(ctx.lat, ctx.lon, r.pt.lat, r.pt.lon) })).filter((x) => x.d <= 12).sort((a, b) => a.d - b.d).map((x) => x.r)[0];
   if (!best) return '';
   return `<li><button type="button" data-pt="${esc(best.pt.id)}">${lv(best.level)}<span class="t">${esc(best.pt.stream)}<small>${esc(best.pt.town)}</small></span>`
-    + `<span class="r">${best.q[0] != null ? `${peakTxt(best.q)} m³/s` : ''}${best.rp[0] != null && best.rp[0] >= 2 ? `<br>${rpTxt(best.rp[0])}` : ''}</span></button></li>`;
+    + `<span class="r">${best.q[0] != null ? `${peakTxt(best.q)} m³/s` : ''}${best.rp[0] != null && best.rp[0] >= 2 ? `<br>${rpTxt(best.rp[0])}` : ''}</span></button></li>`
+    + (() => { const n = damNote(ctx.snap, ctx.hzKey, st.f, best.pt.id); return n ? `<li class="dam-li">${n}</li>` : ''; })();
 }
 
 function gauges(ctx) {

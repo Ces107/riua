@@ -88,7 +88,7 @@ const SceneLayer = L.Layer.extend({
     const view = `${zoom}|${ox},${oy}|${cv.width}x${cv.height}|${streets}|${o.mode}|${geoStamp()}|${this._fonts}`;
     const s = o.selection;
     const top = `${view}|${o.selPoint}|${s ? `${s.lat},${s.lon},${s.cell ? `${s.cell.i}.${s.cell.j}` : ''},${s.basin ? s.basin.id : ''}` : ''}`
-      + `|${o.mode === 'cuencas' && o.pointLevels ? o.pointLevels.join('') : ''}|${o.blocked.map((b) => b.map(Math.round).join(',')).join(';')}`;
+      + `|${o.mode === 'cuencas' && o.pointLevels ? o.pointLevels.join('') : ''}|${o.mode === 'cuencas' && o.dams ? o.dams.map((d) => d.L + (d.sel ? 's' : '')).join('') : ''}|${o.blocked.map((b) => b.map(Math.round).join(',')).join(';')}`;
     const under = this._kept('under', view, cv, dpr, (c) => drawUnder(c, P, o));
     const over = this._kept('over', top, cv, dpr, (c) => { drawLines(c, P, o); drawTop(c, P, o); });
     const ctx = cv.getContext('2d');
@@ -120,7 +120,7 @@ const SceneLayer = L.Layer.extend({
 });
 
 /**
- * handlers: onPick(lat, lon, pointId|null), onView()            getScene(): what to draw (see draw.js)
+ * handlers: onPick(lat, lon, pointId|null, damId|undefined), onView()            getScene(): what to draw (see draw.js)
  */
 export function createMap(el, getScene, handlers) {
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -197,7 +197,18 @@ export function createMap(el, getScene, handlers) {
         if (d < best) { best = d; hit = pt; }
       }
     }
-    if (hit) handlers.onPick(hit.lat, hit.lon, hit.id);
+    // reservoirs (Cauces mode): the nearest marker wins over a control point that is farther away
+    const sc = getScene();
+    let dam = null;
+    if (sc.mode === 'cuencas' && sc.dams) {
+      let best = hit ? map.latLngToContainerPoint([hit.lat, hit.lon]).distanceTo(containerPoint) : 16;
+      for (const d of sc.dams) {
+        const dd = map.latLngToContainerPoint([d.lat, d.lon]).distanceTo(containerPoint);
+        if (dd < best) { best = dd; dam = d; }
+      }
+    }
+    if (dam) handlers.onPick(dam.lat, dam.lon, null, dam.id);
+    else if (hit) handlers.onPick(hit.lat, hit.lon, hit.id);
     else handlers.onPick(latlng.lat, latlng.lng, null);
   };
   map.on('click', (e) => pick(e.latlng, e.containerPoint));

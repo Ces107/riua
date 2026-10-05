@@ -142,7 +142,34 @@ def main() -> None:
     ]
     snap["drivers"] = {"text": "DATOS INVENTADOS. Dana al suroeste de la península con flujo húmedo de levante en capas bajas; "
                                "agua precipitable alta y convergencia persistente sobre el interior de Valencia."}
+    # reservoirs: INVENTED states (how full each one is), run through the real model with the invented storm
+    try:
+        from riua.core import reservoirs as RS
+        dn = RS.load_dams()
+        fill = {"forata": 0.86, "buseo": 0.97, "loriguilla": 0.75, "maria-cristina": 1.01, "bellus": 0.35, "beniarres": 0.72,
+                "tous": 0.2, "escalona": 0.03, "regajo": 0.9, "algar": 0.6, "santomera": 0.1, "amadorio": 0.95, "guadalest": 0.99}
+        live = []
+        for k, i in enumerate(dn.ids):
+            if not np.isfinite(dn.v_spill[k]):
+                continue
+            v = float(fill.get(i, 0.25 + 0.5 * rng.random()) * dn.v_spill[k])
+            hrs = [S.iso(h0 - np.timedelta64(n, "h")) for n in range(12, -1, -1)]
+            live.append({"id": i, "source": dn.meta[k]["source"], "t_utc": t_obs, "volume_hm3": v, "level_m": None,
+                         "inflow_m3s": 2.0, "outflow_m3s": 1.0, "outflow_river_m3s": 1.0, "rate_hm3h": 0.001,
+                         "series": {"t": hrs, "v": [v * (1 - 0.002 * n) for n in range(12, -1, -1)]}})
+        rblk = RS.static_block(dn, live, [c["id"] for c in static.hydro_net()[1]], h0)
+        for hz in P.HORIZONS:
+            frs = PR.frames_for(hz, now)
+            ta = np.unique(np.concatenate([x.t_end for x in members[hz]]))
+            ta = ta[(ta > h0 - np.timedelta64(12, "h")) & (ta <= frs[-1][1])]
+            rblk["horizons"][hz] = RS.pack(RS.reservoir_product(members[hz], frs, dn, live, params, hz, hnow, ta), dn)
+        snap["reservoirs"] = rblk
+    except Exception as e:  # noqa: BLE001 - the page must also work without the block
+        import traceback
+        traceback.print_exc()
+        print("reservoirs skipped:", type(e).__name__, e)
     snap["sources"] = [
+        {"id": "reservoirs", "label": "Embalses SAIH (inventado)", "ok": True, "n": 51},
         {"id": "radar", "label": "Radar (OPERA + AEMET)", "ok": True, "source": "opera", "frames": 13, "last": S.iso(now)},
         {"id": "gauges", "label": "Pluviómetros SAIH / AEMET", "ok": True, "n": len(gauges), "sources": ["aemet", "saih_chj", "saih_segura"]},
         {"id": "arome_hd", "label": "AROME-HD 1,3 km", "ok": True, "runs": [run(a).strftime("%Y-%m-%dT%H:%MZ") for a in (3, 6, 9)], "family": "cp"},

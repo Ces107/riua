@@ -1,0 +1,363 @@
+{
+ "fetched": "2026-10-02",
+ "chj": {
+  "1E01": {
+   "nmn_hm3": 9.11,
+   "spill_level_m": 473.53,
+   "thr": [
+    20,
+    75,
+    150
+   ],
+   "town": "La Pobla de Benifassà",
+   "province": "Castellón"
+  },
+  "2P02": {
+   "nmn_hm3": 0.49,
+   "spill_level_m": 983.45,
+   "thr": [
+    2,
+    10,
+    20
+   ],
+   "town": "Valbona",
+   "province": "Teruel"
+  },
+  "2E03": {
+   "nmn_hm3": 1.13,
+   "spill_level_m": 1118.6,
+   "thr": [
+    3,
+    10,
+    20
+   ],
+   "town": "Mora de Rubielos",
+   "province": "Teruel"
+  },
+  "2E04": {
+   "nmn_hm3": 0.12,
+   "spill_level_m": 1002.9,
+   "thr": [
+    3,
+    10,
+    50
+   ],
+   "town": "Rubielos de Mora",
+   "province": "Teruel"
+  },
+  "2E02": {
+   "nmn_hm3": 136.92,
+   "spill_level_m": 591,
+   "thr": [
+    15,
+    50,
+    70
+   ],
+   "town": "Montanejos",
+   "province": "Castellón"
+  },
+  "1E05": {
+   "nmn_hm3": 48.59,
+   "spill_level_m": 156,
+   "thr": [
+    20,
+    60,
+    100
+   ],
+   "town": "Onda",
+   "province": "Castellón"
+  },
+  "1E02": {
+   "nmn_hm3": 1.18,
+   "spill_level_m": 304.71,
+   "thr": [
+    15,
+    50,
+    100
+   ],
+   "town": "Alcora",
+   "province": "Castellón"
+  },
+  "1E06": {
+   "nmn_hm3": 18.9,
+   "spill_level_m": 134.3,
+   "thr": [
+    20,
+    150,
+    300
+   ],
+   "town": "Alcora",
+   "province": "Castellón"
+  },
+  "1E04": {
+   "nmn_hm3": 0.99,
+   "spill_level_m": 304,
+   "thr": [
+    null,
+    null,
+    null
+   ],
+   "town": "Alcudia de Veo",
+   "province": "Castellón"
+  },
+  "0E01": {
+   "nmn_hm3": 5.97,
+   "spill_level_m": 401.53,
+   "thr": [
+    15,
+    50,
+    120
+   ],
+   "town": "Jérica",
+   "province": "Castellón"
+  },
+  "0E04": {
+   "nmn_hm3": 6.29,
+   "spill_level_m": 207,
+   "thr": [
+    50,
+    100,
+    150
+   ],
+   "town": "Algar de Palancia",
+   "province": "Castellón"
+  },
+  "3E01": {
+   "nmn_hm3": 21.03,
+   "spill_level_m": 974.21,
+   "thr": [
+    15,
+    20,
+    30
+   ],
+   "town": "Teruel",
+   "province": "Teruel"
+  },
+  "6E01": {
+   "nmn_hm3": 221.34,
+   "spill_level_m": 522.2,
+   "thr": [
+    15,
+    50,
+    100
+   ],
+   "town": "Benagéber",
+   "province": "Valencia"
+  },
+  "6E02": {
+   "nmn_hm3": 73.21,
+   "spill_level_m": 313,
+   "thr": [
+    20,
+    60,
+    150
+   ],
+   "town": "Loriguilla",
+   "province": "Valencia"
+  },
+  "6E03": {
+   "nmn_hm3": 7.67,
+   "spill_level_m": 458.7,
+   "thr": [
+    null,
+    null,
+    null
+   ],
+   "town": "Chera",
+   "province": "Valencia"
+  },
+  "7E03": {
+   "nmn_hm3": 37.34,
+   "spill_level_m": 379.2,
+   "thr": [
+    5,
+    30,
+    100
+   ],
+   "town": "Yátova",
+   "province": "Valencia"
+  },
+  "4E01": {
+   "nmn_hm3": 9.7,
+   "spill_level_m": 1156.35,
+   "thr": [
+    null,
+    null,
+    null
+   ],
+   "town": "Uña",
+   "province": "Cuenca"
+  },
+  "4E02": {
+   "nmn_hm3": 1117.83,
+   "spill_level_m": 799,
+   "thr": [
+    40,
+    50,
+    75
+   ],
+   "town": "Alarcón",
+   "province": "Cuenca"
+  },
+  "5E01": {
+   "nmn_hm3": 360.75,
+   "spill_level_m": 664,
+   "thr": [
+    25,
+    75,
+    150
+   ],
+   "town": "Villargordo del Cabriel",
+   "province": "Valencia"
+  },
+  "7E09": {
+   "nmn_hm3": 4.39,
+   "spill_level_m": 182.5,
+   "thr": [
+    50,
+    150,
+    250
+   ],
+   "town": "Navarrés",
+   "province": "Valencia"
+  },
+  "7E04": {
+   "nmn_hm3": 378.6,
+   "spill_level_m": 130,
+   "thr": [
+    50,
+    150,
+    250
+   ],
+   "town": "Tous",
+   "province": "Valencia"
+  },
+  "7E10": {
+   "nmn_hm3": 69.19,
+   "spill_level_m": 150.5,
+   "thr": [
+    20,
+    60,
+    120
+   ],
+   "town": "Bellús",
+   "province": "Valencia"
+  },
+  "9E01": {
+   "nmn_hm3": 27,
+   "spill_level_m": 313.25,
+   "thr": [
+    10,
+    50,
+    75
+   ],
+   "town": "Beniarrés",
+   "province": "Alicante"
+  },
+  "8E02": {
+   "nmn_hm3": 12.99,
+   "spill_level_m": 376,
+   "thr": [
+    10,
+    25,
+    60
+   ],
+   "town": "Guadalest",
+   "province": "Alicante"
+  },
+  "8E01": {
+   "nmn_hm3": 15.83,
+   "spill_level_m": 123,
+   "thr": [
+    10,
+    20,
+    40
+   ],
+   "town": "Vila Joiosa",
+   "province": "Alicante"
+  }
+ },
+ "seg": {
+  "01E01E1": {
+   "capacity_from_pct_hm3": 7.28
+  },
+  "01E02E1": {
+   "capacity_from_pct_hm3": 26.28
+  },
+  "01E03E1": {
+   "capacity_from_pct_hm3": 8.74
+  },
+  "01E04E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "01E05E1": {
+   "capacity_from_pct_hm3": 44.71
+  },
+  "01E06E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "01E07E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "02E01E1": {
+   "capacity_from_pct_hm3": 1.68
+  },
+  "02E02E1": {
+   "capacity_from_pct_hm3": 10.05
+  },
+  "02E03E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "02E04E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "02E05E1": {
+   "capacity_from_pct_hm3": 8.45
+  },
+  "02E06E1": {
+   "capacity_from_pct_hm3": 2.78
+  },
+  "02E07E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "02E08E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "02S01E1": {
+   "capacity_from_pct_hm3": 3.62
+  },
+  "03E02E1": {
+   "capacity_from_pct_hm3": 34.89
+  },
+  "03E03E1": {
+   "capacity_from_pct_hm3": 35.9
+  },
+  "03E04E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "03E05E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "03E06E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "04S02E1": {
+   "capacity_from_pct_hm3": 209.7
+  },
+  "04S03E1": {
+   "capacity_from_pct_hm3": 437.08
+  },
+  "05E02E1": {
+   "capacity_from_pct_hm3": null
+  },
+  "05E03E1": {
+   "capacity_from_pct_hm3": 26.0
+  },
+  "07E01E1": {
+   "capacity_from_pct_hm3": 245.91
+  },
+  "07E02E1": {
+   "capacity_from_pct_hm3": 12.72
+  }
+ }
+}

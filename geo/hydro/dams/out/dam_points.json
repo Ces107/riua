@@ -1,0 +1,1575 @@
+{
+ "meta": {
+  "generated": "2026-10-02",
+  "agent": "q10-dams",
+  "method": "same rasters and flood velocity law (k=15) as geo/hydro/catchments/out/README.md; own catchment = cells that reach the dam without crossing another modelled dam; lags are travel times along the D8 flow path",
+  "grid": {
+   "lon0": -2.4,
+   "lat0": 37.6,
+   "d": 0.05,
+   "nx": 64,
+   "ny": 68,
+   "flat_index": "j*64+i"
+  }
+ },
+ "points": [
+  {
+   "id": "ulldecona",
+   "name": "Ulldecona",
+   "river": "Sénia",
+   "lat": 40.67042,
+   "lon": 0.23625,
+   "moved_m": 0,
+   "area_km2": 93.8,
+   "own_km2": 93.8,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.7,
+   "elev_m": 440,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "senia-vinaros",
+     "lag_h": 2.7,
+     "share": 0.476,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "valbona",
+   "name": "Valbona",
+   "river": "Valbona",
+   "lat": 40.24875,
+   "lon": -0.81958,
+   "moved_m": 610,
+   "area_km2": 156.5,
+   "own_km2": 156.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.3,
+   "elev_m": 964,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "arenos",
+    "lag_h": 4.3
+   },
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 12.8,
+     "share": 0.04,
+     "through": [
+      "arenos",
+      "sichar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "mora",
+   "name": "Mora de Rubielos",
+   "river": "Mora",
+   "lat": 40.27625,
+   "lon": -0.74792,
+   "moved_m": 685,
+   "area_km2": 20.9,
+   "own_km2": 20.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.2,
+   "elev_m": 1080,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "arenos",
+    "lag_h": 4.0
+   },
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 12.5,
+     "share": 0.005,
+     "through": [
+      "arenos",
+      "sichar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "balagueras",
+   "name": "Balagueras",
+   "river": "Palomarejas",
+   "lat": 40.20708,
+   "lon": -0.68292,
+   "moved_m": 640,
+   "area_km2": 22.6,
+   "own_km2": 22.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.8,
+   "elev_m": 967,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "arenos",
+    "lag_h": 2.9
+   },
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 11.5,
+     "share": 0.006,
+     "through": [
+      "arenos",
+      "sichar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "arenos",
+   "name": "Arenós",
+   "river": "Mijares",
+   "lat": 40.08625,
+   "lon": -0.54958,
+   "moved_m": 0,
+   "area_km2": 1429.2,
+   "own_km2": 1229.2,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 9.3,
+   "elev_m": 574,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "balagueras",
+     "lag_h": 2.9
+    },
+    {
+     "id": "mora",
+     "lag_h": 4.0
+    },
+    {
+     "id": "valbona",
+     "lag_h": 4.3
+    }
+   ],
+   "next_dam": {
+    "id": "sichar",
+    "lag_h": 6.4
+   },
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 8.6,
+     "share": 0.361,
+     "through": [
+      "sichar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "sichar",
+   "name": "Sichar",
+   "river": "Mijares",
+   "lat": 40.01042,
+   "lon": -0.23042,
+   "moved_m": 0,
+   "area_km2": 2488.1,
+   "own_km2": 1058.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 10.3,
+   "elev_m": 161,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "arenos",
+     "lag_h": 6.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 2.1,
+     "share": 0.629,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "alcora",
+   "name": "L'Alcora",
+   "river": "Llucena",
+   "lat": 40.09542,
+   "lon": -0.21292,
+   "moved_m": 0,
+   "area_km2": 113.9,
+   "own_km2": 113.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.7,
+   "elev_m": 280,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "maria-cristina",
+    "lag_h": 1.8
+   },
+   "points": [
+    {
+     "id": "viuda-almassora",
+     "lag_h": 2.7,
+     "share": 0.079,
+     "through": [
+      "maria-cristina"
+     ]
+    },
+    {
+     "id": "millars-vilareal",
+     "lag_h": 2.8,
+     "share": 0.029,
+     "through": [
+      "maria-cristina"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "maria-cristina",
+   "name": "María Cristina",
+   "river": "Rambla de la Viuda",
+   "lat": 40.02875,
+   "lon": -0.16375,
+   "moved_m": 0,
+   "area_km2": 1400.8,
+   "own_km2": 1286.8,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 9.9,
+   "elev_m": 122,
+   "cuts": false,
+   "upstream": [
+    {
+     "id": "alcora",
+     "lag_h": 1.8
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "viuda-almassora",
+     "lag_h": 0.9,
+     "share": 0.975,
+     "through": []
+    },
+    {
+     "id": "millars-vilareal",
+     "lag_h": 1.1,
+     "share": 0.354,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "onda",
+   "name": "Onda",
+   "river": "Sonella",
+   "lat": 39.94042,
+   "lon": -0.32708,
+   "moved_m": 615,
+   "area_km2": 20.3,
+   "own_km2": 20.3,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.3,
+   "elev_m": 291,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "sec-borriana",
+     "lag_h": 2.1,
+     "share": 0.095,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "regajo",
+   "name": "El Regajo",
+   "river": "Palancia",
+   "lat": 39.88792,
+   "lon": -0.51542,
+   "moved_m": 0,
+   "area_km2": 476.0,
+   "own_km2": 476.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 5.4,
+   "elev_m": 378,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "algar",
+    "lag_h": 2.4
+   },
+   "points": [
+    {
+     "id": "palancia-sagunt",
+     "lag_h": 3.9,
+     "share": 0.49,
+     "through": [
+      "algar"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "algar",
+   "name": "Algar",
+   "river": "Palancia",
+   "lat": 39.78792,
+   "lon": -0.37708,
+   "moved_m": 0,
+   "area_km2": 743.1,
+   "own_km2": 267.1,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.7,
+   "elev_m": 184,
+   "cuts": false,
+   "upstream": [
+    {
+     "id": "regajo",
+     "lag_h": 2.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "palancia-sagunt",
+     "lag_h": 1.5,
+     "share": 0.765,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "arquillo",
+   "name": "Arquillo de San Blas",
+   "river": "Guadalaviar",
+   "lat": 40.36458,
+   "lon": -1.20458,
+   "moved_m": 0,
+   "area_km2": 813.9,
+   "own_km2": 813.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 11.3,
+   "elev_m": 958,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "benageber",
+    "lag_h": 17.2
+   },
+   "points": [
+    {
+     "id": "turia-ribarroja",
+     "lag_h": 30.1,
+     "share": 0.136,
+     "through": [
+      "benageber",
+      "loriguilla"
+     ]
+    },
+    {
+     "id": "turia-nuevo-cauce",
+     "lag_h": 32.4,
+     "share": 0.132,
+     "through": [
+      "benageber",
+      "loriguilla"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "benageber",
+   "name": "Benagéber",
+   "river": "Turia",
+   "lat": 39.72625,
+   "lon": -1.09875,
+   "moved_m": 0,
+   "area_km2": 4172.2,
+   "own_km2": 3358.3,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 29.3,
+   "elev_m": 491,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "arquillo",
+     "lag_h": 17.2
+    }
+   ],
+   "next_dam": {
+    "id": "loriguilla",
+    "lag_h": 5.5
+   },
+   "points": [
+    {
+     "id": "turia-ribarroja",
+     "lag_h": 12.9,
+     "share": 0.696,
+     "through": [
+      "loriguilla"
+     ]
+    },
+    {
+     "id": "turia-nuevo-cauce",
+     "lag_h": 15.2,
+     "share": 0.678,
+     "through": [
+      "loriguilla"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "loriguilla",
+   "name": "Loriguilla",
+   "river": "Turia",
+   "lat": 39.66708,
+   "lon": -0.91208,
+   "moved_m": 0,
+   "area_km2": 4777.9,
+   "own_km2": 605.7,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 7.5,
+   "elev_m": 337,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "benageber",
+     "lag_h": 5.5
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "turia-ribarroja",
+     "lag_h": 7.4,
+     "share": 0.797,
+     "through": []
+    },
+    {
+     "id": "turia-nuevo-cauce",
+     "lag_h": 9.7,
+     "share": 0.776,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "buseo",
+   "name": "Buseo",
+   "river": "Sot",
+   "lat": 39.59625,
+   "lon": -0.93958,
+   "moved_m": 0,
+   "area_km2": 218.6,
+   "own_km2": 218.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.8,
+   "elev_m": 442,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "turia-ribarroja",
+     "lag_h": 6.5,
+     "share": 0.036,
+     "through": []
+    },
+    {
+     "id": "turia-nuevo-cauce",
+     "lag_h": 8.8,
+     "share": 0.036,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "forata",
+   "name": "Forata",
+   "river": "Magro",
+   "lat": 39.34542,
+   "lon": -0.87792,
+   "moved_m": 0,
+   "area_km2": 1016.6,
+   "own_km2": 1016.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 11.3,
+   "elev_m": 363,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "magro-real",
+     "lag_h": 4.0,
+     "share": 0.738,
+     "through": []
+    },
+    {
+     "id": "magro-carlet",
+     "lag_h": 5.4,
+     "share": 0.668,
+     "through": []
+    },
+    {
+     "id": "magro-algemesi",
+     "lag_h": 6.5,
+     "share": 0.666,
+     "through": []
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 10.0,
+     "share": 0.052,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "la-toba",
+   "name": "La Toba",
+   "river": "Júcar",
+   "lat": 40.21042,
+   "lon": -1.92208,
+   "moved_m": 0,
+   "area_km2": 375.0,
+   "own_km2": 375.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 6.2,
+   "elev_m": 1151,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "alarcon",
+    "lag_h": 27.7
+   },
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 88.1,
+     "share": 0.021,
+     "through": [
+      "alarcon",
+      "tous"
+     ]
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 91.8,
+     "share": 0.019,
+     "through": [
+      "alarcon",
+      "tous"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "alarcon",
+   "name": "Alarcón",
+   "river": "Júcar",
+   "lat": 39.56458,
+   "lon": -2.11208,
+   "moved_m": 0,
+   "area_km2": 2956.6,
+   "own_km2": 2581.6,
+   "inside_box_fraction": 0.9484,
+   "t_longest_h": 28.7,
+   "elev_m": 794,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "la-toba",
+     "lag_h": 27.7
+    }
+   ],
+   "next_dam": {
+    "id": "tous",
+    "lag_h": 52.9
+   },
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 60.3,
+     "share": 0.168,
+     "through": [
+      "tous"
+     ]
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 64.0,
+     "share": 0.152,
+     "through": [
+      "tous"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "contreras",
+   "name": "Contreras",
+   "river": "Cabriel",
+   "lat": 39.54458,
+   "lon": -1.50292,
+   "moved_m": 0,
+   "area_km2": 3235.6,
+   "own_km2": 3235.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 27.6,
+   "elev_m": 644,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "tous",
+    "lag_h": 32.1
+   },
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 39.6,
+     "share": 0.184,
+     "through": [
+      "tous"
+     ]
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 43.3,
+     "share": 0.167,
+     "through": [
+      "tous"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "escalona",
+   "name": "Escalona",
+   "river": "Escalona",
+   "lat": 39.12875,
+   "lon": -0.69792,
+   "moved_m": 0,
+   "area_km2": 509.2,
+   "own_km2": 509.2,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.3,
+   "elev_m": 136,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "tous",
+    "lag_h": 1.4
+   },
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 8.9,
+     "share": 0.029,
+     "through": [
+      "tous"
+     ]
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 12.6,
+     "share": 0.026,
+     "through": [
+      "tous"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "tous",
+   "name": "Tous",
+   "river": "Júcar",
+   "lat": 39.13042,
+   "lon": -0.65125,
+   "moved_m": 0,
+   "area_km2": 15909.8,
+   "own_km2": 9208.4,
+   "inside_box_fraction": 0.9814,
+   "t_longest_h": 55.6,
+   "elev_m": 65,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "alarcon",
+     "lag_h": 52.9
+    },
+    {
+     "id": "contreras",
+     "lag_h": 32.1
+    },
+    {
+     "id": "escalona",
+     "lag_h": 1.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 7.5,
+     "share": 0.903,
+     "through": []
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 11.2,
+     "share": 0.819,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "bellus",
+   "name": "Bellús",
+   "river": "Albaida",
+   "lat": 38.93875,
+   "lon": -0.47792,
+   "moved_m": 0,
+   "area_km2": 490.6,
+   "own_km2": 490.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.9,
+   "elev_m": 142,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "albaida-manuel",
+     "lag_h": 1.9,
+     "share": 0.412,
+     "through": []
+    },
+    {
+     "id": "jucar-alzira",
+     "lag_h": 6.0,
+     "share": 0.028,
+     "through": []
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 9.7,
+     "share": 0.025,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "beniarres",
+   "name": "Beniarrés",
+   "river": "Serpis",
+   "lat": 38.81542,
+   "lon": -0.35625,
+   "moved_m": 0,
+   "area_km2": 464.6,
+   "own_km2": 464.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.6,
+   "elev_m": 295,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "serpis-gandia",
+     "lag_h": 3.2,
+     "share": 0.623,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "guadalest",
+   "name": "Guadalest",
+   "river": "Guadalest",
+   "lat": 38.67958,
+   "lon": -0.19208,
+   "moved_m": 0,
+   "area_km2": 61.6,
+   "own_km2": 61.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.7,
+   "elev_m": 358,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "algar-altea",
+     "lag_h": 1.3,
+     "share": 0.273,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "amadorio",
+   "name": "Amadorio",
+   "river": "Amadorio",
+   "lat": 38.53375,
+   "lon": -0.26458,
+   "moved_m": 0,
+   "area_km2": 203.0,
+   "own_km2": 203.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.7,
+   "elev_m": 102,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "amadorio-vila",
+     "lag_h": 0.3,
+     "share": 0.935,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "fuensanta",
+   "name": "Fuensanta",
+   "river": "Segura",
+   "lat": 38.37292,
+   "lon": -2.23875,
+   "moved_m": 0,
+   "area_km2": 899.0,
+   "own_km2": 899.0,
+   "inside_box_fraction": 0.1809,
+   "t_longest_h": 9.8,
+   "elev_m": 590,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "cenajo",
+    "lag_h": 12.7
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 40.2,
+     "share": 0.066,
+     "through": [
+      "cenajo"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cenajo",
+   "name": "El Cenajo",
+   "river": "Segura",
+   "lat": 38.36542,
+   "lon": -1.77625,
+   "moved_m": 0,
+   "area_km2": 2600.3,
+   "own_km2": 1701.2,
+   "inside_box_fraction": 0.892,
+   "t_longest_h": 17.9,
+   "elev_m": 419,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "fuensanta",
+     "lag_h": 12.7
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 27.4,
+     "share": 0.19,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "talave",
+   "name": "El Talave",
+   "river": "Mundo",
+   "lat": 38.50792,
+   "lon": -1.86458,
+   "moved_m": 0,
+   "area_km2": 760.7,
+   "own_km2": 760.7,
+   "inside_box_fraction": 0.8681,
+   "t_longest_h": 12.3,
+   "elev_m": 503,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "camarillas",
+    "lag_h": 7.4
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 31.6,
+     "share": 0.056,
+     "through": [
+      "camarillas"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "camarillas",
+   "name": "Camarillas",
+   "river": "Mundo",
+   "lat": 38.34625,
+   "lon": -1.64292,
+   "moved_m": 0,
+   "area_km2": 2541.9,
+   "own_km2": 1462.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 10.5,
+   "elev_m": 344,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "bayco",
+     "lag_h": 5.1
+    },
+    {
+     "id": "boqueron",
+     "lag_h": 6.2
+    },
+    {
+     "id": "charcos",
+     "lag_h": 5.3
+    },
+    {
+     "id": "talave",
+     "lag_h": 7.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 24.2,
+     "share": 0.186,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "boqueron",
+   "name": "Boquerón",
+   "river": "Rambla del Boquerón",
+   "lat": 38.52208,
+   "lon": -1.76208,
+   "moved_m": 0,
+   "area_km2": 51.7,
+   "own_km2": 51.7,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.9,
+   "elev_m": 564,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "camarillas",
+    "lag_h": 6.2
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 30.4,
+     "share": 0.004,
+     "through": [
+      "camarillas"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "bayco",
+   "name": "Bayco",
+   "river": "Rambla de Bayco",
+   "lat": 38.63625,
+   "lon": -1.50208,
+   "moved_m": 0,
+   "area_km2": 239.4,
+   "own_km2": 239.4,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.0,
+   "elev_m": 666,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "camarillas",
+    "lag_h": 5.1
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 29.3,
+     "share": 0.017,
+     "through": [
+      "camarillas"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "charcos",
+   "name": "Los Charcos",
+   "river": "Rambla de los Charcos",
+   "lat": 38.64375,
+   "lon": -1.70292,
+   "moved_m": 645,
+   "area_km2": 28.1,
+   "own_km2": 28.1,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.6,
+   "elev_m": 721,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "camarillas",
+    "lag_h": 5.3
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 29.5,
+     "share": 0.002,
+     "through": [
+      "camarillas"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "la-risca",
+   "name": "La Risca",
+   "river": "Moratalla (cabecera)",
+   "lat": 38.19458,
+   "lon": -2.06208,
+   "moved_m": 571,
+   "area_km2": 79.5,
+   "own_km2": 79.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.9,
+   "elev_m": 1050,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "moratalla",
+    "lag_h": 2.7
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 23.8,
+     "share": 0.006,
+     "through": [
+      "moratalla"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "moratalla",
+   "name": "Moratalla",
+   "river": "Moratalla",
+   "lat": 38.24708,
+   "lon": -1.74042,
+   "moved_m": 0,
+   "area_km2": 332.1,
+   "own_km2": 252.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.5,
+   "elev_m": 304,
+   "cuts": false,
+   "upstream": [
+    {
+     "id": "la-risca",
+     "lag_h": 2.7
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 21.1,
+     "share": 0.024,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "argos",
+   "name": "Argos",
+   "river": "Argos",
+   "lat": 38.17708,
+   "lon": -1.72542,
+   "moved_m": 0,
+   "area_km2": 451.2,
+   "own_km2": 451.2,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.9,
+   "elev_m": 379,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 21.1,
+     "share": 0.033,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "alfonso-xiii",
+   "name": "Alfonso XIII",
+   "river": "Quípar",
+   "lat": 38.22292,
+   "lon": -1.59958,
+   "moved_m": 0,
+   "area_km2": 851.1,
+   "own_km2": 851.1,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 9.3,
+   "elev_m": 294,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 19.4,
+     "share": 0.062,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "carcabo",
+   "name": "Cárcabo",
+   "river": "Rambla del Cárcabo",
+   "lat": 38.22125,
+   "lon": -1.52625,
+   "moved_m": 0,
+   "area_km2": 30.5,
+   "own_km2": 30.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.4,
+   "elev_m": 248,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 17.5,
+     "share": 0.002,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "judio",
+   "name": "Judío",
+   "river": "Rambla del Judío",
+   "lat": 38.27958,
+   "lon": -1.43542,
+   "moved_m": 0,
+   "area_km2": 686.5,
+   "own_km2": 686.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 6.2,
+   "elev_m": 209,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 16.6,
+     "share": 0.05,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "moro",
+   "name": "Moro",
+   "river": "Rambla del Moro",
+   "lat": 38.22542,
+   "lon": -1.36542,
+   "moved_m": 0,
+   "area_km2": 380.6,
+   "own_km2": 380.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.1,
+   "elev_m": 197,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 14.7,
+     "share": 0.028,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "mayes",
+   "name": "Mayés",
+   "river": "Rambla del Mayés",
+   "lat": 38.11208,
+   "lon": -1.37208,
+   "moved_m": 494,
+   "area_km2": 13.5,
+   "own_km2": 13.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.1,
+   "elev_m": 241,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 11.6,
+     "share": 0.001,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "la-cierva",
+   "name": "La Cierva",
+   "river": "Mula",
+   "lat": 38.05958,
+   "lon": -1.48792,
+   "moved_m": 0,
+   "area_km2": 173.0,
+   "own_km2": 173.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.7,
+   "elev_m": 343,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "los-rodeos",
+    "lag_h": 2.6
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 12.0,
+     "share": 0.013,
+     "through": [
+      "los-rodeos"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "dona-ana",
+   "name": "Doña Ana",
+   "river": "Rambla de Doña Ana",
+   "lat": 38.02375,
+   "lon": -1.54792,
+   "moved_m": 437,
+   "area_km2": 20.1,
+   "own_km2": 20.1,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.3,
+   "elev_m": 355,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "los-rodeos",
+    "lag_h": 3.5
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 12.9,
+     "share": 0.001,
+     "through": [
+      "los-rodeos"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pliego",
+   "name": "Pliego",
+   "river": "Pliego",
+   "lat": 37.98542,
+   "lon": -1.52458,
+   "moved_m": 0,
+   "area_km2": 202.2,
+   "own_km2": 202.2,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.5,
+   "elev_m": 338,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "los-rodeos",
+    "lag_h": 3.4
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 12.9,
+     "share": 0.015,
+     "through": [
+      "los-rodeos"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "los-rodeos",
+   "name": "Los Rodeos",
+   "river": "Mula",
+   "lat": 38.04375,
+   "lon": -1.29458,
+   "moved_m": 0,
+   "area_km2": 647.2,
+   "own_km2": 252.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 5.1,
+   "elev_m": 110,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "dona-ana",
+     "lag_h": 3.5
+    },
+    {
+     "id": "la-cierva",
+     "lag_h": 2.6
+    },
+    {
+     "id": "pliego",
+     "lag_h": 3.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 9.4,
+     "share": 0.047,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "valdeinfierno",
+   "name": "Valdeinfierno",
+   "river": "Luchena",
+   "lat": 37.80542,
+   "lon": -1.96542,
+   "moved_m": 0,
+   "area_km2": 426.7,
+   "own_km2": 426.7,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.0,
+   "elev_m": 690,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "puentes",
+    "lag_h": 2.0
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 15.2,
+     "share": 0.031,
+     "through": [
+      "puentes",
+      "jose-bautista"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "puentes",
+   "name": "Puentes",
+   "river": "Guadalentín",
+   "lat": 37.73458,
+   "lon": -1.81875,
+   "moved_m": 0,
+   "area_km2": 1419.1,
+   "own_km2": 992.3,
+   "inside_box_fraction": 0.89,
+   "t_longest_h": 6.2,
+   "elev_m": 447,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "valdeinfierno",
+     "lag_h": 2.0
+    }
+   ],
+   "next_dam": {
+    "id": "jose-bautista",
+    "lag_h": 6.3
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 13.2,
+     "share": 0.104,
+     "through": [
+      "jose-bautista"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "algeciras",
+   "name": "Algeciras",
+   "river": "Rambla de Algeciras",
+   "lat": 37.88708,
+   "lon": -1.38542,
+   "moved_m": 0,
+   "area_km2": 44.6,
+   "own_km2": 44.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.3,
+   "elev_m": 257,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "jose-bautista",
+    "lag_h": 0.7
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 7.6,
+     "share": 0.003,
+     "through": [
+      "jose-bautista"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "jose-bautista",
+   "name": "José Bautista (El Romeral)",
+   "river": "Guadalentín",
+   "lat": 37.87375,
+   "lon": -1.33042,
+   "moved_m": 0,
+   "area_km2": 3141.9,
+   "own_km2": 1678.2,
+   "inside_box_fraction": 0.8215,
+   "t_longest_h": 10.9,
+   "elev_m": 125,
+   "cuts": false,
+   "upstream": [
+    {
+     "id": "algeciras",
+     "lag_h": 0.7
+    },
+    {
+     "id": "puentes",
+     "lag_h": 6.3
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 6.9,
+     "share": 0.229,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "santomera",
+   "name": "Santomera",
+   "river": "Rambla Salada",
+   "lat": 38.09542,
+   "lon": -1.08792,
+   "moved_m": 0,
+   "area_km2": 146.9,
+   "own_km2": 146.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.2,
+   "elev_m": 71,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 3.9,
+     "share": 0.011,
+     "through": []
+    }
+   ]
+  },
+  {
+   "id": "la-pedrera",
+   "name": "La Pedrera",
+   "river": "Rambla de Alcoriza",
+   "lat": 38.03958,
+   "lon": -0.86958,
+   "moved_m": 812,
+   "area_km2": 57.6,
+   "own_km2": 57.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.5,
+   "elev_m": 44,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": []
+  },
+  {
+   "id": "crevillente",
+   "name": "Crevillente",
+   "river": "Barranco del Bosch",
+   "lat": 38.25208,
+   "lon": -0.78792,
+   "moved_m": 643,
+   "area_km2": 12.4,
+   "own_km2": 12.4,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.1,
+   "elev_m": 94,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": []
+  }
+ ]
+}

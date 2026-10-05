@@ -244,6 +244,33 @@ function drawPoints(ctx, P, o, lab, k) {
   }
 }
 
+/*
+ * Reservoirs (Cauces mode): a short thick bar across the river, the shape of a dam wall seen from above,
+ * filled with its level; the selected one larger. Names from zoom 9.5, or always for level 2+ and the selected one.
+ */
+function drawDams(ctx, P, o, lab, k) {
+  if (!o.dams) return;
+  const pat = hatch(ctx);
+  const list = o.dams.filter((d) => !(d.lon < P.view[0] || d.lon > P.view[2] || d.lat < P.view[1] || d.lat > P.view[3]))
+    .sort((a, b) => (a.sel - b.sel) || (a.L - b.L));
+  for (const d of list) {
+    const small = P.zoom < 9 && d.L < 2 && !d.sel;
+    const w = Math.round((d.sel ? 22 : small ? 9 : 16) * k), h = Math.round((d.sel ? 8 : small ? 4 : 6) * k);
+    const x = Math.round(P.x(d.lon) - w / 2), y = Math.round(P.y(d.lat) - h / 2);
+    ctx.fillStyle = d.L >= 2 ? LEVEL[d.L].color : PAPER;
+    ctx.fillRect(x, y, w, h);
+    if (d.L === 5) { ctx.globalAlpha = 0.6; ctx.fillStyle = pat; ctx.fillRect(x, y, w, h); ctx.globalAlpha = 1; }
+    ctx.strokeStyle = INK; ctx.lineWidth = d.sel ? 2.5 : 1.5;
+    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+    lab.block(x - 2, y - 2, w + 4, h + 4);
+  }
+  for (const d of list) {
+    if (P.zoom < 9.5 && d.L < 2 && !d.sel) continue;
+    const size = Math.round(10.5 * k);
+    lab.put(d.name, P.x(d.lon) + 12 * k, P.y(d.lat), `${size}px ${SERIF}`, INK, ['r', 'l', 'b', 't'], size);
+  }
+}
+
 function drawSelection(ctx, P, o) {
   const s = o.selection;
   if (!s) return;
@@ -302,7 +329,7 @@ export function drawTop(ctx, P, o) {
   const lab = labeller(ctx, o.frame || null);      // frame: [x, y, w, h] of what is in sight (the canvas is larger)
   // nothing is written under the legend or the map buttons (rectangles in canvas pixels, from map.js)
   for (const b of o.blocked || []) lab.block(b[0], b[1], b[2], b[3]);
-  if (o.mode === 'cuencas') drawPoints(ctx, P, o, lab, k);
+  if (o.mode === 'cuencas') { drawPoints(ctx, P, o, lab, k); drawDams(ctx, P, o, lab, k); }
   if (o.selection) lab.block(P.x(o.selection.lon) - 10, P.y(o.selection.lat) - 10, 20, 20);
   if (o.labels) {
     drawTowns(ctx, P, lab, k);

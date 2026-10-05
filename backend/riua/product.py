@@ -644,6 +644,32 @@ def run_cycle(state: Path, out: Path, now: datetime | None = None, with_radar: b
             notes.append(f"{hz}: {type(e).__name__}: {e}"[:300])
         timing[hz] = round(time.time() - t, 1)
 
+    # ---- reservoirs (q10-dams): live state, filling and spill per horizon; a failure never stops the cycle ----
+    t = time.time()
+    try:
+        from .core import reservoirs as RS
+        from .sources import reservoirs as RL
+        dn = RS.load_dams(base_alpha=net.alpha if net is not None else None)
+        if dn is not None:
+            live, rrep = RL.fetch_reservoirs(dn.meta, state=state, now=now)
+            sources.append(rrep)
+            rblk = RS.static_block(dn, live, [c["id"] for c in cps], hnow)
+            for hz in snap["horizons"]:
+                try:
+                    ms, frs = horizon_members[hz], frames_for(hz, now)
+                    ta = np.unique(np.concatenate([x.t_end for x in ms])) if ms else np.array([], "datetime64[h]")
+                    ta = ta[(ta > np.datetime64(hnow, "h") - np.timedelta64(12, "h")) & (ta <= frs[-1][1])]
+                    rblk["horizons"][hz] = RS.pack(RS.reservoir_product(ms, frs, dn, live, params, hz, hnow, ta), dn)
+                except Exception as e:
+                    log.error("reservoirs %s failed: %s", hz, traceback.format_exc())
+                    notes.append(f"reservoirs {hz}: {type(e).__name__}: {e}"[:200])
+            snap["reservoirs"] = rblk
+    except Exception as e:
+        log.error("reservoirs failed: %s", traceback.format_exc())
+        notes.append(f"reservoirs: {type(e).__name__}: {e}"[:200])
+    timing["reservoirs"] = round(time.time() - t, 1)
+    # ---- end reservoirs ----
+
     # what has already fallen (analysis), per cell
     def acc(hours):
         k = obs.t_end > np.datetime64(hnow, "h") - np.timedelta64(hours, "h")

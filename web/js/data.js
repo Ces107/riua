@@ -78,7 +78,7 @@ export function prepare(raw, origin) {
     origin, generated: new Date(raw.generated), generatedIso: raw.generated, paramsVersion: raw.params_version,
     grid: g, N, cellToN, nToCell, thresholds: raw.thresholds || { zones: {}, extreme: { x1h: 1.5, x12h: 1.67 } },
     hz, obs, gauges: raw.gauges || [], rivers: raw.rivers || [], warnings: raw.warnings || [],
-    drivers: raw.drivers ?? null, sources: raw.sources || [], notes: raw.notes || [],
+    drivers: raw.drivers ?? null, reservoirs: raw.reservoirs || null, sources: raw.sources || [], notes: raw.notes || [],
   };
 }
 

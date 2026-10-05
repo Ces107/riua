@@ -1,0 +1,1558 @@
+{
+ "meta": {
+  "source": "SEPREM fichas (https://www.seprem.es/ficha.php?idpresa=N), parsed 2026-10-02; built by build_static.py"
+ },
+ "dams": [
+  {
+   "id": "forata",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 68.4,
+   "crest_level_m": 389.2,
+   "bed_level_m": 327.8,
+   "catchment_inventory_km2": 1058.0,
+   "design_flood_m3s": 900.0,
+   "year": 1969,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 60.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=441"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 900.0,
+    "gated": true,
+    "regulation": "Compuerta segm -"
+   },
+   "rating_c": 80.0,
+   "rating_note": "1092 m3/s measured over the spillway on 29 Oct 2024 with the level at 384.9 m, sill 379.2 m (CHJ figures quoted in coord/findings/q5-science.md A.3): C = 1092 / 5.7^1.5"
+  },
+  {
+   "id": "bellus",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 46.0,
+   "crest_level_m": 159.0,
+   "bed_level_m": 121.0,
+   "catchment_inventory_km2": 494.0,
+   "design_flood_m3s": 2382.0,
+   "year": 1995,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 640.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=164"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 1300.0,
+    "gated": true,
+    "regulation": "Compuertas. - No, Labio fijo"
+   }
+  },
+  {
+   "id": "beniarres",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 53.0,
+   "crest_level_m": 320.65,
+   "bed_level_m": 281.65,
+   "catchment_inventory_km2": 470.0,
+   "design_flood_m3s": 1000.0,
+   "year": 1958,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 56.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=170"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 1050.0,
+    "gated": true,
+    "regulation": "Compuerta segm -"
+   }
+  },
+  {
+   "id": "maria-cristina",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 57.38,
+   "crest_level_m": 138.22,
+   "bed_level_m": 100.22,
+   "catchment_inventory_km2": 1560.0,
+   "design_flood_m3s": 3154.0,
+   "year": 1920,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 65.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=654"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 597.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "tous",
+   "owner": "Estado",
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 135.5,
+   "crest_level_m": 162.5,
+   "bed_level_m": 52.0,
+   "catchment_inventory_km2": 17821.0,
+   "design_flood_m3s": 12715.0,
+   "year": 1996,
+   "uses": [
+    "Abastecimiento",
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 1565.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1097"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 4500.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "reserve_at_nmn": true,
+   "reserve_note": "SAIH Júcar NMN 378.6 hm3 at 130 m is the flood-control operating limit of Tous (crest 162.5 m); the spillway sill is not published here: generic, crest - 3 m"
+  },
+  {
+   "id": "escalona",
+   "owner": "Estado",
+   "dam_type": "Arco Gravedad",
+   "height_m": 78.0,
+   "crest_level_m": 190.0,
+   "bed_level_m": 119.0,
+   "catchment_inventory_km2": 507.4,
+   "design_flood_m3s": 4400.0,
+   "year": 1995,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 328.4,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=416"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 7913.4,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "buseo",
+   "owner": "Fundacion Medioambiental De La Comunidad Valenciana \"Buseo\"",
+   "dam_type": null,
+   "height_m": 50.0,
+   "crest_level_m": 480.0,
+   "bed_level_m": 440.0,
+   "catchment_inventory_km2": 248.0,
+   "design_flood_m3s": 253.0,
+   "year": 1912,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 60.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=217"
+   },
+   "unverified": [
+    "spill.capacity_m3s (not in the ficha)"
+   ],
+   "spill": {
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "loriguilla",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 78.67,
+   "crest_level_m": 322.5,
+   "bed_level_m": 265.0,
+   "catchment_inventory_km2": 616.0,
+   "design_flood_m3s": 2000.0,
+   "year": 1965,
+   "uses": [
+    "Regulación",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 220.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=627"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 2000.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "benageber",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 110.0,
+   "crest_level_m": 530.0,
+   "bed_level_m": 440.0,
+   "catchment_inventory_km2": 3495.0,
+   "design_flood_m3s": 1450.0,
+   "year": 1955,
+   "uses": [
+    "Abastecimiento",
+    "Hidroeléctrico"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 46.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=168"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 1500.0,
+    "gated": true,
+    "regulation": "No, Labio fijo - Compuertas."
+   }
+  },
+  {
+   "id": "algar",
+   "owner": "Estado",
+   "dam_type": "Gravedad y materiales sueltos P asfáltica",
+   "height_m": 49.0,
+   "crest_level_m": 217.0,
+   "bed_level_m": 180.0,
+   "catchment_inventory_km2": 781.0,
+   "design_flood_m3s": 2650.0,
+   "year": 2000,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Regulación"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 240.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=42"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 2650.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "regajo",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 27.53,
+   "crest_level_m": 406.53,
+   "bed_level_m": 382.2,
+   "catchment_inventory_km2": 450.0,
+   "design_flood_m3s": 438.0,
+   "year": 1959,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 42.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=889"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 315.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "sichar",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 58.0,
+   "crest_level_m": 167.5,
+   "bed_level_m": 113.5,
+   "catchment_inventory_km2": 2334.0,
+   "design_flood_m3s": 1800.0,
+   "year": 1960,
+   "uses": [
+    "Regulación",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 60.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1014"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 1800.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "arenos",
+   "owner": "Estado",
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 105.0,
+   "crest_level_m": 603.0,
+   "bed_level_m": 500.0,
+   "catchment_inventory_km2": 1430.0,
+   "design_flood_m3s": 3873.0,
+   "year": 1980,
+   "uses": [
+    "Regulación",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 220.7,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=88"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 1360.0,
+    "gated": true,
+    "regulation": "No, Labio fijo - Compuertas."
+   }
+  },
+  {
+   "id": "ulldecona",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 61.0,
+   "crest_level_m": 479.83,
+   "bed_level_m": 429.33,
+   "catchment_inventory_km2": 126.0,
+   "design_flood_m3s": 167.0,
+   "year": 1967,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 47.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1111"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 400.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "alcora",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 30.0,
+   "crest_level_m": 303.75,
+   "bed_level_m": 274.75,
+   "catchment_inventory_km2": 109.0,
+   "design_flood_m3s": 330.0,
+   "year": 1958,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 15.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=34"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 330.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "onda",
+   "owner": "Comunidad De Regantes De Onda",
+   "dam_type": "Gravedad",
+   "height_m": 37.0,
+   "crest_level_m": 306.5,
+   "bed_level_m": 272.0,
+   "catchment_inventory_km2": 20.0,
+   "design_flood_m3s": 46.0,
+   "year": 1954,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 30.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=764"
+   },
+   "unverified": [
+    "spill.capacity_m3s (not in the ficha)"
+   ],
+   "spill": {
+    "gated": true,
+    "regulation": "Compuerta segm -"
+   }
+  },
+  {
+   "id": "guadalest",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 77.17,
+   "crest_level_m": 382.65,
+   "bed_level_m": 308.0,
+   "catchment_inventory_km2": 60.0,
+   "design_flood_m3s": 400.0,
+   "year": 1964,
+   "uses": [
+    "Abastecimiento",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 78.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=507"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 520.0,
+    "gated": true,
+    "regulation": "Compuerta segm -"
+   }
+  },
+  {
+   "id": "amadorio",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 64.15,
+   "crest_level_m": 129.65,
+   "bed_level_m": 71.65,
+   "catchment_inventory_km2": 205.0,
+   "design_flood_m3s": 400.0,
+   "year": 1957,
+   "uses": [
+    "Abastecimiento",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 68.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=65"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 520.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "tibi",
+   "owner": "Comunidad De Regantes Sindicato Huerta De Alicante",
+   "dam_type": "Gravedad",
+   "height_m": 46.0,
+   "crest_level_m": 403.4,
+   "bed_level_m": 360.4,
+   "catchment_inventory_km2": 256.0,
+   "design_flood_m3s": 100.0,
+   "year": 1594,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": null,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1063"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 15.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "elx",
+   "owner": "C. Prop. De La Acequia Mayor Del Pantano De Elche",
+   "dam_type": "Arco Gravedad",
+   "height_m": 24.0,
+   "crest_level_m": 152.0,
+   "bed_level_m": 130.0,
+   "catchment_inventory_km2": 1684.0,
+   "design_flood_m3s": 0.0,
+   "year": 1640,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": null,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=402"
+   },
+   "unverified": [
+    "spill.capacity_m3s (not in the ficha)"
+   ],
+   "spill": {
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "contreras",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 129.0,
+   "crest_level_m": 679.0,
+   "bed_level_m": 565.0,
+   "catchment_inventory_km2": 3331.0,
+   "design_flood_m3s": 2400.0,
+   "year": 1974,
+   "uses": [
+    "Abastecimiento",
+    "Hidroeléctrico"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 141.4,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=355"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 2475.0,
+    "gated": true,
+    "regulation": "No, Labio fijo - Compuerta segm"
+   }
+  },
+  {
+   "id": "alarcon",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 67.0,
+   "crest_level_m": 814.0,
+   "bed_level_m": 752.2,
+   "catchment_inventory_km2": 3033.0,
+   "design_flood_m3s": 1700.0,
+   "year": 1955,
+   "uses": [
+    "Regulación",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 70.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=24"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 1750.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "cortes-ii",
+   "owner": "Iberdrola Generacion S.A.",
+   "dam_type": "Arco Gravedad",
+   "height_m": 116.0,
+   "crest_level_m": 332.0,
+   "bed_level_m": 224.0,
+   "catchment_inventory_km2": 17149.0,
+   "design_flood_m3s": 7870.0,
+   "year": 1988,
+   "uses": [
+    "Hidroeléctrico"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 628.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=362"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 6872.0,
+    "gated": true,
+    "regulation": "Compuerta segm -"
+   }
+  },
+  {
+   "id": "naranjero",
+   "owner": "Iberdrola Generacion S.A.",
+   "dam_type": "Arco Gravedad",
+   "height_m": 84.0,
+   "crest_level_m": 247.27,
+   "bed_level_m": 164.87,
+   "catchment_inventory_km2": 17149.0,
+   "design_flood_m3s": 7870.0,
+   "year": 1989,
+   "uses": [
+    "Hidroeléctrico"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 508.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=732"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 6992.0,
+    "gated": true,
+    "regulation": "Compuerta segm -"
+   }
+  },
+  {
+   "id": "santomera",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 51.5,
+   "crest_level_m": 101.5,
+   "bed_level_m": 64.5,
+   "catchment_inventory_km2": 453.0,
+   "design_flood_m3s": 1000.0,
+   "year": 1965,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 23.7,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=997"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 296.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "la-pedrera",
+   "owner": "Estado",
+   "dam_type": "Materiales sueltos homogenea",
+   "height_m": 65.54,
+   "crest_level_m": 110.54,
+   "bed_level_m": 50.0,
+   "catchment_inventory_km2": 34.84,
+   "design_flood_m3s": 22.0,
+   "year": 1983,
+   "uses": [
+    "Abastecimiento",
+    "Regulación"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 38.7,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=791"
+   },
+   "unverified": [
+    "spill.capacity_m3s (not in the ficha)"
+   ],
+   "spill": {
+    "regulation": "-"
+   }
+  },
+  {
+   "id": "crevillente",
+   "owner": "Estado",
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 58.0,
+   "crest_level_m": 147.5,
+   "bed_level_m": 93.0,
+   "catchment_inventory_km2": 11.8,
+   "design_flood_m3s": 67.0,
+   "year": 1986,
+   "uses": [
+    "Regulación"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 34.3,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=366"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 37.5,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "cenajo",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 102.0,
+   "crest_level_m": 437.2,
+   "bed_level_m": 353.0,
+   "catchment_inventory_km2": 1273.0,
+   "design_flood_m3s": 950.0,
+   "year": 1960,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 104.9,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=305"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 838.3,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "fuensanta",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 82.0,
+   "crest_level_m": 607.18,
+   "bed_level_m": 528.0,
+   "catchment_inventory_km2": 1181.0,
+   "design_flood_m3s": 563.0,
+   "year": 1933,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Regulación"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 138.7,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=456"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 681.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "talave",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 46.66,
+   "crest_level_m": 510.66,
+   "bed_level_m": 472.0,
+   "catchment_inventory_km2": 788.0,
+   "design_flood_m3s": 720.0,
+   "year": 1918,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 150.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1051"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 398.0,
+    "gated": true,
+    "regulation": "Compuertas. - Compuertas."
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "camarillas",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 43.5,
+   "crest_level_m": 350.32,
+   "bed_level_m": 314.32,
+   "catchment_inventory_km2": 1603.0,
+   "design_flood_m3s": 428.0,
+   "year": 1961,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Regulación"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 82.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=232"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 328.2,
+    "gated": true,
+    "regulation": "Compuerta sect - Compuertas."
+   }
+  },
+  {
+   "id": "alfonso-xiii",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 46.0,
+   "crest_level_m": 303.0,
+   "bed_level_m": 262.0,
+   "catchment_inventory_km2": 734.0,
+   "design_flood_m3s": 720.0,
+   "year": 1915,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 328.3,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=41"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 180.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "argos",
+   "owner": "Estado",
+   "dam_type": "Materiales sueltos P hormigón",
+   "height_m": 33.0,
+   "crest_level_m": 416.66,
+   "bed_level_m": 385.66,
+   "catchment_inventory_km2": 453.14,
+   "design_flood_m3s": 700.0,
+   "year": 1970,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 14.1,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=91"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 750.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "la-cierva",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 69.1,
+   "crest_level_m": 393.3,
+   "bed_level_m": 329.2,
+   "catchment_inventory_km2": 215.0,
+   "design_flood_m3s": 487.0,
+   "year": 1929,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 34.3,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=333"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 511.0,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "los-rodeos",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 38.0,
+   "crest_level_m": 135.0,
+   "bed_level_m": 104.5,
+   "catchment_inventory_km2": 647.0,
+   "design_flood_m3s": 1089.0,
+   "year": 2002,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 64.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=934"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 1096.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "pliego",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 45.5,
+   "crest_level_m": 360.0,
+   "bed_level_m": 322.0,
+   "catchment_inventory_km2": 206.0,
+   "design_flood_m3s": 1227.0,
+   "year": 1992,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 45.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=838"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 1200.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "dona-ana",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 29.0,
+   "crest_level_m": 386.0,
+   "bed_level_m": 363.0,
+   "catchment_inventory_km2": 19.8,
+   "design_flood_m3s": 143.0,
+   "year": 1994,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 7.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=393"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 140.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "puentes",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 78.0,
+   "crest_level_m": 474.0,
+   "bed_level_m": 413.82,
+   "catchment_inventory_km2": 1388.0,
+   "design_flood_m3s": 3626.0,
+   "year": 2000,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 1320.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=864"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 2026.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "valdeinfierno",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 50.7,
+   "crest_level_m": 700.4,
+   "bed_level_m": 654.4,
+   "catchment_inventory_km2": 540.0,
+   "design_flood_m3s": 850.0,
+   "year": 1806,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": null,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1148"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 673.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "algeciras",
+   "owner": "Estado",
+   "dam_type": "Materiales sueltos homogenea",
+   "height_m": 81.5,
+   "crest_level_m": 274.0,
+   "bed_level_m": 197.0,
+   "catchment_inventory_km2": 45.6,
+   "design_flood_m3s": 237.0,
+   "year": 1995,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Regulación"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 45.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=879"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 20.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "jose-bautista",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 33.5,
+   "crest_level_m": 137.0,
+   "bed_level_m": 111.0,
+   "catchment_inventory_km2": 2311.0,
+   "design_flood_m3s": 2050.0,
+   "year": 1997,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 56.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=577"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 2080.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "judio",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 48.5,
+   "crest_level_m": 245.75,
+   "bed_level_m": 210.0,
+   "catchment_inventory_km2": 554.0,
+   "design_flood_m3s": 878.0,
+   "year": 1991,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 120.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=883"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 734.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "moro",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 43.0,
+   "crest_level_m": 242.3,
+   "bed_level_m": 209.5,
+   "catchment_inventory_km2": 380.0,
+   "design_flood_m3s": 727.1,
+   "year": 1991,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 137.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=884"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 780.0,
+    "gated": true,
+    "regulation": "Compuertas. - No, Labio fijo"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "carcabo",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 45.5,
+   "crest_level_m": 260.0,
+   "bed_level_m": 219.5,
+   "catchment_inventory_km2": 35.7,
+   "design_flood_m3s": 266.0,
+   "year": 1993,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 41.4,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=258"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 65.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "mayes",
+   "owner": "Estado",
+   "dam_type": "Materiales sueltos homogenea",
+   "height_m": 32.0,
+   "crest_level_m": 278.0,
+   "bed_level_m": 254.0,
+   "catchment_inventory_km2": 13.4,
+   "design_flood_m3s": 146.0,
+   "year": 1981,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 20.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=667"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 139.5,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "moratalla",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 44.0,
+   "crest_level_m": 350.2,
+   "bed_level_m": 313.0,
+   "catchment_inventory_km2": 327.0,
+   "design_flood_m3s": 1050.0,
+   "year": 2004,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 95.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=721"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 930.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "la-risca",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 26.88,
+   "crest_level_m": 1080.0,
+   "bed_level_m": 1056.8,
+   "catchment_inventory_km2": 77.0,
+   "design_flood_m3s": 547.3,
+   "year": 2002,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 36.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=920"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 451.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "charcos",
+   "owner": "Estado",
+   "dam_type": "Arco Gravedad",
+   "height_m": 30.7,
+   "crest_level_m": 751.2,
+   "bed_level_m": 727.0,
+   "catchment_inventory_km2": 28.2,
+   "design_flood_m3s": 105.41,
+   "year": 1999,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 23.8,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=881"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 152.6,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "bayco",
+   "owner": "Estado",
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 43.0,
+   "crest_level_m": 697.0,
+   "bed_level_m": 668.0,
+   "catchment_inventory_km2": 242.65,
+   "design_flood_m3s": 721.0,
+   "year": 1999,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 31.1,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=880"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 380.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "boqueron",
+   "owner": "Estado",
+   "dam_type": "Hormigón Compactado",
+   "height_m": 57.0,
+   "crest_level_m": 606.0,
+   "bed_level_m": 556.5,
+   "catchment_inventory_km2": 53.0,
+   "design_flood_m3s": 273.0,
+   "year": 1997,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": true,
+   "outlet_m3s": 28.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=882"
+   },
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ],
+   "spill": {
+    "capacity_m3s": 309.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "outlet_open": true
+  },
+  {
+   "id": "ojos",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 17.67,
+   "crest_level_m": 140.67,
+   "bed_level_m": 128.5,
+   "catchment_inventory_km2": 985.6,
+   "design_flood_m3s": 750.0,
+   "year": 1975,
+   "uses": [
+    "Riego",
+    "Hidroeléctrico"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 56.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=761"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 766.7,
+    "gated": true,
+    "regulation": "Compuertas. -"
+   }
+  },
+  {
+   "id": "taibilla",
+   "owner": "Estado. Mancomunidad Canales Taibilla",
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 39.0,
+   "crest_level_m": 956.3,
+   "bed_level_m": 922.3,
+   "catchment_inventory_km2": 327.0,
+   "design_flood_m3s": 545.0,
+   "year": 1973,
+   "uses": [
+    "Abastecimiento",
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 1.4,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1041"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 510.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "anchuricas",
+   "owner": "Iberdrola Generacion S.A.",
+   "dam_type": "Contrafuertes",
+   "height_m": 54.0,
+   "crest_level_m": 912.5,
+   "bed_level_m": 874.5,
+   "catchment_inventory_km2": 187.0,
+   "design_flood_m3s": 0.0,
+   "year": 1957,
+   "uses": [
+    "Hidroeléctrico"
+   ],
+   "flood_only": false,
+   "outlet_m3s": null,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=68"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 823.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "arquillo",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 54.0,
+   "crest_level_m": 978.96,
+   "bed_level_m": 928.21,
+   "catchment_inventory_km2": 690.52,
+   "design_flood_m3s": 485.0,
+   "year": 1962,
+   "uses": [
+    "Abastecimiento",
+    "Defensa frente a avenidas"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 92.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=97"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 500.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "la-toba",
+   "owner": "Union Fenosa Generacion S.A.",
+   "dam_type": "Gravedad",
+   "height_m": 40.0,
+   "crest_level_m": 1156.35,
+   "bed_level_m": 1136.35,
+   "catchment_inventory_km2": 420.0,
+   "design_flood_m3s": 380.0,
+   "year": 1925,
+   "uses": [
+    "Hidroeléctrico"
+   ],
+   "flood_only": false,
+   "outlet_m3s": null,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1067"
+   },
+   "unverified": [
+    "spill.capacity_m3s (not in the ficha)"
+   ],
+   "spill": {
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "molinar",
+   "owner": "Iberdrola Generacion S.A.",
+   "dam_type": "Materiales sueltos homogenea",
+   "height_m": 28.0,
+   "crest_level_m": 480.0,
+   "bed_level_m": 459.0,
+   "catchment_inventory_km2": 10760.0,
+   "design_flood_m3s": 2500.0,
+   "year": 1951,
+   "uses": [
+    "Hidroeléctrico"
+   ],
+   "flood_only": false,
+   "outlet_m3s": null,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=689"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 2500.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "valbona",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 15.34,
+   "crest_level_m": 980.4,
+   "bed_level_m": 969.2,
+   "catchment_inventory_km2": 42.0,
+   "design_flood_m3s": 100.0,
+   "year": 1959,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 4.9,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1136"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 100.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "mora",
+   "owner": "Estado",
+   "dam_type": "Gravedad y materiales sueltos P asfáltica",
+   "height_m": 35.8,
+   "crest_level_m": 1125.8,
+   "bed_level_m": 1093.0,
+   "catchment_inventory_km2": 21.1,
+   "design_flood_m3s": 372.0,
+   "year": null,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": 11.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=719"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 145.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  },
+  {
+   "id": "balagueras",
+   "owner": "Estado",
+   "dam_type": "Gravedad",
+   "height_m": 18.3,
+   "crest_level_m": 1017.5,
+   "bed_level_m": 1001.4,
+   "catchment_inventory_km2": 0.3,
+   "design_flood_m3s": 80.0,
+   "year": 1957,
+   "uses": [
+    "Riego"
+   ],
+   "flood_only": false,
+   "outlet_m3s": null,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=127"
+   },
+   "unverified": [],
+   "spill": {
+    "capacity_m3s": 87.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   }
+  }
+ ]
+}

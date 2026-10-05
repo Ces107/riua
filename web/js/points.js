@@ -4,6 +4,7 @@
 import { INK, LEVEL, RIVER } from './config.js';
 import { geo, nearest } from './geo.js';
 import { dayTime, esc, nice, num, parts, pct } from './time.js';
+import { damNote, damsHtml } from './dams.js';
 
 const GAUGE_KM = 2;       // a river gauge this close to a control point is taken to measure the same water
 
@@ -68,7 +69,7 @@ function head(cols) {
     + `${cols.gauge ? '<th class="x" title="caudal medido ahora en el aforo que hay junto al punto (dato provisional)">Medido</th>' : ''}<th>Hora</th></tr></thead>`;
 }
 
-function row(r, open, snap, h, cols) {
+function row(r, open, snap, h, cols, st) {
   const cap = r.cap == null ? '<span class="dim" title="sin capacidad del cauce: el nivel sale del caudal por km²">—</span>' : num(r.cap);
   const over = r.cap == null ? '<span class="dim">—</span>' : pct(r.pOver);
   const hgt = r.hover[0] != null && r.hover[0] >= 0 ? `${signed(r.hover[0])} m` : '';
@@ -76,6 +77,8 @@ function row(r, open, snap, h, cols) {
   let out = `<tr class="${open ? 'open' : ''}"><td><span class="lv lv${r.level}">${r.level || '–'}</span></td>
 <th class="wrap"><button type="button" class="link" data-pt="${esc(r.pt.id)}" aria-expanded="${open}">${esc(r.pt.stream || r.pt.id)}</button><span class="town">${esc(r.pt.town || '')}</span></th>
 <td>${over}</td><td>${peakTxt(r.q)}</td><td class="x">${cap}</td><td class="x">${rpTxt(r.rp[0])}</td>${cols.hover ? `<td class="x">${hgt}</td>` : ''}${cols.gauge ? `<td class="x">${g ? num(g.it.flow_m3s, g.it.flow_m3s < 10 ? 1 : 0) : ''}</td>` : ''}<td>${r.tPeak ? hourTxt(r.tPeak) : ''}</td></tr>`;
+  const dn = damNote(snap, st.hz, st.f, r.pt.id);
+  if (dn) out += `<tr class="dam-row"><td></td><td colspan="${6 + (cols.hover ? 1 : 0) + (cols.gauge ? 1 : 0)}">${dn}</td></tr>`;
   if (open) out += `<tr class="chart-row"><td colspan="${7 + (cols.hover ? 1 : 0) + (cols.gauge ? 1 : 0)}">${hydrograph(snap, h, r)}</td></tr>`;
   return out;
 }
@@ -83,20 +86,23 @@ function row(r, open, snap, h, cols) {
 export function renderPoints(root, snap, st) {
   const h = snap && snap.hz[st.hz];
   const rows = pointRows(h, st.f);
-  if (!rows.length) { root.hidden = true; root.innerHTML = ''; return; }
+  const damsOpen = !!root.querySelector('details.dams-all[open]');
+  const dams = snap ? damsHtml(snap, st, damsOpen) : '';
+  if (!rows.length && !dams) { root.hidden = true; root.innerHTML = ''; return; }
   root.hidden = false;
   const key = (r) => r.level >= 2 || st.pt === r.pt.id;
   const main = rows.filter(key), rest = rows.filter((r) => !key(r));
   const table = (list) => {
     const cols = { hover: list.some((r) => r.hover[0] != null && r.hover[0] >= 0), gauge: list.some((r) => gaugeNear(snap, r.pt)) };
-    return `<div class="scroll"><table class="data points">${head(cols)}<tbody>${list.map((r) => row(r, st.pt === r.pt.id, snap, h, cols)).join('')}</tbody></table></div>`;
+    return `<div class="scroll"><table class="data points">${head(cols)}<tbody>${list.map((r) => row(r, st.pt === r.pt.id, snap, h, cols, st)).join('')}</tbody></table></div>`;
   };
   // the long list is only built while it is open: closed, it would be 50 rows rebuilt on every frame step
-  const open = !!root.querySelector('details[open]') || rest.some((r) => st.pt === r.pt.id);
-  root.innerHTML = `<h2>Cauces</h2>
+  const open = !!root.querySelector('details.pts-all[open]') || rest.some((r) => st.pt === r.pt.id);
+  root.innerHTML = `${rows.length ? `<h2>Cauces</h2>
 ${main.length ? table(main) : `<div class="lvl calm"><span class="lv lv1">1</span><div><b>Sin riesgo</b></div></div>`}
-${rest.length ? `<details${open ? ' open' : ''}><summary>Todos (${rows.length})</summary>${open ? table(rest) : ''}</details>` : ''}`;
-  const det = root.querySelector('details');
+${rest.length ? `<details class="pts-all"${open ? ' open' : ''}><summary>Todos (${rows.length})</summary>${open ? table(rest) : ''}</details>` : ''}` : ''}
+${dams}`;
+  const det = root.querySelector('details.pts-all');
   if (det && !open) det.addEventListener('toggle', () => { if (det.open && !det.querySelector('table')) det.insertAdjacentHTML('beforeend', table(rest)); });
 }
 

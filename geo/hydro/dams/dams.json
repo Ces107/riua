@@ -1,0 +1,4115 @@
+{
+ "meta": {
+  "generated": "2026-10-05",
+  "agent": "q10-dams",
+  "note": "built by geo/hydro/dams/build_json.py; edit dams_sites.json / dams_static.json, not this file",
+  "not_modelled": "dams of the h1 inventory without live data (water passes through): Cortes II, El Naranjero, El Molinar, Tibi, Elx, Relleu, Isbert, Taibilla, Anchuricas"
+ },
+ "dams": [
+  {
+   "id": "ulldecona",
+   "name": "Ulldecona",
+   "river": "Sénia",
+   "lat": 40.67042,
+   "lon": 0.23625,
+   "saih": "chj:1E01",
+   "vars": {
+    "level": "2488",
+    "volume": "2489",
+    "inflow": "13862",
+    "outflow": "13848",
+    "river": "16683"
+   },
+   "source": "saih_chj",
+   "area_km2": 93.8,
+   "own_km2": 93.8,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.7,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "senia-vinaros",
+     "lag_h": 2.7,
+     "share": 0.476,
+     "through": []
+    }
+   ],
+   "thr": [
+    20,
+    75,
+    150
+   ],
+   "town": "La Pobla de Benifassà",
+   "nmn_hm3": 9.11,
+   "curve": {
+    "a": 0.00034814493,
+    "b": 2.7070573,
+    "h0": 430.67293,
+    "level_min": 439.37,
+    "level_max": 474.19,
+    "rel_rms": 0.0026,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 9.11,
+   "spill_kind": "free",
+   "v_spill_hm3": 9.11,
+   "spill": {
+    "capacity_m3s": 400.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 473.53,
+    "design_head_m": 4.8,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 13.21,
+   "owner": "Estado",
+   "year": 1967,
+   "dam_type": "Gravedad",
+   "height_m": 61.0,
+   "crest_level_m": 479.83,
+   "outlet_m3s": 47.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 126.0,
+   "design_flood_m3s": 167.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 429.33,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1111"
+   },
+   "alpha": 0.2028,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "valbona",
+   "name": "Valbona",
+   "river": "Valbona",
+   "lat": 40.24875,
+   "lon": -0.81958,
+   "saih": "chj:2P02",
+   "vars": {
+    "level": "14573",
+    "volume": "14574",
+    "inflow": "16759",
+    "outflow": "16758",
+    "river": "16700"
+   },
+   "source": "saih_chj",
+   "area_km2": 156.5,
+   "own_km2": 156.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.3,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "arenos",
+    "lag_h": 4.3
+   },
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 12.8,
+     "share": 0.04,
+     "through": [
+      "arenos",
+      "sichar"
+     ]
+    }
+   ],
+   "thr": [
+    2,
+    10,
+    20
+   ],
+   "town": "Valbona",
+   "nmn_hm3": 0.49,
+   "curve": {
+    "a": 0.0012332687,
+    "b": 2.3763712,
+    "h0": 971.15669,
+    "level_min": 981.38,
+    "level_max": 983.5,
+    "rel_rms": 0.0182,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 0.48,
+   "spill_kind": "free",
+   "v_spill_hm3": 0.49,
+   "spill": {
+    "capacity_m3s": 100.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 983.45
+   },
+   "owner": "Estado",
+   "year": 1959,
+   "dam_type": "Gravedad",
+   "height_m": 15.34,
+   "crest_level_m": 980.4,
+   "outlet_m3s": 4.9,
+   "flood_only": false,
+   "catchment_inventory_km2": 42.0,
+   "design_flood_m3s": 100.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 969.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1136"
+   },
+   "alpha": 0.0448,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "mora",
+   "name": "Mora de Rubielos",
+   "river": "Mora",
+   "lat": 40.27625,
+   "lon": -0.74792,
+   "saih": "chj:2E03",
+   "vars": {
+    "level": "2476",
+    "volume": "2477",
+    "inflow": "16726",
+    "outflow": "16716",
+    "river": "16701"
+   },
+   "source": "saih_chj",
+   "area_km2": 20.9,
+   "own_km2": 20.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.2,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "arenos",
+    "lag_h": 4.0
+   },
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 12.5,
+     "share": 0.005,
+     "through": [
+      "arenos",
+      "sichar"
+     ]
+    }
+   ],
+   "thr": [
+    3,
+    10,
+    20
+   ],
+   "town": "Mora de Rubielos",
+   "nmn_hm3": 1.13,
+   "curve": {
+    "a": 1.1500423e-06,
+    "b": 3.9009233,
+    "h0": 1089.534,
+    "level_min": 1101.03,
+    "level_max": 1113.53,
+    "rel_rms": 0.001,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 0.59,
+   "spill_kind": "gated",
+   "v_spill_hm3": 1.13,
+   "spill": {
+    "capacity_m3s": 145.0,
+    "gated": true,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 1118.6,
+    "design_head_m": 5.3,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 1.39,
+   "owner": "Estado",
+   "dam_type": "Gravedad y materiales sueltos P asfáltica",
+   "height_m": 35.8,
+   "crest_level_m": 1125.8,
+   "outlet_m3s": 11.2,
+   "flood_only": false,
+   "catchment_inventory_km2": 21.1,
+   "design_flood_m3s": 372.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 1093.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=719"
+   },
+   "alpha": 0.0243,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "balagueras",
+   "name": "Balagueras",
+   "river": "Palomarejas",
+   "lat": 40.20708,
+   "lon": -0.68292,
+   "saih": "chj:2E04",
+   "vars": {
+    "level": "13283",
+    "volume": "13284",
+    "inflow": "16762",
+    "outflow": "16761",
+    "river": "16690"
+   },
+   "source": "saih_chj",
+   "area_km2": 22.6,
+   "own_km2": 22.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.8,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "arenos",
+    "lag_h": 2.9
+   },
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 11.5,
+     "share": 0.006,
+     "through": [
+      "arenos",
+      "sichar"
+     ]
+    }
+   ],
+   "thr": [
+    3,
+    10,
+    50
+   ],
+   "town": "Rubielos de Mora",
+   "nmn_hm3": 0.12,
+   "curve": {
+    "a": 3.6351302e-08,
+    "b": 4.6052046,
+    "h0": 976.93784,
+    "level_min": 998.93,
+    "level_max": 1002.9,
+    "rel_rms": 0.0017,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 0.12,
+   "spill_kind": "free",
+   "v_spill_hm3": 0.12,
+   "spill": {
+    "capacity_m3s": 87.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 1002.9,
+    "design_head_m": 13.1,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 0.93,
+   "owner": "Estado",
+   "year": 1957,
+   "dam_type": "Gravedad",
+   "height_m": 18.3,
+   "crest_level_m": 1017.5,
+   "flood_only": false,
+   "catchment_inventory_km2": 0.3,
+   "design_flood_m3s": 80.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 1001.4,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=127"
+   },
+   "alpha": 0.033,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "arenos",
+   "name": "Arenós",
+   "river": "Mijares",
+   "lat": 40.08625,
+   "lon": -0.54958,
+   "saih": "chj:2E02",
+   "vars": {
+    "level": "1665",
+    "volume": "2482",
+    "inflow": "13573",
+    "outflow": "15149",
+    "river": "16783"
+   },
+   "source": "saih_chj",
+   "area_km2": 1429.2,
+   "own_km2": 1229.2,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 9.3,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "balagueras",
+     "lag_h": 2.9
+    },
+    {
+     "id": "mora",
+     "lag_h": 4.0
+    },
+    {
+     "id": "valbona",
+     "lag_h": 4.3
+    }
+   ],
+   "next_dam": {
+    "id": "sichar",
+    "lag_h": 6.4
+   },
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 8.6,
+     "share": 0.361,
+     "through": [
+      "sichar"
+     ]
+    }
+   ],
+   "thr": [
+    15,
+    50,
+    70
+   ],
+   "town": "Montanejos",
+   "nmn_hm3": 136.92,
+   "curve": {
+    "a": 0.00076812005,
+    "b": 2.6681036,
+    "h0": 507.08643,
+    "level_min": 544.33,
+    "level_max": 578.57,
+    "rel_rms": 0.0009,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 104.33,
+   "spill_kind": "gated",
+   "v_spill_hm3": 136.92,
+   "spill": {
+    "capacity_m3s": 1360.0,
+    "gated": true,
+    "regulation": "No, Labio fijo - Compuertas.",
+    "sill_level_m": 591,
+    "design_head_m": 9.0,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 149.04,
+   "owner": "Estado",
+   "year": 1980,
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 105.0,
+   "crest_level_m": 603.0,
+   "outlet_m3s": 220.7,
+   "flood_only": false,
+   "catchment_inventory_km2": 1430.0,
+   "design_flood_m3s": 3873.0,
+   "uses": [
+    "Regulación",
+    "Riego"
+   ],
+   "bed_level_m": 500.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=88"
+   },
+   "alpha": 0.1543,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "sichar",
+   "name": "Sichar",
+   "river": "Mijares",
+   "lat": 40.01042,
+   "lon": -0.23042,
+   "saih": "chj:1E05",
+   "vars": {
+    "level": "2040",
+    "volume": "2480",
+    "inflow": "15144",
+    "outflow": "15147",
+    "river": "16687"
+   },
+   "source": "saih_chj",
+   "area_km2": 2488.1,
+   "own_km2": 1058.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 10.3,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "arenos",
+     "lag_h": 6.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "millars-vilareal",
+     "lag_h": 2.1,
+     "share": 0.629,
+     "through": []
+    }
+   ],
+   "thr": [
+    20,
+    60,
+    100
+   ],
+   "town": "Onda",
+   "nmn_hm3": 48.59,
+   "curve": {
+    "a": 0.023100632,
+    "b": 2.2073331,
+    "h0": 132.05454,
+    "level_min": 150.71,
+    "level_max": 162.28,
+    "rel_rms": 0.0013,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 25.59,
+   "spill_kind": "gated",
+   "v_spill_hm3": 48.59,
+   "spill": {
+    "capacity_m3s": 1800.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 156,
+    "design_head_m": 8.07,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 60.82,
+   "owner": "Estado",
+   "year": 1960,
+   "dam_type": "Gravedad",
+   "height_m": 58.0,
+   "crest_level_m": 167.5,
+   "outlet_m3s": 60.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 2334.0,
+   "design_flood_m3s": 1800.0,
+   "uses": [
+    "Regulación",
+    "Riego"
+   ],
+   "bed_level_m": 113.5,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1014"
+   },
+   "alpha": 0.0714,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "alcora",
+   "name": "L'Alcora",
+   "river": "Llucena",
+   "lat": 40.09542,
+   "lon": -0.21292,
+   "saih": "chj:1E02",
+   "vars": {
+    "level": "12800",
+    "volume": "12801",
+    "inflow": "15131",
+    "outflow": "15130",
+    "river": "16684"
+   },
+   "source": "saih_chj",
+   "area_km2": 113.9,
+   "own_km2": 113.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.7,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "maria-cristina",
+    "lag_h": 1.8
+   },
+   "points": [
+    {
+     "id": "viuda-almassora",
+     "lag_h": 2.7,
+     "share": 0.079,
+     "through": [
+      "maria-cristina"
+     ]
+    },
+    {
+     "id": "millars-vilareal",
+     "lag_h": 2.8,
+     "share": 0.029,
+     "through": [
+      "maria-cristina"
+     ]
+    }
+   ],
+   "thr": [
+    15,
+    50,
+    100
+   ],
+   "town": "Alcora",
+   "nmn_hm3": 1.18,
+   "curve": {
+    "a": 0.010764085,
+    "b": 1.7971062,
+    "h0": 291.09225,
+    "level_min": 302.02,
+    "level_max": 305.36,
+    "rel_rms": 0.0003,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 1.18,
+   "spill_kind": "free",
+   "v_spill_hm3": 1.18,
+   "spill": {
+    "capacity_m3s": 330.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 304.71
+   },
+   "owner": "Estado",
+   "year": 1958,
+   "dam_type": "Gravedad",
+   "height_m": 30.0,
+   "crest_level_m": 303.75,
+   "outlet_m3s": 15.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 109.0,
+   "design_flood_m3s": 330.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 274.75,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=34"
+   },
+   "alpha": 0.0406,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "maria-cristina",
+   "name": "María Cristina",
+   "river": "Rambla de la Viuda",
+   "lat": 40.02875,
+   "lon": -0.16375,
+   "saih": "chj:1E06",
+   "vars": {
+    "level": "1952",
+    "volume": "2481",
+    "inflow": "13921",
+    "outflow": "13920",
+    "river": "16688"
+   },
+   "source": "saih_chj",
+   "area_km2": 1400.8,
+   "own_km2": 1286.8,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 9.9,
+   "cuts": false,
+   "upstream": [
+    {
+     "id": "alcora",
+     "lag_h": 1.8
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "viuda-almassora",
+     "lag_h": 0.9,
+     "share": 0.975,
+     "through": []
+    },
+    {
+     "id": "millars-vilareal",
+     "lag_h": 1.1,
+     "share": 0.354,
+     "through": []
+    }
+   ],
+   "thr": [
+    20,
+    150,
+    300
+   ],
+   "town": "Alcora",
+   "nmn_hm3": 18.9,
+   "curve": {
+    "a": 0.056225343,
+    "b": 2.0921627,
+    "h0": 118.17,
+    "level_min": 121.37,
+    "level_max": 135.14,
+    "rel_rms": 0.0033,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 18.9,
+   "spill_kind": "free",
+   "v_spill_hm3": 18.9,
+   "spill": {
+    "capacity_m3s": 597.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 134.3,
+    "design_head_m": 2.42,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 29.8,
+   "owner": "Estado",
+   "year": 1920,
+   "dam_type": "Gravedad",
+   "height_m": 57.38,
+   "crest_level_m": 138.22,
+   "outlet_m3s": 65.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 1560.0,
+   "design_flood_m3s": 3154.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 100.22,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=654"
+   },
+   "alpha": 0.0474,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "onda",
+   "name": "Onda",
+   "river": "Sonella",
+   "lat": 39.94042,
+   "lon": -0.32708,
+   "saih": "chj:1E04",
+   "vars": {
+    "level": "13301",
+    "volume": "13302",
+    "inflow": "13750",
+    "outflow": "13307",
+    "river": "16686"
+   },
+   "source": "saih_chj",
+   "area_km2": 20.3,
+   "own_km2": 20.3,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.3,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "sec-borriana",
+     "lag_h": 2.1,
+     "share": 0.095,
+     "through": []
+    }
+   ],
+   "thr": [
+    null,
+    null,
+    null
+   ],
+   "town": "Alcudia de Veo",
+   "nmn_hm3": 0.99,
+   "curve": {
+    "a": 8.4737009e-12,
+    "b": 5.9191929,
+    "h0": 231.99002,
+    "level_min": 300.28,
+    "level_max": 304.78,
+    "rel_rms": 0.0015,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 0.84,
+   "spill_kind": "gated",
+   "v_spill_hm3": 0.99,
+   "spill": {
+    "gated": true,
+    "regulation": "Compuerta segm -",
+    "sill_level_m": 304
+   },
+   "v_top_hm3": 1.02,
+   "owner": "Comunidad De Regantes De Onda",
+   "year": 1954,
+   "dam_type": "Gravedad",
+   "height_m": 37.0,
+   "crest_level_m": 306.5,
+   "outlet_m3s": 30.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 20.0,
+   "design_flood_m3s": 46.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 272.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=764"
+   },
+   "alpha": 0.019,
+   "unverified": [
+    "spill.capacity_m3s (not in the ficha)"
+   ]
+  },
+  {
+   "id": "regajo",
+   "name": "El Regajo",
+   "river": "Palancia",
+   "lat": 39.88792,
+   "lon": -0.51542,
+   "saih": "chj:0E01",
+   "vars": {
+    "level": "2333",
+    "volume": "2459",
+    "inflow": "13597",
+    "outflow": "13322",
+    "river": "16681"
+   },
+   "source": "saih_chj",
+   "area_km2": 476.0,
+   "own_km2": 476.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 5.4,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "algar",
+    "lag_h": 2.4
+   },
+   "points": [
+    {
+     "id": "palancia-sagunt",
+     "lag_h": 3.9,
+     "share": 0.49,
+     "through": [
+      "algar"
+     ]
+    }
+   ],
+   "thr": [
+    15,
+    50,
+    120
+   ],
+   "town": "Jérica",
+   "nmn_hm3": 5.97,
+   "curve": {
+    "a": 0.0036307512,
+    "b": 2.5252482,
+    "h0": 386.29105,
+    "level_min": 390.44,
+    "level_max": 403.95,
+    "rel_rms": 0.0023,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 3.53,
+   "spill_kind": "gated",
+   "v_spill_hm3": 5.97,
+   "spill": {
+    "capacity_m3s": 315.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 401.53,
+    "design_head_m": 3.53,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 7.22,
+   "owner": "Estado",
+   "year": 1959,
+   "dam_type": "Gravedad",
+   "height_m": 27.53,
+   "crest_level_m": 406.53,
+   "outlet_m3s": 42.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 450.0,
+   "design_flood_m3s": 438.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 382.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=889"
+   },
+   "alpha": 0.0548,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "algar",
+   "name": "Algar",
+   "river": "Palancia",
+   "lat": 39.78792,
+   "lon": -0.37708,
+   "saih": "chj:0E04",
+   "vars": {
+    "level": "2325",
+    "volume": "2473",
+    "inflow": "15142",
+    "outflow": "15136",
+    "river": "16682"
+   },
+   "source": "saih_chj",
+   "area_km2": 743.1,
+   "own_km2": 267.1,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.7,
+   "cuts": false,
+   "upstream": [
+    {
+     "id": "regajo",
+     "lag_h": 2.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "palancia-sagunt",
+     "lag_h": 1.5,
+     "share": 0.765,
+     "through": []
+    }
+   ],
+   "thr": [
+    50,
+    100,
+    150
+   ],
+   "town": "Algar de Palancia",
+   "nmn_hm3": 6.29,
+   "curve": {
+    "a": 0.00062154958,
+    "b": 2.6845177,
+    "h0": 178.63172,
+    "level_min": 181.53,
+    "level_max": 193.82,
+    "rel_rms": 0.008,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 4.94,
+   "spill_kind": "gated",
+   "v_spill_hm3": 6.29,
+   "spill": {
+    "capacity_m3s": 2650.0,
+    "gated": true,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 207,
+    "design_head_m": 2.67,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 11.11,
+   "owner": "Estado",
+   "year": 2000,
+   "dam_type": "Gravedad y materiales sueltos P asfáltica",
+   "height_m": 49.0,
+   "crest_level_m": 217.0,
+   "outlet_m3s": 240.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 781.0,
+   "design_flood_m3s": 2650.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Regulación"
+   ],
+   "bed_level_m": 180.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=42"
+   },
+   "alpha": 0.033,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "arquillo",
+   "name": "Arquillo de San Blas",
+   "river": "Guadalaviar",
+   "lat": 40.36458,
+   "lon": -1.20458,
+   "saih": "chj:3E01",
+   "vars": {
+    "level": "1666",
+    "volume": "2483",
+    "inflow": "15155",
+    "outflow": "15154",
+    "river": "16691"
+   },
+   "source": "saih_chj",
+   "area_km2": 813.9,
+   "own_km2": 813.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 11.3,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "benageber",
+    "lag_h": 17.2
+   },
+   "points": [
+    {
+     "id": "turia-ribarroja",
+     "lag_h": 30.1,
+     "share": 0.136,
+     "through": [
+      "benageber",
+      "loriguilla"
+     ]
+    },
+    {
+     "id": "turia-nuevo-cauce",
+     "lag_h": 32.4,
+     "share": 0.132,
+     "through": [
+      "benageber",
+      "loriguilla"
+     ]
+    }
+   ],
+   "thr": [
+    15,
+    20,
+    30
+   ],
+   "town": "Teruel",
+   "nmn_hm3": 21.03,
+   "curve": {
+    "a": 6.7151569e-05,
+    "b": 3.2716949,
+    "h0": 926.35728,
+    "level_min": 969.01,
+    "level_max": 973.43,
+    "rel_rms": 0.0001,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 21.05,
+   "spill_kind": "free",
+   "v_spill_hm3": 21.03,
+   "spill": {
+    "capacity_m3s": 500.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 974.21,
+    "design_head_m": 3.25,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 28.69,
+   "owner": "Estado",
+   "year": 1962,
+   "dam_type": "Gravedad",
+   "height_m": 54.0,
+   "crest_level_m": 978.96,
+   "outlet_m3s": 92.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 690.52,
+   "design_flood_m3s": 485.0,
+   "uses": [
+    "Abastecimiento",
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 928.21,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=97"
+   },
+   "alpha": 0.0448,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "benageber",
+   "name": "Benagéber",
+   "river": "Turia",
+   "lat": 39.72625,
+   "lon": -1.09875,
+   "saih": "chj:6E01",
+   "vars": {
+    "level": "2338",
+    "volume": "2486",
+    "inflow": "13904",
+    "outflow": "13903",
+    "river": "16693"
+   },
+   "source": "saih_chj",
+   "area_km2": 4172.2,
+   "own_km2": 3358.3,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 29.3,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "arquillo",
+     "lag_h": 17.2
+    }
+   ],
+   "next_dam": {
+    "id": "loriguilla",
+    "lag_h": 5.5
+   },
+   "points": [
+    {
+     "id": "turia-ribarroja",
+     "lag_h": 12.9,
+     "share": 0.696,
+     "through": [
+      "loriguilla"
+     ]
+    },
+    {
+     "id": "turia-nuevo-cauce",
+     "lag_h": 15.2,
+     "share": 0.678,
+     "through": [
+      "loriguilla"
+     ]
+    }
+   ],
+   "thr": [
+    15,
+    50,
+    100
+   ],
+   "town": "Benagéber",
+   "nmn_hm3": 221.34,
+   "curve": {
+    "a": 0.0008616636,
+    "b": 2.8083198,
+    "h0": 442.71963,
+    "level_min": 496.98,
+    "level_max": 518.41,
+    "rel_rms": 0.0002,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 187.01,
+   "spill_kind": "gated",
+   "v_spill_hm3": 221.34,
+   "spill": {
+    "capacity_m3s": 1500.0,
+    "gated": true,
+    "regulation": "No, Labio fijo - Compuertas.",
+    "sill_level_m": 522.2,
+    "design_head_m": 4.92,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 243.25,
+   "owner": "Estado",
+   "year": 1955,
+   "dam_type": "Gravedad",
+   "height_m": 110.0,
+   "crest_level_m": 530.0,
+   "outlet_m3s": 46.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 3495.0,
+   "design_flood_m3s": 1450.0,
+   "uses": [
+    "Abastecimiento",
+    "Hidroeléctrico"
+   ],
+   "bed_level_m": 440.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=168"
+   },
+   "alpha": 0.0812,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "loriguilla",
+   "name": "Loriguilla",
+   "river": "Turia",
+   "lat": 39.66708,
+   "lon": -0.91208,
+   "saih": "chj:6E02",
+   "vars": {
+    "level": "2461",
+    "volume": "2462",
+    "inflow": "13594",
+    "outflow": "13755",
+    "river": "16694"
+   },
+   "source": "saih_chj",
+   "area_km2": 4777.9,
+   "own_km2": 605.7,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 7.5,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "benageber",
+     "lag_h": 5.5
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "turia-ribarroja",
+     "lag_h": 7.4,
+     "share": 0.797,
+     "through": []
+    },
+    {
+     "id": "turia-nuevo-cauce",
+     "lag_h": 9.7,
+     "share": 0.776,
+     "through": []
+    }
+   ],
+   "thr": [
+    20,
+    60,
+    150
+   ],
+   "town": "Loriguilla",
+   "nmn_hm3": 73.21,
+   "curve": {
+    "a": 0.00015634954,
+    "b": 3.1842061,
+    "h0": 259.3926,
+    "level_min": 292.83,
+    "level_max": 308.8,
+    "rel_rms": 0.0013,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 50.15,
+   "spill_kind": "gated",
+   "v_spill_hm3": 73.21,
+   "spill": {
+    "capacity_m3s": 2000.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 313,
+    "design_head_m": 6.76,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 84.32,
+   "owner": "Estado",
+   "year": 1965,
+   "dam_type": "Gravedad",
+   "height_m": 78.67,
+   "crest_level_m": 322.5,
+   "outlet_m3s": 220.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 616.0,
+   "design_flood_m3s": 2000.0,
+   "uses": [
+    "Regulación",
+    "Riego"
+   ],
+   "bed_level_m": 265.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=627"
+   },
+   "alpha": 0.0249,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "buseo",
+   "name": "Buseo",
+   "river": "Sot",
+   "lat": 39.59625,
+   "lon": -0.93958,
+   "saih": "chj:6E03",
+   "vars": {
+    "level": "13540",
+    "volume": "13541",
+    "inflow": "15068",
+    "outflow": "13571",
+    "river": "16695"
+   },
+   "source": "saih_chj",
+   "area_km2": 218.6,
+   "own_km2": 218.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.8,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "turia-ribarroja",
+     "lag_h": 6.5,
+     "share": 0.036,
+     "through": []
+    },
+    {
+     "id": "turia-nuevo-cauce",
+     "lag_h": 8.8,
+     "share": 0.036,
+     "through": []
+    }
+   ],
+   "thr": [
+    null,
+    null,
+    null
+   ],
+   "town": "Chera",
+   "nmn_hm3": 7.67,
+   "curve": {
+    "a": 0.075152834,
+    "b": 1.5891296,
+    "h0": 441.51759,
+    "level_min": 442.89,
+    "level_max": 454.46,
+    "rel_rms": 0.0026,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 6.9,
+   "spill_kind": "gated",
+   "v_spill_hm3": 7.67,
+   "spill": {
+    "gated": true,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 458.7
+   },
+   "v_top_hm3": 24.84,
+   "owner": "Fundacion Medioambiental De La Comunidad Valenciana \"Buseo\"",
+   "year": 1912,
+   "height_m": 50.0,
+   "crest_level_m": 480.0,
+   "outlet_m3s": 60.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 248.0,
+   "design_flood_m3s": 253.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 440.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=217"
+   },
+   "alpha": 0.0624,
+   "unverified": [
+    "spill.capacity_m3s (not in the ficha)"
+   ]
+  },
+  {
+   "id": "forata",
+   "name": "Forata",
+   "river": "Magro",
+   "lat": 39.34542,
+   "lon": -0.87792,
+   "saih": "chj:7E03",
+   "vars": {
+    "level": "1874",
+    "volume": "2464",
+    "inflow": "14582",
+    "outflow": "13345",
+    "river": "16696"
+   },
+   "source": "saih_chj",
+   "area_km2": 1016.6,
+   "own_km2": 1016.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 11.3,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "magro-real",
+     "lag_h": 4.0,
+     "share": 0.738,
+     "through": []
+    },
+    {
+     "id": "magro-carlet",
+     "lag_h": 5.4,
+     "share": 0.668,
+     "through": []
+    },
+    {
+     "id": "magro-algemesi",
+     "lag_h": 6.5,
+     "share": 0.666,
+     "through": []
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 10.0,
+     "share": 0.052,
+     "through": []
+    }
+   ],
+   "thr": [
+    5,
+    30,
+    100
+   ],
+   "town": "Yátova",
+   "nmn_hm3": 37.34,
+   "curve": {
+    "a": 0.0011536172,
+    "b": 2.7169184,
+    "h0": 338.35526,
+    "level_min": 360.63,
+    "level_max": 384.0,
+    "rel_rms": 0.0012,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 27.5,
+   "spill_kind": "gated",
+   "v_spill_hm3": 37.34,
+   "spill": {
+    "capacity_m3s": 900.0,
+    "gated": true,
+    "regulation": "Compuerta segm -",
+    "sill_level_m": 379.2,
+    "design_head_m": 4.87,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)",
+    "rating_c": 80.0,
+    "rating_note": "1092 m3/s measured over the spillway on 29 Oct 2024 with the level at 384.9 m, sill 379.2 m (CHJ figures quoted in coord/findings/q5-science.md A.3): C = 1092 / 5.7^1.5"
+   },
+   "v_top_hm3": 49.86,
+   "owner": "Estado",
+   "year": 1969,
+   "dam_type": "Gravedad",
+   "height_m": 68.4,
+   "crest_level_m": 389.2,
+   "outlet_m3s": 60.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 1058.0,
+   "design_flood_m3s": 900.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 327.8,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=441"
+   },
+   "alpha": 0.0618,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "la-toba",
+   "name": "La Toba",
+   "river": "Júcar",
+   "lat": 40.21042,
+   "lon": -1.92208,
+   "saih": "chj:4E01",
+   "vars": {
+    "level": "1667",
+    "volume": "2484",
+    "inflow": "14816",
+    "outflow": "14815",
+    "river": "16692"
+   },
+   "source": "saih_chj",
+   "area_km2": 375.0,
+   "own_km2": 375.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 6.2,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "alarcon",
+    "lag_h": 27.7
+   },
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 88.1,
+     "share": 0.021,
+     "through": [
+      "alarcon",
+      "tous"
+     ]
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 91.8,
+     "share": 0.019,
+     "through": [
+      "alarcon",
+      "tous"
+     ]
+    }
+   ],
+   "thr": [
+    null,
+    null,
+    null
+   ],
+   "town": "Uña",
+   "nmn_hm3": 9.7,
+   "curve": {
+    "a": 0.028877355,
+    "b": 2.1585046,
+    "h0": 1141.5784,
+    "level_min": 1150.39,
+    "level_max": 1157.21,
+    "rel_rms": 0.001,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 9.66,
+   "spill_kind": "free",
+   "v_spill_hm3": 9.7,
+   "spill": {
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 1156.35
+   },
+   "owner": "Union Fenosa Generacion S.A.",
+   "year": 1925,
+   "dam_type": "Gravedad",
+   "height_m": 40.0,
+   "crest_level_m": 1156.35,
+   "flood_only": false,
+   "catchment_inventory_km2": 420.0,
+   "design_flood_m3s": 380.0,
+   "uses": [
+    "Hidroeléctrico"
+   ],
+   "bed_level_m": 1136.35,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1067"
+   },
+   "alpha": 0.131,
+   "unverified": [
+    "spill.capacity_m3s (not in the ficha)"
+   ]
+  },
+  {
+   "id": "alarcon",
+   "name": "Alarcón",
+   "river": "Júcar",
+   "lat": 39.56458,
+   "lon": -2.11208,
+   "saih": "chj:4E02",
+   "vars": {
+    "level": "1668",
+    "volume": "2485",
+    "inflow": "13596",
+    "outflow": "15148",
+    "river": "16904"
+   },
+   "source": "saih_chj",
+   "area_km2": 2956.6,
+   "own_km2": 2581.6,
+   "inside_box_fraction": 0.9484,
+   "t_longest_h": 28.7,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "la-toba",
+     "lag_h": 27.7
+    }
+   ],
+   "next_dam": {
+    "id": "tous",
+    "lag_h": 52.9
+   },
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 60.3,
+     "share": 0.168,
+     "through": [
+      "tous"
+     ]
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 64.0,
+     "share": 0.152,
+     "through": [
+      "tous"
+     ]
+    }
+   ],
+   "thr": [
+    40,
+    50,
+    75
+   ],
+   "town": "Alarcón",
+   "nmn_hm3": 1117.83,
+   "curve": {
+    "a": 4.485753e-07,
+    "b": 4.9527811,
+    "h0": 727.08081,
+    "level_min": 797.1,
+    "level_max": 802.45,
+    "rel_rms": 0.0001,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 705.31,
+   "spill_kind": "gated",
+   "v_spill_hm3": 1117.83,
+   "spill": {
+    "capacity_m3s": 1750.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 799,
+    "design_head_m": 7.01,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 1802.4,
+   "owner": "Estado",
+   "year": 1955,
+   "dam_type": "Gravedad",
+   "height_m": 67.0,
+   "crest_level_m": 814.0,
+   "outlet_m3s": 70.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 3033.0,
+   "design_flood_m3s": 1700.0,
+   "uses": [
+    "Regulación",
+    "Riego"
+   ],
+   "bed_level_m": 752.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=24"
+   },
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "contreras",
+   "name": "Contreras",
+   "river": "Cabriel",
+   "lat": 39.54458,
+   "lon": -1.50292,
+   "saih": "chj:5E01",
+   "vars": {
+    "level": "1669",
+    "volume": "2487",
+    "inflow": "13593",
+    "outflow": "15150",
+    "river": "16707"
+   },
+   "source": "saih_chj",
+   "area_km2": 3235.6,
+   "own_km2": 3235.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 27.6,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "tous",
+    "lag_h": 32.1
+   },
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 39.6,
+     "share": 0.184,
+     "through": [
+      "tous"
+     ]
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 43.3,
+     "share": 0.167,
+     "through": [
+      "tous"
+     ]
+    }
+   ],
+   "thr": [
+    25,
+    75,
+    150
+   ],
+   "town": "Villargordo del Cabriel",
+   "nmn_hm3": 360.75,
+   "curve": {
+    "a": 0.015874927,
+    "b": 2.447045,
+    "h0": 585.72264,
+    "level_min": 629.29,
+    "level_max": 641.54,
+    "rel_rms": 0.0002,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 683.16,
+   "spill_kind": "operating limit below the spillway",
+   "v_spill_hm3": 683.164,
+   "reserve": [
+    {
+     "months": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "max_hm3": 360.75,
+     "source": "SAIH Júcar: volume at the maximum normal (operating) level, below the spillway"
+    }
+   ],
+   "spill": {
+    "capacity_m3s": 2475.0,
+    "gated": true,
+    "regulation": "No, Labio fijo - Compuerta segm",
+    "sill_level_m": 664,
+    "design_head_m": 13.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 1049.16,
+   "owner": "Estado",
+   "year": 1974,
+   "dam_type": "Gravedad",
+   "height_m": 129.0,
+   "crest_level_m": 679.0,
+   "outlet_m3s": 141.4,
+   "flood_only": false,
+   "catchment_inventory_km2": 3331.0,
+   "design_flood_m3s": 2400.0,
+   "uses": [
+    "Abastecimiento",
+    "Hidroeléctrico"
+   ],
+   "bed_level_m": 565.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=355"
+   },
+   "alpha": 0.1025,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "escalona",
+   "name": "Escalona",
+   "river": "Escalona",
+   "lat": 39.12875,
+   "lon": -0.69792,
+   "saih": "chj:7E09",
+   "vars": {
+    "level": "2490",
+    "volume": "2491",
+    "inflow": "16376",
+    "outflow": "16375",
+    "river": "16697"
+   },
+   "source": "saih_chj",
+   "area_km2": 509.2,
+   "own_km2": 509.2,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.3,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "tous",
+    "lag_h": 1.4
+   },
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 8.9,
+     "share": 0.029,
+     "through": [
+      "tous"
+     ]
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 12.6,
+     "share": 0.026,
+     "through": [
+      "tous"
+     ]
+    }
+   ],
+   "thr": [
+    50,
+    150,
+    250
+   ],
+   "town": "Navarrés",
+   "nmn_hm3": 4.39,
+   "curve": {
+    "a": 0.0024723697,
+    "b": 2.5912825,
+    "h0": 125.06281,
+    "level_min": 143.11,
+    "level_max": 147.08,
+    "rel_rms": 0.0004,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 89.47,
+   "spill_kind": "operating limit below the spillway",
+   "v_spill_hm3": 89.471,
+   "reserve": [
+    {
+     "months": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "max_hm3": 4.39,
+     "source": "SAIH Júcar: volume at the maximum normal (operating) level, below the spillway"
+    }
+   ],
+   "spill": {
+    "capacity_m3s": 7913.4,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 182.5,
+    "design_head_m": 6.0,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 122.97,
+   "owner": "Estado",
+   "year": 1995,
+   "dam_type": "Arco Gravedad",
+   "height_m": 78.0,
+   "crest_level_m": 190.0,
+   "outlet_m3s": 328.4,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 507.4,
+   "design_flood_m3s": 4400.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 119.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=416"
+   },
+   "alpha": 0.019,
+   "unverified": [
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "tous",
+   "name": "Tous",
+   "river": "Júcar",
+   "lat": 39.13042,
+   "lon": -0.65125,
+   "saih": "chj:7E04",
+   "vars": {
+    "level": "2340",
+    "volume": "2470",
+    "inflow": "15143",
+    "outflow": "13338",
+    "river": "15430"
+   },
+   "source": "saih_chj",
+   "area_km2": 15909.8,
+   "own_km2": 9208.4,
+   "inside_box_fraction": 0.9814,
+   "t_longest_h": 55.6,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "alarcon",
+     "lag_h": 52.9
+    },
+    {
+     "id": "contreras",
+     "lag_h": 32.1
+    },
+    {
+     "id": "escalona",
+     "lag_h": 1.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "jucar-alzira",
+     "lag_h": 7.5,
+     "share": 0.903,
+     "through": []
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 11.2,
+     "share": 0.819,
+     "through": []
+    }
+   ],
+   "thr": [
+    50,
+    150,
+    250
+   ],
+   "town": "Tous",
+   "nmn_hm3": 378.6,
+   "curve": {
+    "a": 0.083083842,
+    "b": 1.9772817,
+    "h0": 59.285448,
+    "level_min": 83.35,
+    "level_max": 112.65,
+    "rel_rms": 0.0083,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 377.15,
+   "spill_kind": "operating limit below the spillway",
+   "v_spill_hm3": 751.485,
+   "reserve": [
+    {
+     "months": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+     ],
+     "max_hm3": 378.6,
+     "source": "SAIH Júcar: volume at the maximum normal (operating) level, below the spillway"
+    }
+   ],
+   "spill": {
+    "capacity_m3s": 4500.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 159.5,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 796.62,
+   "owner": "Estado",
+   "year": 1996,
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 135.5,
+   "crest_level_m": 162.5,
+   "outlet_m3s": 1565.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 17821.0,
+   "design_flood_m3s": 12715.0,
+   "uses": [
+    "Abastecimiento",
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 52.0,
+   "reserve_note": "SAIH Júcar NMN 378.6 hm3 at 130 m is the flood-control operating limit of Tous (crest 162.5 m); the spillway sill is not published here: generic, crest - 3 m",
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1097"
+   },
+   "alpha": 0.0548,
+   "unverified": [
+    "spill level (generic: crest - 3 m)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "bellus",
+   "name": "Bellús",
+   "river": "Albaida",
+   "lat": 38.93875,
+   "lon": -0.47792,
+   "saih": "chj:7E10",
+   "vars": {
+    "level": "1218",
+    "volume": "1219",
+    "inflow": "13729",
+    "outflow": "13727",
+    "river": "13728"
+   },
+   "source": "saih_chj",
+   "area_km2": 490.6,
+   "own_km2": 490.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.9,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "albaida-manuel",
+     "lag_h": 1.9,
+     "share": 0.412,
+     "through": []
+    },
+    {
+     "id": "jucar-alzira",
+     "lag_h": 6.0,
+     "share": 0.028,
+     "through": []
+    },
+    {
+     "id": "jucar-sueca",
+     "lag_h": 9.7,
+     "share": 0.025,
+     "through": []
+    }
+   ],
+   "thr": [
+    20,
+    60,
+    120
+   ],
+   "town": "Bellús",
+   "nmn_hm3": 69.19,
+   "curve": {
+    "a": 1.5405993e-08,
+    "b": 5.7671479,
+    "h0": 107.03739,
+    "level_min": 141.12,
+    "level_max": 146.21,
+    "rel_rms": 0.0022,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 43.15,
+   "spill_kind": "gated",
+   "v_spill_hm3": 69.19,
+   "spill": {
+    "capacity_m3s": 1300.0,
+    "gated": true,
+    "regulation": "Compuertas. - No, Labio fijo",
+    "sill_level_m": 150.5,
+    "design_head_m": 3.71,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 120.87,
+   "owner": "Estado",
+   "year": 1995,
+   "dam_type": "Gravedad",
+   "height_m": 46.0,
+   "crest_level_m": 159.0,
+   "outlet_m3s": 640.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 494.0,
+   "design_flood_m3s": 2382.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "bed_level_m": 121.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=164"
+   },
+   "alpha": 0.133,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "beniarres",
+   "name": "Beniarrés",
+   "river": "Serpis",
+   "lat": 38.81542,
+   "lon": -0.35625,
+   "saih": "chj:9E01",
+   "vars": {
+    "level": "2468",
+    "volume": "2469",
+    "inflow": "13084",
+    "outflow": "13276",
+    "river": "16699"
+   },
+   "source": "saih_chj",
+   "area_km2": 464.6,
+   "own_km2": 464.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.6,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "serpis-gandia",
+     "lag_h": 3.2,
+     "share": 0.623,
+     "through": []
+    }
+   ],
+   "thr": [
+    10,
+    50,
+    75
+   ],
+   "town": "Beniarrés",
+   "nmn_hm3": 27,
+   "curve": {
+    "a": 0.041299555,
+    "b": 2.0199934,
+    "h0": 294.24778,
+    "level_min": 302.55,
+    "level_max": 311.41,
+    "rel_rms": 0.0014,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 15.82,
+   "spill_kind": "gated",
+   "v_spill_hm3": 27,
+   "spill": {
+    "capacity_m3s": 1050.0,
+    "gated": true,
+    "regulation": "Compuerta segm -",
+    "sill_level_m": 313.25,
+    "design_head_m": 5.76,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 30.74,
+   "owner": "Estado",
+   "year": 1958,
+   "dam_type": "Gravedad",
+   "height_m": 53.0,
+   "crest_level_m": 320.65,
+   "outlet_m3s": 56.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 470.0,
+   "design_flood_m3s": 1000.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 281.65,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=170"
+   },
+   "alpha": 0.0407,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "guadalest",
+   "name": "Guadalest",
+   "river": "Guadalest",
+   "lat": 38.67958,
+   "lon": -0.19208,
+   "saih": "chj:8E02",
+   "vars": {
+    "level": "2466",
+    "volume": "2467",
+    "inflow": "15279",
+    "outflow": "15278",
+    "river": "16698"
+   },
+   "source": "saih_chj",
+   "area_km2": 61.6,
+   "own_km2": 61.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.7,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "algar-altea",
+     "lag_h": 1.3,
+     "share": 0.273,
+     "through": []
+    }
+   ],
+   "thr": [
+    10,
+    25,
+    60
+   ],
+   "town": "Guadalest",
+   "nmn_hm3": 12.99,
+   "curve": {
+    "a": 1.8620263e-05,
+    "b": 3.3702822,
+    "h0": 324.29804,
+    "level_min": 353.43,
+    "level_max": 365.13,
+    "rel_rms": 0.0004,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 11.09,
+   "spill_kind": "gated",
+   "v_spill_hm3": 12.99,
+   "spill": {
+    "capacity_m3s": 520.0,
+    "gated": true,
+    "regulation": "Compuerta segm -",
+    "sill_level_m": 376,
+    "design_head_m": 2.48,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 16.68,
+   "owner": "Estado",
+   "year": 1964,
+   "dam_type": "Gravedad",
+   "height_m": 77.17,
+   "crest_level_m": 382.65,
+   "outlet_m3s": 78.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 60.0,
+   "design_flood_m3s": 400.0,
+   "uses": [
+    "Abastecimiento",
+    "Riego"
+   ],
+   "bed_level_m": 308.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=507"
+   },
+   "alpha": 0.03,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "amadorio",
+   "name": "Amadorio",
+   "river": "Amadorio",
+   "lat": 38.53375,
+   "lon": -0.26458,
+   "saih": "chj:8E01",
+   "vars": {
+    "level": "132",
+    "volume": "133",
+    "inflow": "13901",
+    "outflow": "13900",
+    "river": "13898"
+   },
+   "source": "saih_chj",
+   "area_km2": 203.0,
+   "own_km2": 203.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.7,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "amadorio-vila",
+     "lag_h": 0.3,
+     "share": 0.935,
+     "through": []
+    }
+   ],
+   "thr": [
+    10,
+    20,
+    40
+   ],
+   "town": "Vila Joiosa",
+   "nmn_hm3": 15.83,
+   "curve": {
+    "a": 0.0024697332,
+    "b": 2.3492435,
+    "h0": 86.614432,
+    "level_min": 100.97,
+    "level_max": 112.16,
+    "rel_rms": 0.0005,
+    "source": "power law fitted to SAIH level-volume pairs (build_curves.py)"
+   },
+   "v_sill_hm3": 11.47,
+   "spill_kind": "gated",
+   "v_spill_hm3": 15.83,
+   "spill": {
+    "capacity_m3s": 520.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 123,
+    "design_head_m": 5.34,
+    "design_head_source": "capacity reached at the maximum normal level (gates open)"
+   },
+   "v_top_hm3": 17.02,
+   "owner": "Estado",
+   "year": 1957,
+   "dam_type": "Gravedad",
+   "height_m": 64.15,
+   "crest_level_m": 129.65,
+   "outlet_m3s": 68.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 205.0,
+   "design_flood_m3s": 400.0,
+   "uses": [
+    "Abastecimiento",
+    "Riego"
+   ],
+   "bed_level_m": 71.65,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=65"
+   },
+   "alpha": 0.03,
+   "unverified": [
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "fuensanta",
+   "name": "Fuensanta",
+   "river": "Segura",
+   "lat": 38.37292,
+   "lon": -2.23875,
+   "saih": "seg:04S02E1",
+   "vars": {
+    "level": "04S02C12",
+    "volume": "04S02B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 899.0,
+   "own_km2": 899.0,
+   "inside_box_fraction": 0.1809,
+   "t_longest_h": 9.8,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "cenajo",
+    "lag_h": 12.7
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 40.2,
+     "share": 0.066,
+     "through": [
+      "cenajo"
+     ]
+    }
+   ],
+   "nmn_hm3": 209.7,
+   "curve": {
+    "a": 0.004139958709612216,
+    "b": 2.5,
+    "h0": 528.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 209.7,
+   "spill": {
+    "capacity_m3s": 681.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 604.18,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 230.96,
+   "owner": "Estado",
+   "year": 1933,
+   "dam_type": "Gravedad",
+   "height_m": 82.0,
+   "crest_level_m": 607.18,
+   "outlet_m3s": 138.7,
+   "flood_only": false,
+   "catchment_inventory_km2": 1181.0,
+   "design_flood_m3s": 563.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Regulación"
+   ],
+   "bed_level_m": 528.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=456"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "cenajo",
+   "name": "El Cenajo",
+   "river": "Segura",
+   "lat": 38.36542,
+   "lon": -1.77625,
+   "saih": "seg:04S03E1",
+   "vars": {
+    "level": "04S03C12",
+    "volume": "04S03B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 2600.3,
+   "own_km2": 1701.2,
+   "inside_box_fraction": 0.892,
+   "t_longest_h": 17.9,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "fuensanta",
+     "lag_h": 12.7
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 27.4,
+     "share": 0.19,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 437.08,
+   "curve": {
+    "a": 0.007356493596976815,
+    "b": 2.5,
+    "h0": 353.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 437.08,
+   "spill": {
+    "capacity_m3s": 838.3,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 434.2,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 478.58,
+   "owner": "Estado",
+   "year": 1960,
+   "dam_type": "Gravedad",
+   "height_m": 102.0,
+   "crest_level_m": 437.2,
+   "outlet_m3s": 104.9,
+   "flood_only": false,
+   "catchment_inventory_km2": 1273.0,
+   "design_flood_m3s": 950.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "bed_level_m": 353.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=305"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "talave",
+   "name": "El Talave",
+   "river": "Mundo",
+   "lat": 38.50792,
+   "lon": -1.86458,
+   "saih": "seg:03E02E1",
+   "vars": {
+    "level": "03E02C12",
+    "volume": "03E02B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 760.7,
+   "own_km2": 760.7,
+   "inside_box_fraction": 0.8681,
+   "t_longest_h": 12.3,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "camarillas",
+    "lag_h": 7.4
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 31.6,
+     "share": 0.056,
+     "through": [
+      "camarillas"
+     ]
+    }
+   ],
+   "nmn_hm3": 34.89,
+   "curve": {
+    "a": 0.00459459909126815,
+    "b": 2.5,
+    "h0": 472.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 34.89,
+   "spill": {
+    "capacity_m3s": 398.0,
+    "gated": true,
+    "regulation": "Compuertas. - Compuertas.",
+    "sill_level_m": 507.66,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 42.7,
+   "owner": "Estado",
+   "year": 1918,
+   "dam_type": "Gravedad",
+   "height_m": 46.66,
+   "crest_level_m": 510.66,
+   "outlet_m3s": 150.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 788.0,
+   "design_flood_m3s": 720.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 472.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1051"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "camarillas",
+   "name": "Camarillas",
+   "river": "Mundo",
+   "lat": 38.34625,
+   "lon": -1.64292,
+   "saih": "seg:03E03E1",
+   "vars": {
+    "level": "03E03C12",
+    "volume": "03E03B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 2541.9,
+   "own_km2": 1462.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 10.5,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "bayco",
+     "lag_h": 5.1
+    },
+    {
+     "id": "boqueron",
+     "lag_h": 6.2
+    },
+    {
+     "id": "charcos",
+     "lag_h": 5.3
+    },
+    {
+     "id": "talave",
+     "lag_h": 7.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 24.2,
+     "share": 0.186,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 35.9,
+   "curve": {
+    "a": 0.005738648162359552,
+    "b": 2.5,
+    "h0": 314.32,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 35.9,
+   "spill": {
+    "capacity_m3s": 328.2,
+    "gated": true,
+    "regulation": "Compuerta sect - Compuertas.",
+    "sill_level_m": 347.32,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 44.62,
+   "owner": "Estado",
+   "year": 1961,
+   "dam_type": "Gravedad",
+   "height_m": 43.5,
+   "crest_level_m": 350.32,
+   "outlet_m3s": 82.2,
+   "flood_only": false,
+   "catchment_inventory_km2": 1603.0,
+   "design_flood_m3s": 428.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Regulación"
+   ],
+   "bed_level_m": 314.32,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=232"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "boqueron",
+   "name": "Boquerón",
+   "river": "Rambla del Boquerón",
+   "lat": 38.52208,
+   "lon": -1.76208,
+   "saih": "seg:03E06E1",
+   "vars": {
+    "level": "03E06C12",
+    "volume": "03E06B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 51.7,
+   "own_km2": 51.7,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.9,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "camarillas",
+    "lag_h": 6.2
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 30.4,
+     "share": 0.004,
+     "through": [
+      "camarillas"
+     ]
+    }
+   ],
+   "nmn_hm3": 15,
+   "curve": {
+    "a": 0.0010173230317124752,
+    "b": 2.5,
+    "h0": 556.5,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 15,
+   "spill": {
+    "capacity_m3s": 309.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 603.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 17.54,
+   "owner": "Estado",
+   "year": 1997,
+   "dam_type": "Hormigón Compactado",
+   "height_m": 57.0,
+   "crest_level_m": 606.0,
+   "outlet_m3s": 28.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 53.0,
+   "design_flood_m3s": 273.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 556.5,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=882"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "bayco",
+   "name": "Bayco",
+   "river": "Rambla de Bayco",
+   "lat": 38.63625,
+   "lon": -1.50208,
+   "saih": "seg:03E05E1",
+   "vars": {
+    "level": "03E05C12",
+    "volume": "03E05B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 239.4,
+   "own_km2": 239.4,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.0,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "camarillas",
+    "lag_h": 5.1
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 29.3,
+     "share": 0.017,
+     "through": [
+      "camarillas"
+     ]
+    }
+   ],
+   "nmn_hm3": 14,
+   "curve": {
+    "a": 0.004061576763216829,
+    "b": 2.5,
+    "h0": 668.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 14,
+   "spill": {
+    "capacity_m3s": 380.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 694.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 18.39,
+   "owner": "Estado",
+   "year": 1999,
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 43.0,
+   "crest_level_m": 697.0,
+   "outlet_m3s": 31.1,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 242.65,
+   "design_flood_m3s": 721.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 668.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=880"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "charcos",
+   "name": "Los Charcos",
+   "river": "Rambla de los Charcos",
+   "lat": 38.64375,
+   "lon": -1.70292,
+   "saih": "seg:03E04E1",
+   "vars": {
+    "level": "03E04C12",
+    "volume": "03E04B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 28.1,
+   "own_km2": 28.1,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.6,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "camarillas",
+    "lag_h": 5.3
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 29.5,
+     "share": 0.002,
+     "through": [
+      "camarillas"
+     ]
+    }
+   ],
+   "nmn_hm3": null,
+   "spill_kind": "unknown",
+   "v_spill_hm3": null,
+   "spill": {
+    "capacity_m3s": 152.6,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "owner": "Estado",
+   "year": 1999,
+   "dam_type": "Arco Gravedad",
+   "height_m": 30.7,
+   "crest_level_m": 751.2,
+   "outlet_m3s": 23.8,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 28.2,
+   "design_flood_m3s": 105.41,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 727.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=881"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ]
+  },
+  {
+   "id": "la-risca",
+   "name": "La Risca",
+   "river": "Moratalla (cabecera)",
+   "lat": 38.19458,
+   "lon": -2.06208,
+   "saih": "seg:02E07E1",
+   "vars": {
+    "level": "02E07C12",
+    "volume": "02E07B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 79.5,
+   "own_km2": 79.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.9,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "moratalla",
+    "lag_h": 2.7
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 23.8,
+     "share": 0.006,
+     "through": [
+      "moratalla"
+     ]
+    }
+   ],
+   "nmn_hm3": null,
+   "spill_kind": "unknown",
+   "v_spill_hm3": null,
+   "spill": {
+    "capacity_m3s": 451.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "owner": "Estado",
+   "year": 2002,
+   "dam_type": "Gravedad",
+   "height_m": 26.88,
+   "crest_level_m": 1080.0,
+   "outlet_m3s": 36.2,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 77.0,
+   "design_flood_m3s": 547.3,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 1056.8,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=920"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ]
+  },
+  {
+   "id": "moratalla",
+   "name": "Moratalla",
+   "river": "Moratalla",
+   "lat": 38.24708,
+   "lon": -1.74042,
+   "saih": "seg:02E08E1",
+   "vars": {
+    "level": "02E08C12",
+    "volume": "02E08B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 332.1,
+   "own_km2": 252.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.5,
+   "cuts": false,
+   "upstream": [
+    {
+     "id": "la-risca",
+     "lag_h": 2.7
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 21.1,
+     "share": 0.024,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 5,
+   "curve": {
+    "a": 0.0007309787285583277,
+    "b": 2.5,
+    "h0": 313.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 5,
+   "spill": {
+    "capacity_m3s": 930.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 347.2,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 6.17,
+   "owner": "Estado",
+   "year": 2004,
+   "dam_type": "Gravedad",
+   "height_m": 44.0,
+   "crest_level_m": 350.2,
+   "outlet_m3s": 95.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 327.0,
+   "design_flood_m3s": 1050.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 313.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=721"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "argos",
+   "name": "Argos",
+   "river": "Argos",
+   "lat": 38.17708,
+   "lon": -1.72542,
+   "saih": "seg:02E02E1",
+   "vars": {
+    "level": "02E02C12",
+    "volume": "02E02B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 451.2,
+   "own_km2": 451.2,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.9,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 21.1,
+     "share": 0.033,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 10.05,
+   "curve": {
+    "a": 0.0024225401490706212,
+    "b": 2.5,
+    "h0": 385.66,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 10.05,
+   "spill": {
+    "capacity_m3s": 750.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 413.66,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 12.96,
+   "owner": "Estado",
+   "year": 1970,
+   "dam_type": "Materiales sueltos P hormigón",
+   "height_m": 33.0,
+   "crest_level_m": 416.66,
+   "outlet_m3s": 14.1,
+   "flood_only": false,
+   "catchment_inventory_km2": 453.14,
+   "design_flood_m3s": 700.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "bed_level_m": 385.66,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=91"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "alfonso-xiii",
+   "name": "Alfonso XIII",
+   "river": "Quípar",
+   "lat": 38.22292,
+   "lon": -1.59958,
+   "saih": "seg:02E03E1",
+   "vars": {
+    "level": "02E03C12",
+    "volume": "02E03B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 851.1,
+   "own_km2": 851.1,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 9.3,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 19.4,
+     "share": 0.062,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 22,
+   "curve": {
+    "a": 0.0024715174964520608,
+    "b": 2.5,
+    "h0": 262.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 22,
+   "spill": {
+    "capacity_m3s": 180.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 300.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 26.6,
+   "owner": "Estado",
+   "year": 1915,
+   "dam_type": "Gravedad",
+   "height_m": 46.0,
+   "crest_level_m": 303.0,
+   "outlet_m3s": 328.3,
+   "flood_only": false,
+   "catchment_inventory_km2": 734.0,
+   "design_flood_m3s": 720.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "bed_level_m": 262.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=41"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "carcabo",
+   "name": "Cárcabo",
+   "river": "Rambla del Cárcabo",
+   "lat": 38.22125,
+   "lon": -1.52625,
+   "saih": "seg:02E06E1",
+   "vars": {
+    "level": "02E06C12",
+    "volume": "02E06B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 30.5,
+   "own_km2": 30.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.4,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 17.5,
+     "share": 0.002,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 2.78,
+   "curve": {
+    "a": 0.0003228246037303578,
+    "b": 2.5,
+    "h0": 219.5,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 2.78,
+   "spill": {
+    "capacity_m3s": 65.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 257.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 3.37,
+   "owner": "Estado",
+   "year": 1993,
+   "dam_type": "Gravedad",
+   "height_m": 45.5,
+   "crest_level_m": 260.0,
+   "outlet_m3s": 41.4,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 35.7,
+   "design_flood_m3s": 266.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 219.5,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=258"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "judio",
+   "name": "Judío",
+   "river": "Rambla del Judío",
+   "lat": 38.27958,
+   "lon": -1.43542,
+   "saih": "seg:02E05E1",
+   "vars": {
+    "level": "02E05C12",
+    "volume": "02E05B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 686.5,
+   "own_km2": 686.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 6.2,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 16.6,
+     "share": 0.05,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 8.45,
+   "curve": {
+    "a": 0.0013766655609879646,
+    "b": 2.5,
+    "h0": 210.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 8.45,
+   "spill": {
+    "capacity_m3s": 734.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 242.75,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 10.52,
+   "owner": "Estado",
+   "year": 1991,
+   "dam_type": "Gravedad",
+   "height_m": 48.5,
+   "crest_level_m": 245.75,
+   "outlet_m3s": 120.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 554.0,
+   "design_flood_m3s": 878.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 210.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=883"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "moro",
+   "name": "Moro",
+   "river": "Rambla del Moro",
+   "lat": 38.22542,
+   "lon": -1.36542,
+   "saih": "seg:02E04E1",
+   "vars": {
+    "level": "02E04C12",
+    "volume": "02E04B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 380.6,
+   "own_km2": 380.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.1,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 14.7,
+     "share": 0.028,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 4,
+   "curve": {
+    "a": 0.0008251242122509245,
+    "b": 2.5,
+    "h0": 209.5,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 4,
+   "spill": {
+    "capacity_m3s": 780.0,
+    "gated": true,
+    "regulation": "Compuertas. - No, Labio fijo",
+    "sill_level_m": 239.3,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 5.08,
+   "owner": "Estado",
+   "year": 1991,
+   "dam_type": "Gravedad",
+   "height_m": 43.0,
+   "crest_level_m": 242.3,
+   "outlet_m3s": 137.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 380.0,
+   "design_flood_m3s": 727.1,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 209.5,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=884"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "mayes",
+   "name": "Mayés",
+   "river": "Rambla del Mayés",
+   "lat": 38.11208,
+   "lon": -1.37208,
+   "saih": "seg:02E01E1",
+   "vars": {
+    "level": "02E01C12",
+    "volume": "02E01B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 13.5,
+   "own_km2": 13.5,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.1,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 11.6,
+     "share": 0.001,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 1.68,
+   "curve": {
+    "a": 0.0008313062485180662,
+    "b": 2.5,
+    "h0": 254.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 1.68,
+   "spill": {
+    "capacity_m3s": 139.5,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 275.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 2.35,
+   "owner": "Estado",
+   "year": 1981,
+   "dam_type": "Materiales sueltos homogenea",
+   "height_m": 32.0,
+   "crest_level_m": 278.0,
+   "outlet_m3s": 20.2,
+   "flood_only": false,
+   "catchment_inventory_km2": 13.4,
+   "design_flood_m3s": 146.0,
+   "uses": [
+    "Riego"
+   ],
+   "bed_level_m": 254.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=667"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "la-cierva",
+   "name": "La Cierva",
+   "river": "Mula",
+   "lat": 38.05958,
+   "lon": -1.48792,
+   "saih": "seg:01E01E1",
+   "vars": {
+    "level": "01E01C12",
+    "volume": "01E01B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 173.0,
+   "own_km2": 173.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.7,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "los-rodeos",
+    "lag_h": 2.6
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 12.0,
+     "share": 0.013,
+     "through": [
+      "los-rodeos"
+     ]
+    }
+   ],
+   "nmn_hm3": 7.28,
+   "curve": {
+    "a": 0.0002494757596422076,
+    "b": 2.5,
+    "h0": 329.2,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 7.28,
+   "spill": {
+    "capacity_m3s": 511.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 390.3,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 8.21,
+   "owner": "Estado",
+   "year": 1929,
+   "dam_type": "Gravedad",
+   "height_m": 69.1,
+   "crest_level_m": 393.3,
+   "outlet_m3s": 34.3,
+   "flood_only": false,
+   "catchment_inventory_km2": 215.0,
+   "design_flood_m3s": 487.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "bed_level_m": 329.2,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=333"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "dona-ana",
+   "name": "Doña Ana",
+   "river": "Rambla de Doña Ana",
+   "lat": 38.02375,
+   "lon": -1.54792,
+   "saih": "seg:01E04E1",
+   "vars": {
+    "level": "01E04C12",
+    "volume": "01E04B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 20.1,
+   "own_km2": 20.1,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.3,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": {
+    "id": "los-rodeos",
+    "lag_h": 3.5
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 12.9,
+     "share": 0.001,
+     "through": [
+      "los-rodeos"
+     ]
+    }
+   ],
+   "nmn_hm3": null,
+   "spill_kind": "unknown",
+   "v_spill_hm3": null,
+   "spill": {
+    "capacity_m3s": 140.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -"
+   },
+   "owner": "Estado",
+   "year": 1994,
+   "dam_type": "Gravedad",
+   "height_m": 29.0,
+   "crest_level_m": 386.0,
+   "outlet_m3s": 7.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 19.8,
+   "design_flood_m3s": 143.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 363.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=393"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)"
+   ]
+  },
+  {
+   "id": "pliego",
+   "name": "Pliego",
+   "river": "Pliego",
+   "lat": 37.98542,
+   "lon": -1.52458,
+   "saih": "seg:01E03E1",
+   "vars": {
+    "level": "01E03C12",
+    "volume": "01E03B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 202.2,
+   "own_km2": 202.2,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.5,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "los-rodeos",
+    "lag_h": 3.4
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 12.9,
+     "share": 0.015,
+     "through": [
+      "los-rodeos"
+     ]
+    }
+   ],
+   "nmn_hm3": 8.74,
+   "curve": {
+    "a": 0.0012059833773595487,
+    "b": 2.5,
+    "h0": 322.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 8.74,
+   "spill": {
+    "capacity_m3s": 1200.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 357.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 10.73,
+   "owner": "Estado",
+   "year": 1992,
+   "dam_type": "Gravedad",
+   "height_m": 45.5,
+   "crest_level_m": 360.0,
+   "outlet_m3s": 45.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 206.0,
+   "design_flood_m3s": 1227.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 322.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=838"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "los-rodeos",
+   "name": "Los Rodeos",
+   "river": "Mula",
+   "lat": 38.04375,
+   "lon": -1.29458,
+   "saih": "seg:01E07E1",
+   "vars": {
+    "level": "01E07C12",
+    "volume": "01E07B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 647.2,
+   "own_km2": 252.0,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 5.1,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "dona-ana",
+     "lag_h": 3.5
+    },
+    {
+     "id": "la-cierva",
+     "lag_h": 2.6
+    },
+    {
+     "id": "pliego",
+     "lag_h": 3.4
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 9.4,
+     "share": 0.047,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 15,
+   "curve": {
+    "a": 0.003782330932544498,
+    "b": 2.5,
+    "h0": 104.5,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 15,
+   "spill": {
+    "capacity_m3s": 1096.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 132.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 19.43,
+   "owner": "Estado",
+   "year": 2002,
+   "dam_type": "Gravedad",
+   "height_m": 38.0,
+   "crest_level_m": 135.0,
+   "outlet_m3s": 64.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 647.0,
+   "design_flood_m3s": 1089.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 104.5,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=934"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "valdeinfierno",
+   "name": "Valdeinfierno",
+   "river": "Luchena",
+   "lat": 37.80542,
+   "lon": -1.96542,
+   "saih": "seg:05E02E1",
+   "vars": {
+    "level": "05E02C12",
+    "volume": "05E02B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 426.7,
+   "own_km2": 426.7,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 4.0,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "puentes",
+    "lag_h": 2.0
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 15.2,
+     "share": 0.031,
+     "through": [
+      "puentes",
+      "jose-bautista"
+     ]
+    }
+   ],
+   "nmn_hm3": 12,
+   "curve": {
+    "a": 0.0009897148966961904,
+    "b": 2.5,
+    "h0": 654.4,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 12,
+   "spill": {
+    "capacity_m3s": 673.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 697.4,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 14.2,
+   "owner": "Estado",
+   "year": 1806,
+   "dam_type": "Gravedad",
+   "height_m": 50.7,
+   "crest_level_m": 700.4,
+   "flood_only": false,
+   "catchment_inventory_km2": 540.0,
+   "design_flood_m3s": 850.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "bed_level_m": 654.4,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=1148"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "puentes",
+   "name": "Puentes",
+   "river": "Guadalentín",
+   "lat": 37.73458,
+   "lon": -1.81875,
+   "saih": "seg:05E03E1",
+   "vars": {
+    "level": "05E03C12",
+    "volume": "05E03B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 1419.1,
+   "own_km2": 992.3,
+   "inside_box_fraction": 0.89,
+   "t_longest_h": 6.2,
+   "cuts": true,
+   "upstream": [
+    {
+     "id": "valdeinfierno",
+     "lag_h": 2.0
+    }
+   ],
+   "next_dam": {
+    "id": "jose-bautista",
+    "lag_h": 6.3
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 13.2,
+     "share": 0.104,
+     "through": [
+      "jose-bautista"
+     ]
+    }
+   ],
+   "nmn_hm3": 26.0,
+   "curve": {
+    "a": 0.0010516300087749391,
+    "b": 2.5,
+    "h0": 413.82,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 26.0,
+   "spill": {
+    "capacity_m3s": 2026.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 471.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 29.55,
+   "owner": "Estado",
+   "year": 2000,
+   "dam_type": "Gravedad",
+   "height_m": 78.0,
+   "crest_level_m": 474.0,
+   "outlet_m3s": 1320.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 1388.0,
+   "design_flood_m3s": 3626.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "bed_level_m": 413.82,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=864"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "algeciras",
+   "name": "Algeciras",
+   "river": "Rambla de Algeciras",
+   "lat": 37.88708,
+   "lon": -1.38542,
+   "saih": "seg:01E05E1",
+   "vars": {
+    "level": "01E05C12",
+    "volume": "01E05B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 44.6,
+   "own_km2": 44.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.3,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": {
+    "id": "jose-bautista",
+    "lag_h": 0.7
+   },
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 7.6,
+     "share": 0.003,
+     "through": [
+      "jose-bautista"
+     ]
+    }
+   ],
+   "nmn_hm3": 44.71,
+   "curve": {
+    "a": 0.0009491292783484587,
+    "b": 2.5,
+    "h0": 197.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 44.71,
+   "spill": {
+    "capacity_m3s": 20.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 271.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 49.38,
+   "owner": "Estado",
+   "year": 1995,
+   "dam_type": "Materiales sueltos homogenea",
+   "height_m": 81.5,
+   "crest_level_m": 274.0,
+   "outlet_m3s": 45.0,
+   "flood_only": false,
+   "catchment_inventory_km2": 45.6,
+   "design_flood_m3s": 237.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Regulación"
+   ],
+   "bed_level_m": 197.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=879"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "jose-bautista",
+   "name": "José Bautista (El Romeral)",
+   "river": "Guadalentín",
+   "lat": 37.87375,
+   "lon": -1.33042,
+   "saih": "seg:01E06E1",
+   "vars": {
+    "level": "01E06C12",
+    "volume": "01E06B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 3141.9,
+   "own_km2": 1678.2,
+   "inside_box_fraction": 0.8215,
+   "t_longest_h": 10.9,
+   "cuts": false,
+   "upstream": [
+    {
+     "id": "algeciras",
+     "lag_h": 0.7
+    },
+    {
+     "id": "puentes",
+     "lag_h": 6.3
+    }
+   ],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 6.9,
+     "share": 0.229,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 6,
+   "curve": {
+    "a": 0.0023650028059403567,
+    "b": 2.5,
+    "h0": 111.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 6,
+   "spill": {
+    "capacity_m3s": 2080.0,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 134.0,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 8.15,
+   "owner": "Estado",
+   "year": 1997,
+   "dam_type": "Gravedad",
+   "height_m": 33.5,
+   "crest_level_m": 137.0,
+   "outlet_m3s": 56.0,
+   "outlet_open": true,
+   "flood_only": true,
+   "catchment_inventory_km2": 2311.0,
+   "design_flood_m3s": 2050.0,
+   "uses": [
+    "Defensa frente a avenidas"
+   ],
+   "bed_level_m": 111.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=577"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "outlet_open (assumed: flood-control dam kept empty with the bottom outlet open)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "santomera",
+   "name": "Santomera",
+   "river": "Rambla Salada",
+   "lat": 38.09542,
+   "lon": -1.08792,
+   "saih": "seg:01E02E1",
+   "vars": {
+    "level": "01E02C12",
+    "volume": "01E02B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 146.9,
+   "own_km2": 146.9,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 3.2,
+   "cuts": true,
+   "upstream": [],
+   "next_dam": null,
+   "points": [
+    {
+     "id": "segura-orihuela",
+     "lag_h": 3.9,
+     "share": 0.011,
+     "through": []
+    }
+   ],
+   "nmn_hm3": 26.28,
+   "curve": {
+    "a": 0.0038987740636203566,
+    "b": 2.5,
+    "h0": 64.5,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 26.28,
+   "spill": {
+    "capacity_m3s": 296.0,
+    "gated": true,
+    "regulation": "Compuertas. -",
+    "sill_level_m": 98.5,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 32.47,
+   "owner": "Estado",
+   "year": 1965,
+   "dam_type": "Gravedad",
+   "height_m": 51.5,
+   "crest_level_m": 101.5,
+   "outlet_m3s": 23.7,
+   "flood_only": false,
+   "catchment_inventory_km2": 453.0,
+   "design_flood_m3s": 1000.0,
+   "uses": [
+    "Defensa frente a avenidas",
+    "Riego"
+   ],
+   "bed_level_m": 64.5,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=997"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  },
+  {
+   "id": "la-pedrera",
+   "name": "La Pedrera",
+   "river": "Rambla de Alcoriza",
+   "lat": 38.03958,
+   "lon": -0.86958,
+   "saih": "seg:07E01E1",
+   "vars": {
+    "level": "07E01C12",
+    "volume": "07E01B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 57.6,
+   "own_km2": 57.6,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 2.5,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [],
+   "nmn_hm3": 245.91,
+   "curve": {
+    "a": 0.009791552253770942,
+    "b": 2.5,
+    "h0": 50.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 245.91,
+   "spill": {
+    "regulation": "-",
+    "sill_level_m": 107.54
+   },
+   "v_top_hm3": 279.23,
+   "owner": "Estado",
+   "year": 1983,
+   "dam_type": "Materiales sueltos homogenea",
+   "height_m": 65.54,
+   "crest_level_m": 110.54,
+   "outlet_m3s": 38.7,
+   "flood_only": false,
+   "catchment_inventory_km2": 34.84,
+   "design_flood_m3s": 22.0,
+   "uses": [
+    "Abastecimiento",
+    "Regulación"
+   ],
+   "bed_level_m": 50.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=791"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.capacity_m3s (not in the ficha)"
+   ]
+  },
+  {
+   "id": "crevillente",
+   "name": "Crevillente",
+   "river": "Barranco del Bosch",
+   "lat": 38.25208,
+   "lon": -0.78792,
+   "saih": "seg:07E02E1",
+   "vars": {
+    "level": "07E02C12",
+    "volume": "07E02B01"
+   },
+   "source": "saih_segura",
+   "area_km2": 12.4,
+   "own_km2": 12.4,
+   "inside_box_fraction": 1.0,
+   "t_longest_h": 1.1,
+   "cuts": false,
+   "upstream": [],
+   "next_dam": null,
+   "points": [],
+   "nmn_hm3": 12.72,
+   "curve": {
+    "a": 0.0006682962723566314,
+    "b": 2.5,
+    "h0": 93.0,
+    "source": "GENERIC: V = V_s ((h - bed) / h_s)^2.5, spill level = crest - 3 m (SEPREM crest and bed levels)"
+   },
+   "spill_kind": "free",
+   "v_spill_hm3": 12.72,
+   "spill": {
+    "capacity_m3s": 37.5,
+    "gated": false,
+    "regulation": "No, Labio fijo -",
+    "sill_level_m": 144.5,
+    "design_head_m": 1.5,
+    "design_head_source": "capacity reached 1.5 m below the crest"
+   },
+   "v_top_hm3": 14.65,
+   "owner": "Estado",
+   "year": 1986,
+   "dam_type": "Materiales sueltos núcleo arcilla",
+   "height_m": 58.0,
+   "crest_level_m": 147.5,
+   "outlet_m3s": 34.3,
+   "flood_only": false,
+   "catchment_inventory_km2": 11.8,
+   "design_flood_m3s": 67.0,
+   "uses": [
+    "Regulación"
+   ],
+   "bed_level_m": 93.0,
+   "sources": {
+    "ficha": "https://www.seprem.es/ficha.php?idpresa=366"
+   },
+   "unverified": [
+    "capacity_hm3 (from the SAIH Segura percentage or embalses.net)",
+    "curve and spill level (generic)",
+    "spill.design_head_m (assumed, see design_head_source)"
+   ]
+  }
+ ]
+}

@@ -19,6 +19,7 @@ gauges            [{id,name,lat,lon,source,t_utc,p_1h,p_12h,p_24h}]
 rivers            [{id,name,river,lat,lon,source,t_utc,level_m,flow_m3s,thr_low,thr_mid,thr_high,...}]  (keys vary by source)
 warnings          [{zone_code,zone_name,level:"yellow|orange|red",onset,expires,text,params,...}]  official AEMET rain warnings
 drivers           optional: ingredients block (see backend/riua/diagnostics), may be missing
+reservoirs        optional: reservoirs, live state and filling / spill forecast (see the end of this file); may be missing
 sources           [{id,label,ok,runs?,n?,error?,...}]
 notes             [string]
 timing_s          {...}
@@ -91,3 +92,37 @@ level = highest L with P(>= L) >= tau[L], then min(level, level_cap)
 ```
 
 With `method: "emos"` the probability of a level is NOT a count of scenarios: it comes from the calibrated distribution `cal` (censored shifted gamma): with `m`,`q` the ensemble mean and 90th percentile, `mu = a0 + a1*m + a2*q`, `sigma = b0*sqrt(mu) + b1*(q-m)`, shape `k = mu²/sigma²`, scale `θ = sigma²/mu`, `P(amount >= T) = Q(k, (T - delta)/θ)` (upper regularised incomplete gamma). The two marginals (1 h, 12 h) are joined with a Gaussian copula of correlation `rho`. Level = highest L with `P(>=L) >= tau[L]`.
+
+## reservoirs (optional, `core/reservoirs.py`, `sources/reservoirs.py`, static data `geo/hydro/dams/dams.json`)
+
+```
+dams[D]   {id, name, river, lat, lon, source: saih_chj|saih_segura,
+           kind: "gated" | "free" | "operating limit below the spillway" | "unknown",
+           cap   hm3 at the spill level (lip of a free spillway / top of the gates): the 100 % of every percentage below
+           res   hm3 flood-reserve limit this month (or null)        top  hm3 with the water at the dam crest (or null)
+           qd    design spillway capacity m3/s (or null)             thr  [low, mid, high] outflow thresholds m3/s (SAIH Júcar;
+                                                                         elsewhere 0.6 / 1.5 / 3 x A^0.6)
+           area  km2 natural catchment     up [ids of the dams directly above]     next  id of the next dam below (or null)
+           now   null | {t (UTC ISO), v hm3, pct (% of cap), level m a.s.l. (SAIH Júcar only), qin, qout, qriv m3/s
+                         (inflow, total outflow, outflow to the river; SAIH Júcar only), rate hm3/h (mean of the last 3 h),
+                         sv [[hour ISO, % of cap], ...] measured volume of the last 12 h}}
+points    {control point id: [[dam index, share of the point's natural catchment above the dam, lag h dam -> point, cuts 0/1]]}
+          only the dams with no other modelled dam between them and the point. cuts = 1: the catchment above the dam is
+          NOT in the point's own discharge (control_points.json scope 1), so what the dam lets out adds to it.
+horizons  {now|mid|long: per horizon, D = order of dams, F = frames of that horizon
+           level[F][D]       0 (not computed: no live volume, no capacity, or < 50 % of the catchment in the rain grid) or 1..5
+           p[4][F][D]        P(level >= 2..5)
+           p_reserve[F][D]   P(inside the flood reserve)   p_spill[F][D] P(spilling)   p_design[F][D] P(spill >= design capacity)
+           qin[2][F][D], qout[2][F][D], qspill[2][F][D]   median / p90 of the frame's peak inflow, outflow to the river, spill (m3/s)
+           pct[3][F][D]      p10 / p50 / p90 volume at the end of the frame, % of cap
+           p_spill_any[D]    P(spilling at any time of the horizon)
+           t_spill[D]        median hour of the first spill among the scenarios that spill (UTC ISO) or null
+           t[T]              hours of the series (thinned to at most 48)
+           v[3][T][D]        p10 / p50 / p90 volume, % of cap      qi[2][T][D], qo[2][T][D]  p50 / p90 inflow, outflow m3/s
+           ok[D]             dam computed}
+```
+
+Levels of a reservoir: 2 = fills fast (gains 10 % of cap, or rises into its flood reserve) or outflow >= thr low;
+3 = reaches the spill level or outflow >= thr mid; 4 = outflow >= thr high; 5 = spill >= design capacity or water at the crest.
+Probabilities are weighted shares over the scenarios x 7 equal-probability multipliers of the simulated inflow (log-normal,
+sigma of the control points); level = highest L with P >= tau of the horizon.
