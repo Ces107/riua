@@ -1,28 +1,40 @@
-"""Hindcast: re-run the risk model on forecasts that existed at the time, score it, tune it.
+"""Hindcast: re-run what PRODUCTION computes on forecasts that existed at the time, then score and fit it.
 
-    python hindcast/run.py            (inside the Linux environment: needs pysteps for the nowcast part)
+    python hindcast/run.py build [now] [mid] [long] [--jobs N] [--cases a,b] [--force]    (WSL: `now` needs pysteps)
+    python hindcast/run.py status
+    python hindcast/run.py fit [--quick]         -> hindcast/results.json, hindcast/fit.json   (see score.py)
+    python hindcast/run.py all [--jobs N]        build what is missing, then fit
 
-Truth      hindcast/truth/*.npz   radar-gauge analysis, hourly, on the Riuà grid (build_truth.py)
-Forecasts  48 h   day-ahead runs of AROME 2.5 km, ICON-EU, ARPEGE (+ IFS) from the Open-Meteo
-                  Previous Runs archive ("previous_day1": issued 24-30 h before each hour)
-           now    radar STEPS nowcast from the OPERA archive blended with the short-lead AROME series
-           long   ECMWF ENS 51 members, runs issued 3 and 5 days before each target day
-For every horizon:
-  1. the same code as the live pipeline turns the scenarios into per-scenario amounts,
-  2. sigma and bias of the scenario dressing are chosen to maximise the mean Brier skill score
-     over the levels (grid search), with leave-one-case-out cross-validation,
-  3. tau per level maximises the critical success index, never below 0.40,
-  4. hits / misses / false alarms are counted per cell and frame, and per warning zone and day.
-Writes hindcast/results.json and the tuned backend/riua/params.json.
+A block = one issue time of one horizon. The member list is built the way `product.run_cycle` builds it
+(lagged runs with their real age and model weight, `ingest.fill_gaps`, ECMWF ENS with production's member
+weight, `product.nowcast_members`, `product.with_past` with the measured hours of the truth analysis as the
+observations up to the issue time), and `risk.predictors` - the production function - turns it into
+per-scenario amounts, weights and measured shares. Blocks are cached in hindcast/cache/blocks/<horizon>/,
+one small file per issue time; re-running `build` only adds the issue times that are missing, so the
+command is the same when more truth files or archives appear.
+
+What the archives allow (see coord/findings/q8-verify.md):
+  tier A  complete runs kept by q4 from the Open-Meteo S3 `data_run` (2026-06-30 on): AROME 2.5 km, ICON-EU,
+          ARPEGE with real run times -> production's lags, ages and leads, whole grid.
+  tier B  older cases: only the stitched Previous Runs series exist (day 1 / day 2). A leak-free pseudo-run
+          is assembled per model: day 1 where that run was already out at the issue time, day 2 elsewhere.
+          Lattice points only; the runs are 5-24 h older than the ones production would have had.
+  ENS     3-hourly (6-48 h) when the 00Z run of the day is on disk and is the run production would use
+          (issues 08Z and 14Z); 12-hourly (days 2-7) for the frames the archive covers (day +3, +4, +5).
+  never   AROME-HD, IFS 0.25 / 9 km (not fetched), ICON-EU-EPS, AROME-IFS, AROME-PI (no archive).
 """
 from __future__ import annotations
 
 import glob
 import json
+import os
 import sys
 import warnings
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+for _v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    os.environ.setdefault(_v, "1")          # the machine is shared: one thread per process
 
 import numpy as np
 
@@ -32,403 +44,566 @@ warnings.filterwarnings("ignore")
 
 from riua import ingest, params as P, product, static  # noqa: E402
 from riua.core import grid, hydro as H, risk  # noqa: E402
-from scipy.special import ndtr  # noqa: E402
 
 H1 = np.timedelta64(1, "h")
+HC = ROOT / "hindcast"
+BLOCKS = HC / "cache" / "blocks"
+RUNS = HC / "cache" / "openmeteo" / "runs"
+ENS3H = HC / "obs" / "ens3h"
+ENS12 = HC / "cache" / "ens"
+BLOCK_VERSION = 3
+
 PARAMS = P.load()
 ST = static.load()
 THR = static.thresholds(PARAMS)
-MASK = ST.mask & (ST.cv_frac > 0.3)      # score only where the gauge network makes the truth trustworthy
+MASK = ST.mask                                  # every published cell
+MASK_B = ST.mask & (ST.cv_frac > 0.3)           # where the lattice archive of the older cases has data
 ZONE = ST.zone_idx
-TAU_GRID = np.round(np.arange(0.10, 0.81, 0.05), 2)
-SIGMAS = (0.2, 0.3, 0.4, 0.5, 0.65, 0.8, 1.0)
-BIASES = (0.4, 0.5, 0.6, 0.75, 0.9, 1.0, 1.15, 1.35, 1.6)
+
+ISSUE_HOURS = (2, 8, 14, 20)
+# hours after the run time at which production sees a run as complete (r1-nwp-live, runs of 2026-09-30)
+DELAY_H = {"arome_hd": 5.0, "arome": 5.0, "icon_eu": 4.0, "arpege": 4.5, "ifs": 8.0, "ens3h": 8.0, "ens": 8.0}
+RUNS_S3 = {k: v["s3"] for k, v in ingest.MODELS.items()}
+# variants stored next to the production setting: neighbourhood radius (km) and the gate on measured rain (mm)
+RADII = {"now": (12.0,), "mid": (6.0, 20.0), "long": (25.0,)}
+GATES = {"now": (0.01, 5.0, 60.0, 1e9), "mid": (), "long": ()}      # 0.01 = measured rain always counts, 1e9 = never
+ENS3H_WEIGHT = 0.6                              # product.run_cycle: m.weight *= 0.6 for ifs_ens3h
+
+
+def tag_r(r: float) -> str:
+    return f"@r{r:g}"
+
+
+def tag_g(g: float) -> str:
+    return f"@g{g:g}"
 
 
 # ------------------------------------------------------------------------------------------ truth
 
 class Truth:
+    """Hourly radar-gauge analysis of every case on disk. Arrays are read per case, on demand."""
+
     def __init__(self):
-        ts, om, on, o12 = [], [], [], []
-        self.cases = {}
-        for f in sorted(glob.glob(str(ROOT / "hindcast" / "truth" / "*.npz"))):
-            z = np.load(f, allow_pickle=True)
-            if "o12_max" not in z.files or len(z["t_end"]) == 0:
-                continue
-            ts.append(z["t_end"]); om.append(z["o_max"]); on.append(z["o_mean"]); o12.append(z["o12_max"])
-            self.cases[Path(f).stem] = (z["t_end"][0], z["t_end"][-1])
-        t = np.concatenate(ts)
-        _, first = np.unique(t, return_index=True)
-        self.t = t[first]
-        self.o_max = np.concatenate(om)[first]
-        self.o_mean = np.nan_to_num(np.concatenate(on)[first])
-        self.o12 = np.concatenate(o12)[first]
-        self.pos = {str(x): k for k, x in enumerate(self.t)}
+        self.files, self.cases, self.kind = {}, {}, {}
+        hour = {}
+        for f in sorted(glob.glob(str(HC / "truth" / "*.npz"))):
+            try:
+                z = np.load(f, allow_pickle=True)
+                if "o12_max" not in z.files or len(z["t_end"]) == 0:
+                    continue
+                t = z["t_end"]
+            except Exception:
+                continue                        # a file q4 is writing right now
+            c = Path(f).stem
+            self.files[c], self.cases[c] = f, (t[0], t[-1])
+            for k, x in enumerate(t):
+                hour.setdefault(str(x), (c, k))     # a duplicated hour keeps the first file
+        self.hour = hour
+        try:
+            for c in json.loads((HC / "cases.json").read_text(encoding="utf-8"))["cases"]:
+                self.kind[c["id"]] = c.get("kind")
+        except Exception:
+            pass
+        self._data = {}
+
+    def _case(self, c):
+        if c not in self._data:
+            if len(self._data) >= 4:
+                self._data.pop(next(iter(self._data)))
+            z = np.load(self.files[c], allow_pickle=True)
+            self._data[c] = (z["o_max"].astype(np.float32), np.nan_to_num(z["o_mean"]).astype(np.float32),
+                             z["o12_max"].astype(np.float32))
+        return self._data[c]
 
     def has(self, t0, t1) -> bool:
-        return all(str(t0 + (k + 1) * H1) in self.pos for k in range(int((t1 - t0) / H1)))
+        return all(str(t0 + (k + 1) * H1) in self.hour for k in range(int((t1 - t0) / H1)))
 
-    def frame(self, t0, t1):
-        idx = [self.pos[str(t0 + (k + 1) * H1)] for k in range(int((t1 - t0) / H1))]
-        return self.o_max[idx].max(axis=0), self.o12[idx].max(axis=0)
+    def hours(self, ts):
+        """-> o_max, o_mean, o12_max (len(ts), NY, NX) for hours that all exist."""
+        om, on, o12 = [], [], []
+        for t in ts:
+            c, k = self.hour[str(t)]
+            d = self._case(c)
+            om.append(d[0][k]); on.append(d[1][k]); o12.append(d[2][k])
+        return np.stack(om), np.stack(on), np.stack(o12)
 
     def case_of(self, t) -> str | None:
-        for c, (a, b) in self.cases.items():
-            if a <= t <= b:
-                return c
+        x = self.hour.get(str(t))
+        return x[0] if x else None
+
+    def has_obs(self, hnow: np.datetime64) -> bool:
+        return all(str(hnow - k * H1) in self.hour for k in range(12))
+
+    def obs(self, hnow: np.datetime64, back_h: int = 24):
+        """What production would hold at the issue time: `product.Obs` of the last hours, or None when the
+        12 h before the issue time are not all in the truth. `o_tail` is the hourly cell maximum scaled so
+        that the last 12 h add up to the largest 12-h total of one pixel (production telescopes the 1-km
+        fields to the same total; the truth files keep the 12-h pixel maximum, not the 1-km hours)."""
+        ts = [hnow - k * H1 for k in range(back_h - 1, -1, -1)]
+        ts = [t for t in ts if str(t) in self.hour]
+        if not self.has_obs(hnow):
+            return None
+        om, on, o12 = self.hours(ts)
+        tail = om.copy()
+        s = om[-12:].sum(axis=0)
+        with np.errstate(invalid="ignore", divide="ignore"):
+            f = np.where(s > 0, o12[-1] / s, 1.0)
+        tail[-12:] = om[-12:] * f
+        return product.Obs(np.array(ts, "datetime64[h]"), om, on, o_tail=tail.astype(np.float32))
+
+    def frame_truth(self, frames, hnow: np.datetime64, gates):
+        """Per frame: o1 = largest hourly amount, o12 = largest 12-h pixel total ending inside the frame
+        (the event scored until now), and for every gate G the forward-looking 12-h amount: production's
+        own rule applied to the rain that really fell (new + clip(new / G, 0, 1) x already measured)."""
+        o1, o12, og = [], [], {g: [] for g in gates}
+        for t0, t1 in frames:
+            hs = [t0 + (k + 1) * H1 for k in range(int((t1 - t0) / H1))]
+            om, _, full = self.hours(hs)
+            o1.append(om.max(axis=0)); o12.append(full.max(axis=0))
+            if not gates:
+                continue
+            best = {g: np.zeros_like(full[0]) for g in gates}
+            for k, h in enumerate(hs):
+                lo = max(h - 12 * H1, hnow)
+                n_new = int((h - lo) / H1)
+                if n_new >= 12:
+                    new = full[k]
+                else:
+                    back = [h - j * H1 for j in range(n_new)]
+                    new = np.minimum(self.hours(back)[0].sum(axis=0), full[k]) if (back and all(str(b) in self.hour for b in back)) else np.zeros_like(full[k])
+                for g in gates:
+                    best[g] = np.maximum(best[g], new + np.clip(new / g, 0.0, 1.0) * (full[k] - new))
+            for g in gates:
+                og[g].append(best[g])
+        return np.stack(o1), np.stack(o12), {g: np.stack(v) for g, v in og.items()}
+
+
+# ---------------------------------------------------------------------------------------- archives
+
+_RUN_INDEX: dict[str, list[datetime]] = {}
+
+
+def run_index(key: str) -> list[datetime]:
+    if key not in _RUN_INDEX:
+        d = RUNS / RUNS_S3[key]
+        _RUN_INDEX[key] = sorted(datetime.strptime(f.stem.split("_")[-1], "%Y%m%d%H") for f in d.glob("precipitation_*.npz")
+                                 if ".tmp" not in f.name) if d.exists() else []
+    return _RUN_INDEX[key]
+
+
+def run_member(key: str, run: datetime, t_from: datetime, t_to: datetime) -> risk.Member | None:
+    """One complete archived run as production's `ingest.load_run` would deliver it."""
+    cfg = ingest.MODELS[key]
+    z = np.load(RUNS / RUNS_S3[key] / f"precipitation_{run:%Y%m%d%H}.npz")
+    valid = [datetime.fromisoformat(str(v)) for v in z["valid"]]
+    sel = [k for k, v in enumerate(valid) if t_from <= v <= t_to]
+    if len(sel) < 2:
         return None
-
-
-def obs_level(o1, o12):
-    L = np.ones(o1.shape, np.uint8)
-    for k in range(4):
-        L = np.where((o1 >= THR.t1h[k]) | (o12 >= THR.t12h[k]), k + 2, L)
-    return L
-
-
-# ------------------------------------------------------------------------------- forecast blocks
-# A block = everything needed to re-score a set of frames with any (sigma, bias):
-#   a1, a12 (M, F, N) scaled per-scenario amounts at the N evaluated cells (NaN = not available)
-#   w (M, F) weights, o1, o12 (F, N) truth, cells (N,) flat cell index, frames, case
-
-def make_block(members, frames, hz, now, truth: Truth, case, sample_mask=None, radius=None) -> dict | None:
-    frames = [f for f in frames if truth.has(*f)]
-    if not frames or not members:
+    code = z["data"][sel]
+    d = code.astype(np.float32) / 10.0
+    d[code < 0] = np.nan
+    vals = ingest.regridder(key, z["lat"], z["lon"])(d)
+    t_end, p, step = ingest.to_hourly([valid[k] for k in sel], vals)
+    if len(t_end) == 0:
         return None
-    par = PARAMS if radius is None else {**PARAMS, "radius_km": {**PARAMS["radius_km"], hz: radius}}
-    pred = risk.predictors(members, frames, par, hz, now, sample_mask=sample_mask, keep_members=True)
-    if pred.a1 is None:
-        return None
-    s1 = np.array([PARAMS["families"][a["family"]]["s1h"] for a in pred.audit], np.float32)
-    s12 = np.array([PARAMS["families"][a["family"]]["s12h"] for a in pred.audit], np.float32)
-    ok = MASK & np.isfinite(pred.a12).any(axis=0).all(axis=0)
-    cells = np.nonzero(ok.ravel())[0]
-    if cells.size == 0:
-        return None
-    flat = lambda a: a.reshape(*a.shape[:-2], -1)[..., cells]
-    r_ev = par["radius_km"][hz]
-    o = [tuple(grid.neighbourhood_max(x, r_ev) for x in truth.frame(*f)) for f in frames]
-    return dict(a1=(flat(pred.a1) * s1[:, None, None]).astype(np.float32), a12=(flat(pred.a12) * s12[:, None, None]).astype(np.float32),
-                w=pred.w.astype(np.float32), o1=np.stack([flat(x[0]) for x in o]), o12=np.stack([flat(x[1]) for x in o]),
-                cells=cells, frames=frames, case=case, valid=pred.valid)
+    return risk.Member(f"{cfg['label']} · {run:%d/%m %H}Z", cfg["family"], key, run, t_end, p, step,
+                       float(cfg.get("weight", 1.0)), meta={"nan_frac": float(np.isnan(p).mean())})
 
 
-def block_prob(b: dict, sigma: float, bias: float) -> np.ndarray:
-    """(4, F, N) probabilities with the scenario dressing."""
-    t1 = THR.t1h.reshape(4, -1)[:, b["cells"]]
-    t12 = THR.t12h.reshape(4, -1)[:, b["cells"]]
-    M, F, N = b["a12"].shape
-    out = np.zeros((4, F, N), np.float32)
-    den = np.zeros((F, N), np.float32)
-    for m in range(M):
-        ok12, ok1 = np.isfinite(b["a12"][m]), np.isfinite(b["a1"][m])
-        w = b["w"][m][:, None] * (ok12 | ok1)
-        den += w
-        for k in range(4):
-            r = np.maximum(np.where(ok1, b["a1"][m] / t1[k], 0.0), np.where(ok12, b["a12"][m] / t12[k], 0.0))
-            with np.errstate(divide="ignore"):
-                out[k] += w * ndtr(np.log(np.maximum(bias * r, 1e-9)) / sigma)
-    out /= np.maximum(den, 1e-9)
-    return np.minimum.accumulate(out, axis=0)
-
-
-def block_obs(b: dict) -> np.ndarray:
-    t1 = THR.t1h.reshape(4, -1)[:, b["cells"]]
-    t12 = THR.t12h.reshape(4, -1)[:, b["cells"]]
-    return np.stack([(b["o1"] >= t1[k]) | (b["o12"] >= t12[k]) for k in range(4)])     # (4, F, N) bool
-
-
-# ------------------------------------------------------------------------------------- scoring
-
-def brier_skill(blocks, sigma, bias) -> tuple[float, list]:
-    num = np.zeros(4); n = 0; ev = np.zeros(4)
-    for b in blocks:
-        p, o = block_prob(b, sigma, bias), block_obs(b)
-        num += ((p - o) ** 2).sum(axis=(1, 2)); ev += o.sum(axis=(1, 2)); n += o[0].size
-    bs = num / max(n, 1)
-    base = ev / max(n, 1)
-    ref = base * (1 - base)
-    bss = [float(1 - bs[k] / ref[k]) if ev[k] >= 30 else None for k in range(4)]
-    use = [x for x in bss if x is not None]
-    return (float(np.mean(use)) if use else -9.0), bss
-
-
-def tune_dressing(blocks):
-    best = None
-    for s in SIGMAS:
-        for bi in BIASES:
-            sc, bss = brier_skill(blocks, s, bi)
-            if best is None or sc > best[0]:
-                best = (sc, s, bi, bss)
-    return best
-
-
-def contingency(blocks, sigma, bias, tau: dict) -> dict:
-    """Counts per level (forecast level >= L vs observed level >= L), per cell-frame and per zone-day."""
-    cell = {L: [0, 0, 0, 0] for L in (2, 3, 4, 5)}        # hits, misses, false alarms, correct negatives
-    zone = {L: [0, 0, 0, 0] for L in (2, 3, 4, 5)}
-    zday = {}
-    for b in blocks:
-        p, o = block_prob(b, sigma, bias), block_obs(b)
-        fl = np.ones(p.shape[1:], np.uint8)
-        for k, L in enumerate((2, 3, 4, 5)):
-            fl = np.where(p[k] >= tau[L], L, fl)
-        ol = 1 + o.sum(axis=0)
-        zi = ZONE.ravel()[b["cells"]]
-        for k, L in enumerate((2, 3, 4, 5)):
-            f, ob = fl >= L, ol >= L
-            cell[L][0] += int((f & ob).sum()); cell[L][1] += int((~f & ob).sum())
-            cell[L][2] += int((f & ~ob).sum()); cell[L][3] += int((~f & ~ob).sum())
-        for fi, (t0, _) in enumerate(b["frames"]):
-            day = str(t0)[:10]
-            for z in np.unique(zi[zi >= 0]):
-                sel = zi == z
-                key = (b["case"], day, int(z))
-                a = zday.setdefault(key, [1, 1])
-                a[0] = max(a[0], int(fl[fi, sel].max())); a[1] = max(a[1], int(ol[fi, sel].max()))
-    for (c, d, z), (f, ob) in zday.items():
-        for L in (2, 3, 4, 5):
-            zone[L][0 if (f >= L and ob >= L) else 1 if (ob >= L) else 2 if (f >= L) else 3] += 1
-    return {"cell": cell, "zone_day": zone}
-
-
-def rates(c):
-    h, m, fa, cn = c
-    return {"hits": h, "misses": m, "false_alarms": fa, "correct_negatives": cn,
-            "POD": round(h / (h + m), 2) if h + m else None, "FAR": round(fa / (h + fa), 2) if h + fa else None,
-            "CSI": round(h / (h + m + fa), 2) if h + m + fa else None}
-
-
-def tune_tau(blocks, sigma, bias, lo: float = 0.10) -> dict:
-    po = [(block_prob(b, sigma, bias), block_obs(b)) for b in blocks]      # once per setting
-    tau = {}
-    for k, L in enumerate((2, 3, 4, 5)):
-        best = (-1.0, 0.5)
-        for t in TAU_GRID[TAU_GRID >= lo - 1e-9]:
-            h = m = fa = 0
-            for p, o in po:
-                f = p[k] >= t
-                h += int((f & o[k]).sum()); m += int((~f & o[k]).sum()); fa += int((f & ~o[k]).sum())
-            csi = h / (h + m + fa) if h + m + fa else -1.0
-            if csi > best[0] + 0.005:
-                best = (csi, float(t))
-        tau[L] = best[1] if best[0] >= 0 else None
-    # levels with no observed event: one step below the previous level, within the allowed range
-    prev = 0.5
-    for L in (2, 3, 4, 5):
-        if tau[L] is None:
-            tau[L] = max(lo, 0.40 if lo >= 0.4 else 0.15, prev - 0.05)
-        prev = tau[L]
-    return tau
-
-
-def reliability(blocks, sigma, bias) -> dict:
-    edges = np.array([0, .05, .15, .3, .5, .7, .9, 1.0001])
-    out = {}
-    for k, L in enumerate((2, 3, 4, 5)):
-        n = np.zeros(len(edges) - 1); s = np.zeros_like(n); pm = np.zeros_like(n)
-        for b in blocks:
-            p, o = block_prob(b, sigma, bias)[k].ravel(), block_obs(b)[k].ravel()
-            idx = np.digitize(p, edges) - 1
-            np.add.at(n, idx, 1); np.add.at(s, idx, o); np.add.at(pm, idx, p)
-        out[L] = [{"p_forecast": round(float(pm[i] / n[i]), 3), "observed_freq": round(float(s[i] / n[i]), 3), "n": int(n[i])}
-                  for i in range(len(n)) if n[i] > 0]
+def lagged_runs(T: datetime, hours_ahead: int) -> list[risk.Member]:
+    """Tier A: the runs `ingest_cached` would hold at T (newest `lags` complete runs of every model)."""
+    out = []
+    for key, cfg in ingest.MODELS.items():
+        runs = [r for r in run_index(key) if r + timedelta(hours=DELAY_H[key]) <= T and T - r <= timedelta(hours=36)]
+        for r in sorted(runs, reverse=True)[:cfg["lags"]]:
+            m = run_member(key, r, T - timedelta(hours=14), T + timedelta(hours=hours_ahead))
+            if m is not None:
+                out.append(m)
     return out
 
 
-def evaluate(blocks, name: str) -> dict:
-    cases = sorted({b["case"] for b in blocks})
-    sc, sigma, bias, bss = tune_dressing(blocks)
-    tau = tune_tau(blocks, sigma, bias)
-    tau40 = tune_tau(blocks, sigma, bias, 0.40)
-    res = {"horizon": name, "cases": cases, "n_frames": int(sum(len(b["frames"]) for b in blocks)),
-           "n_cell_frames": int(sum(b["o1"].size for b in blocks)),
-           "observed_cell_frames": {L: int(sum(block_obs(b)[k].sum() for b in blocks)) for k, L in enumerate((2, 3, 4, 5))},
-           "tuned": {"sigma": sigma, "bias": bias, "tau": tau, "mean_BSS": round(sc, 3), "BSS": bss},
-           "tau_min40": tau40,
-           "in_sample": {k: {L: rates(v) for L, v in d.items()} for k, d in contingency(blocks, sigma, bias, tau).items()},
-           "in_sample_min40": {k: {L: rates(v) for L, v in d.items()} for k, d in contingency(blocks, sigma, bias, tau40).items()},
-           "reliability": reliability(blocks, sigma, bias)}
-    # leave one case out: tune on the others, score the held-out case, add the counts up
-    if len(cases) >= 3:
-        tot = {"cell": {L: [0, 0, 0, 0] for L in (2, 3, 4, 5)}, "zone_day": {L: [0, 0, 0, 0] for L in (2, 3, 4, 5)}}
-        tot40 = {"cell": {L: [0, 0, 0, 0] for L in (2, 3, 4, 5)}, "zone_day": {L: [0, 0, 0, 0] for L in (2, 3, 4, 5)}}
-        picks = []
-        for c in cases:
-            train = [b for b in blocks if b["case"] != c]
-            test = [b for b in blocks if b["case"] == c]
-            _, s, bi, _ = tune_dressing(train)
-            t = tune_tau(train, s, bi)
-            picks.append({"held_out": c, "sigma": s, "bias": bi, "tau": t})
-            cont = contingency(test, s, bi, t)
-            cont40 = contingency(test, s, bi, tune_tau(train, s, bi, 0.40))
-            for k in tot:
-                for L in tot[k]:
-                    tot[k][L] = [a + b for a, b in zip(tot[k][L], cont[k][L])]
-                    tot40[k][L] = [a + b for a, b in zip(tot40[k][L], cont40[k][L])]
-        res["cross_validated"] = {k: {L: rates(v) for L, v in d.items()} for k, d in tot.items()}
-        res["cross_validated_min40"] = {k: {L: rates(v) for L, v in d.items()} for k, d in tot40.items()}
-        res["cv_picks"] = picks
-    return res
+_STITCH = None
 
 
-# ------------------------------------------------------------------------------------ 48 h blocks
+def stitched_index():
+    """Tier B: files of the Previous Runs archive -> [(t0, t1, path)]."""
+    global _STITCH
+    if _STITCH is None:
+        _STITCH = []
+        for f in sorted(glob.glob(str(HC / "cache" / "openmeteo" / "prev_*.npz"))):
+            z = np.load(f, allow_pickle=True)
+            t = z["time"]
+            _STITCH.append((np.datetime64(str(t[0]), "h"), np.datetime64(str(t[-1]), "h"), f))
+    return _STITCH
 
-FAM = {"meteofrance_arome_france": ("arome", "cp"), "meteofrance_arome_france_hd": ("arome_hd", "cp"),
-       "icon_eu": ("icon_eu", "regional"), "meteofrance_arpege_europe": ("arpege", "regional"), "ecmwf_ifs025": ("ifs", "global")}
+
+_STITCH_DATA = {}
 
 
-def mid_blocks(truth: Truth, lead: int = 1, radius=None) -> list[dict]:
-    out = []
-    for f in sorted(glob.glob(str(ROOT / "hindcast" / "cache" / "openmeteo" / "prev_*.npz"))):
+def stitched_load(f: str) -> dict:
+    if f not in _STITCH_DATA:
+        if len(_STITCH_DATA) >= 4:
+            _STITCH_DATA.pop(next(iter(_STITCH_DATA)))
         z = np.load(f, allow_pickle=True)
-        t = np.array([np.datetime64(x, "h") for x in z["time"]])
         j = np.floor((z["lat"] - grid.LAT0) / grid.D + 1e-6).astype(int)
         i = np.floor((z["lon"] - grid.LON0) / grid.D + 1e-6).astype(int)
         ok = (j >= 0) & (j < grid.NY) & (i >= 0) & (i < grid.NX)
-        sample = np.zeros((grid.NY, grid.NX), bool); sample[j[ok], i[ok]] = True
-        leads = z["lead_days"].tolist()
-        if lead not in leads:
+        _STITCH_DATA[f] = dict(t=np.array([np.datetime64(x, "h") for x in z["time"]]), models=[str(m) for m in z["models"]],
+                               leads=z["lead_days"].tolist(), j=j[ok], i=i[ok], precip=z["precip"][..., ok])
+    return _STITCH_DATA[f]
+
+
+def stitched_runs(T: datetime, hours_ahead: int, full_grid: bool):
+    """Tier B pseudo-runs at issue time T. Returns (members, sample mask or None).
+    For valid hour v the day-1 series (run issued <= v - 24 h) is used while that run was already complete at
+    T, the day-2 series afterwards: nothing issued after T is ever used. `full_grid`: lattice values are
+    copied to their 2x2 block of cells (the nowcast works on whole fields, without the sampling lattice)."""
+    hT = np.datetime64(T, "h")
+    lo, hi = hT + H1, hT + hours_ahead * H1
+    # archive files that touch the window; an issue time may precede the first archived hour of a case, and a
+    # window may run from one file into the next: every hour takes the first file that has it
+    files = sorted([x for x in stitched_index() if x[0] <= hi and x[1] >= lo], key=lambda x: (not (x[0] <= lo <= x[1]), x[0]))
+    if not files:
+        return [], None
+    src, v = [], max(lo, min(x[0] for x in files))
+    while v <= hi:
+        f = next((x[2] for x in files if x[0] <= v <= x[1]), None)
+        if f is None:
+            break                       # the series must be continuous
+        src.append((v, f))
+        v = v + H1
+    if len(src) < 2:
+        return [], None
+    hours = np.array([s[0] for s in src])
+    sample = np.zeros((grid.NY, grid.NX), bool)
+    fields = {}
+    for key in ("arome", "icon_eu", "arpege"):      # IFS 0.25: 3 days of one case; production uses the 9-km run instead
+        model = ingest.ARCHIVE_IDS[key]
+        delay = np.timedelta64(int(round(DELAY_H[key] * 60)), "m")
+        g = np.full((len(hours), grid.NY, grid.NX), np.nan, np.float32)
+        good = np.zeros(len(hours), bool)
+        for k, (v, f) in enumerate(src):
+            d = stitched_load(f)
+            lead = 1 if (v - 24 * H1) <= (np.datetime64(T, "m") - delay) else 2
+            if model in d["models"] and lead in d["leads"]:
+                row = d["precip"][d["models"].index(model), d["leads"].index(lead), int(np.searchsorted(d["t"], v))]
+                g[k, d["j"], d["i"]] = row
+                good[k] = np.isfinite(row).mean() > 0.3
+        n = int(np.argmin(good)) if not good.all() else len(hours)      # the series ends where the archive ends
+        if n < 2:
             continue
-        li = leads.index(lead)
-        run0 = datetime.fromisoformat(str(t[0]))
-        arrs = {}
-        for m, model in enumerate(z["models"]):
-            a = z["precip"][m, li][:, ok]
-            if np.isfinite(a).mean() < 0.3:
-                continue
-            g = np.full((len(t), grid.NY, grid.NX), np.nan, np.float32)
-            g[:, j[ok], i[ok]] = a
-            arrs[str(model)] = g
-        if not arrs:
-            continue
-        donor = arrs.get("icon_eu")
-        members = []
-        for model, g in arrs.items():
-            if donor is not None:
-                g = np.where(np.isnan(g), donor, g)           # AROME has no data south of 38 N
-            key, fam = FAM[model]
-            members.append(risk.Member(f"{key} d{lead}", fam, key, run0, t, np.nan_to_num(g, nan=0.0), 1))
-        day = np.datetime64(str(t[0])[:10] + "T00", "h")
-        frames = []
-        while day + 3 * H1 <= t[-1]:
-            if day - 12 * H1 >= t[0] - H1:                     # the 12-h window must be inside the series
-                frames.append((day, day + 3 * H1))
-            day = day + 3 * H1
-        # one block per verification case (the file may span several)
-        by_case = {}
-        for fr in frames:
-            c = truth.case_of(fr[1])
-            if c:
-                by_case.setdefault(c, []).append(fr)
-        for c, frs in by_case.items():
-            b = make_block(members, frs, "mid", run0, truth, c, sample_mask=sample, radius=radius)
-            if b:
-                out.append(b)
-    return out
+        fields[key] = g[:n]
+        sample |= np.isfinite(g[:n]).any(axis=0)
+    members = []
+    fam = PARAMS["families"]
+    donor = fields.get("icon_eu", fields.get("arpege"))
+    for key, g in fields.items():
+        cfg = ingest.MODELS[key]
+        if donor is not None and donor is not g:                 # AROME has no data south of 38 N: as ingest.fill_gaps
+            n = min(len(g), len(donor))
+            hole = np.isnan(g[:n]) & np.isfinite(donor[:n])
+            g[:n][hole] = donor[:n][hole] * (fam["regional"]["s12h"] / fam[cfg["family"]]["s12h"])
+        p = np.nan_to_num(g, nan=0.0)
+        if full_grid:
+            p = np.maximum.reduce([p, np.roll(p, 1, axis=1), np.roll(p, 1, axis=2), np.roll(np.roll(p, 1, axis=1), 1, axis=2)])
+        members.append(risk.Member(f"{cfg['label']} · archivo día 1-2", cfg["family"], key, T - timedelta(hours=6),
+                                   hours[:len(g)], p, 1, float(cfg.get("weight", 1.0)), meta={"stitched": True}))
+    return members, sample
 
 
-# ------------------------------------------------------------------------------------ long blocks
-
-def long_blocks(truth: Truth, lead_days: int) -> list[dict]:
-    out = []
-    for f in sorted(glob.glob(str(ROOT / "hindcast" / "cache" / "ens" / "ifsens_tp_*.npz"))):
-        z = np.load(f, allow_pickle=True)
-        run = datetime.strptime(Path(f).stem.split("_")[-1], "%Y%m%d%H")
-        steps = set(z["steps"].astype(int).tolist())
-        base = lead_days * 24
-        if not {base - 12, base, base + 12, base + 24} <= steps:
-            continue
-        t0 = np.datetime64(run + timedelta(days=lead_days), "h")
-        fr = (t0, t0 + 24 * H1)
-        c = truth.case_of(fr[1])
-        if not c or not truth.has(*fr):
-            continue
-        b = make_block(product.ens_npz_members(z, run), [fr], "long", run, truth, c)
-        if b:
-            out.append(b)
-    return out
+def ens3h_run(T: datetime) -> datetime | None:
+    """The 00Z ENS run on disk, when it is the run production would use at T (complete, 8-14 h old)."""
+    run = T.replace(hour=0, minute=0, second=0, microsecond=0)
+    age = (T - run).total_seconds() / 3600.0
+    d = ENS3H / f"ec_ifs_{run:%Y%m%d%H}"
+    if not (DELAY_H["ens3h"] <= age <= 14.0) or not (d / "grid.npz").exists():
+        return None
+    return run if all((d / f"tp_{s:03d}.npy").exists() for s in range(6, 67, 3)) else None
 
 
-# ------------------------------------------------------------------------------------- now blocks
+def ens3h_members(run: datetime) -> list[risk.Member]:
+    from riua.sources import extra_models as X
+    ms = X.ecmwf_ens_members(run, ENS3H, 6, 66)          # every step is on disk: no download
+    for m in ms:
+        m.weight *= ENS3H_WEIGHT
+    return ms
 
-def _radar_rates(t_issue: datetime):
+
+def ens12_file(T: datetime) -> Path | None:
+    run = T.replace(hour=0, minute=0, second=0, microsecond=0)
+    f = ENS12 / f"ifsens_tp_{run:%Y%m%d%H}.npz"
+    return f if f.exists() and (T - run) >= timedelta(hours=DELAY_H["ens"]) else None
+
+
+def radar_rates(T: datetime) -> list:
+    """The last scans production would have at T, as (ground-arrival time, rain rate) like `update_obs`."""
     from riua.radar import qpe
     out = []
-    for day in {(t_issue - timedelta(minutes=30)).strftime("%Y%m%d"), t_issue.strftime("%Y%m%d")}:
-        f = ROOT / "hindcast" / "cache" / "radar" / f"{day}.npz"
+    lag = timedelta(minutes=qpe.FALL_MIN)
+    Tz = T.replace(tzinfo=timezone.utc)
+    for day in {(T - timedelta(minutes=50)).strftime("%Y%m%d"), T.strftime("%Y%m%d")}:
+        f = HC / "cache" / "radar" / f"{day}.npz"
         if not f.exists():
             continue
         z = np.load(f)
-        for s, code in zip(z["t"], z["dbz"]):
-            t = datetime.fromtimestamp(int(s), timezone.utc)
-            if timedelta(0) <= (t_issue.replace(tzinfo=timezone.utc) - t) <= timedelta(minutes=25):
-                d = code.astype(np.float32) / 2.0 - 32.0
-                d[code == 255] = np.nan
-                out.append((t, qpe.rain_rate(qpe.despeckle(d))))
-    return sorted(out, key=lambda x: x[0])
+        ts = z["t"]
+        for k in np.nonzero((ts > Tz.timestamp() - 45 * 60) & (ts <= Tz.timestamp() - lag.total_seconds()))[0]:
+            code = z["dbz"][k]
+            d = code.astype(np.float32) / 2.0 - 32.0
+            d[code == 255] = np.nan
+            out.append((datetime.fromtimestamp(int(ts[k]), timezone.utc) + lag, qpe.rain_rate(qpe.despeckle(d))))
+    return sorted(out, key=lambda x: x[0])[-3:]
 
 
-_DAY0 = {}
+# ----------------------------------------------------------------------------- members of one cycle
+
+def members_at(hz: str, T: datetime, truth: Truth):
+    """The member list `run_cycle` would hand to `horizon_product`, from the archives. -> members, sample, info"""
+    hnow = product.top_of_hour(T)
+    h = np.datetime64(hnow, "h")
+    obs = truth.obs(h)
+    info = {"tier": None, "ens": None, "obs": obs is not None, "radar": None, "fc_first": None}
+
+    def past(ms):
+        # first forecast hour that every member has: earlier hours are measured (with obs) or unknown (without)
+        first = [m.t_end[m.t_end > h].min() for m in ms if (m.t_end > h).any()]
+        info["fc_first"] = str(max(first)) if first else None
+        return [product.with_past(m, obs, hnow, bridge=None) for m in ms] if obs is not None else ms
+    jj, ii = np.mgrid[0:grid.NY, 0:grid.NX]
+    lattice = (jj % 2 == 0) & (ii % 2 == 0)
+    if hz == "long":
+        f = ens12_file(T)
+        if f is None:
+            return [], None, info
+        run = T.replace(hour=0, minute=0, second=0, microsecond=0)
+        ens = product.ens_npz_members(np.load(f, allow_pickle=True), run)
+        info.update(tier="ens", ens=f"{run:%Y-%m-%dT%HZ}")
+        return past(ens), None, info                 # + 2 IFS runs in production: not archived
+    nwp = lagged_runs(T, 66 if hz == "mid" else 8)
+    sample = lattice if hz == "mid" else None
+    if nwp:
+        info["tier"] = "A"
+        ingest.fill_gaps(nwp)
+    else:
+        nwp, smp = stitched_runs(T, 52 if hz == "mid" else 7, full_grid=(hz == "now"))
+        if not nwp:
+            return [], None, info
+        info["tier"] = "B"
+        sample = smp if hz == "mid" else None
+    if hz == "mid":
+        extra = []
+        run = ens3h_run(T)
+        if run is not None:
+            extra = ens3h_members(run)
+            info["ens"] = f"{run:%Y-%m-%dT%HZ}"
+        return past(nwp + extra), sample, info
+    # now: radar members blended into the newest convection-permitting runs, the other runs beside them
+    if obs is None:
+        return [], None, info
+    rates = radar_rates(T)
+    from riua.radar import nowcast as NC
+    if not getattr(NC, "_q8_two_workers", False):       # shared machine: 2 threads instead of production's 4
+        orig = NC.steps_ensemble
+        NC.steps_ensemble = lambda *a, **k: orig(*a, **{**k, "workers": 2})
+        NC._q8_two_workers = True
+    radar_m, nrep = product.nowcast_members(rates, obs, nwp, T.replace(tzinfo=timezone.utc))
+    info["radar"] = {k: nrep.get(k) for k in ("method", "members", "wet_fraction")}
+    info["scans"] = len(rates)
+    blended = set(nrep.get("donors") or [])
+    return past(radar_m + [m for m in nwp if m.name not in blended]), None, info
 
 
-def _day0(model: str):
-    if model not in _DAY0:
-        fs = sorted(glob.glob(str(ROOT / "hindcast" / "cache" / "openmeteo" / "s3" / f"s3_{model}_precipitation_2024-10-27_*.npz")))
-        if not fs:
-            _DAY0[model] = None
-        else:
-            z = np.load(fs[0], allow_pickle=True)
-            rg = grid.Regridder(z["lat"], z["lon"])
-            data = z["data"]
-            if model != "icon_eu":
-                ic = _day0("icon_eu")
-                p = rg(data)
-                if ic is not None:
-                    p = np.where(np.isnan(p), ic[1], p)
-            else:
-                p = rg(data)
-            _DAY0[model] = (np.array([np.datetime64(x, "h") for x in z["time"]]), np.nan_to_num(p, nan=0.0).astype(np.float32))
-    return _DAY0[model]
+# -------------------------------------------------------------------------------------- one block
+
+def block_path(hz: str, T: datetime) -> Path:
+    return BLOCKS / hz / f"{T:%Y%m%d%H}.npz"
 
 
-def now_block(args):
-    t_issue, case = args
-    truth = Truth()
-    h = np.datetime64(t_issue, "h")
-    past = truth.t <= h
-    keep = past & (truth.t > h - 24 * H1)
-    obs = product.Obs(truth.t[keep], truth.o_max[keep], truth.o_mean[keep])
-    nwp = []
-    for model, key, fam in (("meteofrance_arome_france_hd", "arome_hd", "cp"), ("meteofrance_arome_france", "arome", "cp"),
-                            ("icon_eu", "icon_eu", "regional")):
-        d = _day0(model)
-        if d is not None:
-            nwp.append(risk.Member(f"{key} corto plazo", fam, key, t_issue - timedelta(hours=3), d[0], d[1], 1,
-                                   float(ingest.MODELS[key].get("weight", 1.0))))
-    radar_m, _ = product.nowcast_members(_radar_rates(t_issue), obs, nwp, t_issue.replace(tzinfo=timezone.utc))
-    members = [product.with_past(m, obs, t_issue) for m in radar_m + nwp]
-    frames = product.frames_for("now", t_issue)
-    return make_block(members, frames, "now", t_issue, truth, case)
+def build_block(hz: str, T: datetime, truth: Truth) -> str:
+    out = block_path(hz, T)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    hnow = product.top_of_hour(T)
+    h = np.datetime64(hnow, "h")
+    frames = product.frames_for(hz, T)
+    have_obs = truth.has_obs(h)
+    if not any(truth.has(t0, t1) and (have_obs or t0 >= h + 11 * H1) for t0, t1 in frames):
+        return "no truth"
+    members, sample, info = members_at(hz, T, truth)
+    if not members or info["fc_first"] is None:
+        return "no members"
+    # A frame is scored when every hour of its 12-h windows is known to every member: measured hours up to the
+    # issue time followed at once by the forecast, or forecast hours only (windows starting after the first one).
+    first = np.datetime64(info["fc_first"], "h")
+    whole = have_obs and first <= h + H1
+    keep = [k for k, (t0, t1) in enumerate(frames) if truth.has(t0, t1) and (whole or t0 - 10 * H1 >= first)]
+    if not keep:
+        return "no frame with complete 12-h windows"
+    r0 = float(PARAMS["radius_km"][hz])
+    g0 = float(PARAMS.get("obs_gate_mm", 20.0))
+    variants = [("", PARAMS)]
+    variants += [(tag_r(r), {**PARAMS, "radius_km": {**PARAMS["radius_km"], hz: r}}) for r in RADII[hz]]
+    gates = GATES[hz] if info["obs"] else ()
+    variants += [(tag_g(g), {**PARAMS, "obs_gate_mm": g}) for g in gates]
+    arrays, cells, base = {}, None, None
+    for tag, par in variants:
+        pred = risk.predictors(members, frames, par, hz, hnow, sample_mask=sample, keep_members=True)
+        if pred.a1 is None:
+            return "no predictors"
+        if tag == "":
+            kf = [k for k in keep if pred.valid[k]]
+            if not kf:
+                return "no valid frame"
+            ok = (MASK if info["tier"] in ("A", "ens") else MASK_B) & np.isfinite(pred.a12[:, kf]).any(axis=0).all(axis=0)
+            cells = np.nonzero(ok.ravel())[0]
+            if cells.size == 0:
+                return "no cells"
+            base = pred
+        flat = lambda a: a[:, kf].reshape(a.shape[0], len(kf), -1)[:, :, cells]      # noqa: E731
+        a1 = flat(pred.a1)
+        has1 = np.nonzero(np.isfinite(a1).any(axis=(1, 2)))[0]
+        if not tag.startswith("@g"):                     # the gate does not touch the 1-h amounts
+            arrays["a1" + tag] = a1[has1].astype(np.float16)
+        arrays["a12" + tag] = flat(pred.a12).astype(np.float16)
+        if info["obs"]:
+            arrays["phi" + tag] = np.round(flat(pred.obs12) * 250.0).astype(np.uint8)
+        if tag == "":
+            arrays["has1"] = has1.astype(np.int16)
+    fr = [frames[k] for k in kf]
+    all_gates = tuple(gates) + ((g0,) if info["obs"] else ())
+    o1, o12, og = truth.frame_truth(fr, h, all_gates)
+    cut = lambda a: a.reshape(a.shape[0], -1)[:, cells].astype(np.float16)           # noqa: E731
+    for r in (r0,) + tuple(RADII[hz]):
+        tag = "" if r == r0 else tag_r(r)
+        arrays["o1" + tag] = cut(grid.neighbourhood_max(o1, r))
+        arrays["o12" + tag] = cut(grid.neighbourhood_max(o12, r))
+    for g, v in og.items():
+        arrays["o12f" + ("" if g == g0 else tag_g(g))] = cut(grid.neighbourhood_max(v, r0))
+    names = [a["name"] for a in base.audit]
+    by_name = {m.name: m for m in members}
+    age = [max(0.0, (hnow - by_name[n].run).total_seconds() / 3600.0) for n in names]
+    case = truth.case_of(fr[0][1]) or "?"
+    meta = {"v": BLOCK_VERSION, "hz": hz, "issue": f"{T:%Y-%m-%dT%H:%MZ}", "case": case, "kind": truth.kind.get(case),
+            "radius": r0, "gate": g0, "radii": list(RADII[hz]), "gates": list(gates), "params_version": PARAMS.get("version"),
+            "names": names, "n_truth": sum(1 for t0, t1 in frames if truth.has(t0, t1)), **info}
+    tmp = out.with_name(out.stem + ".tmp.npz")
+    np.savez_compressed(
+        tmp, meta=json.dumps(meta, ensure_ascii=False), cells=cells.astype(np.int32),
+        t0=np.array([f[0] for f in fr]), t1=np.array([f[1] for f in fr]),
+        lead_h=np.array([float((f[1] - h) / H1) for f in fr], np.float32),
+        valid=(base.w[:, kf] > 0), family=np.array([a["family"] for a in base.audit]),
+        model=np.array([a["model"] for a in base.audit]), age_h=np.array(age, np.float32),
+        mw=np.array([by_name[n].weight for n in names], np.float32),
+        radar=np.array([bool(by_name[n].meta.get("radar")) or by_name[n].family == "radar" for n in names]), **arrays)
+    tmp.replace(out)
+    return f"ok tier {info['tier']} M={len(names)} F={len(kf)} N={cells.size}" + (f" ens {info['ens']}" if info["ens"] else "")
 
 
-def now_blocks(truth: Truth) -> list[dict]:
-    from multiprocessing import Pool
-    d = _day0("meteofrance_arome_france_hd")
-    if d is None:
-        return []
-    lo, hi = d[0][0], d[0][-1]
-    jobs = []
+# ------------------------------------------------------------------------------------ issue times
+
+def issue_times(hz: str, truth: Truth, cases: list[str] | None = None) -> list[datetime]:
+    """Every issue time whose frames can be verified, for the cases on disk."""
+    out = set()
+    lead_max = {"now": 6, "mid": 54, "long": 24 * 8}[hz]
+    lead_min = {"now": 0, "mid": 4, "long": 48}[hz]
     for c, (a, b) in truth.cases.items():
-        t = max(a, lo) + 12 * H1
-        t = np.datetime64(str(t)[:10] + "T00", "h") + 24 * H1 if str(t)[11:13] != "00" else t
-        while t + 6 * H1 <= min(b, hi):
-            jobs.append((datetime.fromisoformat(str(t)), c))
-            t = t + 3 * H1
-    print(f"nowcast hindcast: {len(jobs)} issue times", flush=True)
-    with Pool(4) as pool:
-        out = pool.map(now_block, jobs, chunksize=2)
-    return [b for b in out if b]
+        if cases and c not in cases:
+            continue
+        t = a - lead_max * H1
+        t = np.datetime64(str(t)[:10] + "T00", "h")
+        while t <= b - lead_min * H1:
+            hh = int(str(t)[11:13])
+            ok = hh in ISSUE_HOURS if hz != "long" else hh == 8
+            if ok and (hz != "now" or truth.has_obs(t)):
+                out.add(datetime.fromisoformat(str(t)))
+            t = t + H1
+    return sorted(out)
+
+
+_TRUTH = None
+
+
+def _job(args):
+    global _TRUTH
+    hz, T, force = args
+    if _TRUTH is None:
+        _TRUTH = Truth()
+    if not force and not stale(hz, T, _TRUTH):
+        return hz, T, "cached"
+    try:
+        msg = build_block(hz, T, _TRUTH)
+    except Exception as e:  # noqa: BLE001  one bad issue time must not stop the batch
+        msg = f"FAILED {type(e).__name__}: {e}"[:300]
+    return hz, T, msg
+
+
+def block_meta(f: Path) -> dict:
+    with np.load(f, allow_pickle=True) as z:
+        m = json.loads(str(z["meta"]))
+        m["n_frames"] = int(len(z["t0"]))
+    return m
+
+
+def stale(hz: str, T: datetime, truth: Truth) -> bool:
+    """True when the block is missing or was built from less than what is on disk now: an older block
+    format, an ENS run that arrived later, more verifiable frames (a neighbouring truth file appeared)."""
+    f = block_path(hz, T)
+    if not f.exists():
+        return True
+    m = block_meta(f)
+    if m.get("v") != BLOCK_VERSION:
+        return True
+    if hz == "mid" and m.get("ens") is None and ens3h_run(T) is not None:
+        return True
+    h = np.datetime64(product.top_of_hour(T), "h")
+    n = sum(1 for t0, t1 in product.frames_for(hz, T) if truth.has(t0, t1))
+    return n > m.get("n_truth", n) or (hz != "long" and truth.has_obs(h) and not m.get("obs"))
+
+
+def build(hzs, jobs: int = 1, cases=None, force: bool = False) -> None:
+    """Build every block that is missing or stale. Issue times with no archived forecast are tried again on
+    every call (cheap), so the command is the same after q4 adds truth files, runs or ENS steps."""
+    truth = Truth()
+    print(f"truth: {len(truth.cases)} cases, {len(truth.hour)} hours", flush=True)
+    todo = []
+    for hz in hzs:
+        ts = issue_times(hz, truth, cases)
+        new = [(hz, T, force) for T in ts if force or stale(hz, T, truth)]
+        print(f"{hz}: {len(ts)} issue times, {len(new)} missing or stale", flush=True)
+        todo += new
+    if not todo:
+        return
+    if "--spread" in sys.argv:
+        # slow machine: one issue time of every case first (14Z, then 02Z, 20Z, 08Z), the severe cases first, so that
+        # whatever is built when the job is stopped is a sample of all the cases and not the first cases only
+        rank = {"major": 0, "moderate": 1, "null": 2, "ordinary": 3, "dry": 4}
+        kind = lambda T: rank.get(truth.kind.get(truth.case_of(np.datetime64(T, "h")) or ""), 5)      # noqa: E731
+        todo.sort(key=lambda x: ((14, 2, 20, 8).index(x[1].hour) if x[1].hour in (14, 2, 20, 8) else 9, kind(x[1]), x[1]))
+    if "--reverse" in sys.argv:          # a second process working from the other end (each job re-checks the cache)
+        todo.reverse()
+    n_ok = 0
+    if jobs > 1:
+        from multiprocessing import Pool
+        with Pool(jobs) as pool:
+            for hz, T, msg in pool.imap_unordered(_job, todo, chunksize=1):
+                n_ok += msg.startswith("ok")
+                print(f"{hz} {T:%Y-%m-%d %H}Z {msg}", flush=True)
+    else:
+        for a in todo:
+            hz, T, msg = _job(a)
+            n_ok += msg.startswith("ok")
+            print(f"{hz} {T:%Y-%m-%d %H}Z {msg}", flush=True)
+    print(f"build done: {n_ok} blocks written of {len(todo)} tried", flush=True)
+
+
+def status() -> None:
+    truth = Truth()
+    print(f"truth cases on disk: {len(truth.cases)}")
+    for hz in P.HORIZONS:
+        ts = issue_times(hz, truth)
+        done = [T for T in ts if block_path(hz, T).exists()]
+        size = sum(f.stat().st_size for f in (BLOCKS / hz).glob("*.npz")) / 1e6 if (BLOCKS / hz).exists() else 0.0
+        print(f"{hz}: {len(ts)} issue times, {len(done)} blocks ({size:.0f} MB), {len(ts) - len(done)} without a block "
+              f"(no archived forecast, or not built yet)")
 
 
 # -------------------------------------------------------------------------------- hydrology check
@@ -437,97 +612,38 @@ def poyo_check(truth: Truth) -> dict | None:
     net, cps = static.hydro_net()
     if net is None or "2024-10-dana" not in truth.cases:
         return None
-    sel = (truth.t >= np.datetime64("2024-10-28T00", "h")) & (truth.t <= np.datetime64("2024-10-31T00", "h"))
-    t, p = truth.t[sel], truth.o_mean[sel]
+    ts = [t for t in (np.datetime64("2024-10-28T00", "h") + k * H1 for k in range(73)) if str(t) in truth.hour]
+    t, p = np.array(ts), truth.hours(ts)[1]
     hp = PARAMS["hydro"]
     out = {"observed": "SAIH Rambla del Poyo (A-3): 2283 m3/s at 18:55 local (17:55 UTC) on 29 Oct 2024, then the sensor was lost",
            "rain_input": "radar-gauge analysis, cell means", "runs": []}
     flat = p.reshape(len(t), -1)
-    for p0 in (hp["p0_mm"],):
-        q = H.route(H.net_rain(flat, p0, hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm"), alpha=net.alpha,
-                               p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0)), net, hp["clark_k"])
-        row = {"p0_mm": p0}
-        for pid in ("poyo-chiva", "poyo-ribarroja", "poyo-paiporta", "magro-algemesi"):
-            if pid in net.ids:
-                k = net.ids.index(pid)
-                row[pid] = {"peak_m3s": round(float(q[:, k].max())), "peak_utc": str(t[int(q[:, k].argmax())])}
-        out["runs"].append(row)
+    q = H.route(H.net_rain(flat, hp["p0_mm"], hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm"), alpha=net.alpha,
+                           p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0)), net, hp["clark_k"])
+    row = {"p0_mm": hp["p0_mm"]}
+    for pid in ("poyo-chiva", "poyo-ribarroja", "poyo-paiporta", "magro-algemesi"):
+        if pid in net.ids:
+            k = net.ids.index(pid)
+            row[pid] = {"peak_m3s": round(float(q[:, k].max())), "peak_utc": str(t[int(q[:, k].argmax())])}
+    out["runs"].append(row)
     return out
 
 
-def cached(name: str, build):
-    """Blocks are expensive (the nowcast ones re-run STEPS): keep them on disk; --rebuild-<name> recomputes."""
-    import pickle
-    f = ROOT / "hindcast" / "cache" / f"blocks_{name}.pkl"
-    if f.exists() and f"--rebuild-{name}" not in sys.argv and "--rebuild" not in sys.argv:
-        return pickle.loads(f.read_bytes())
-    blocks = build()
-    f.write_bytes(pickle.dumps(blocks, protocol=4))
-    return blocks
-
-
-def dump(results: dict) -> None:
-    (ROOT / "hindcast" / "results.json").write_text(json.dumps(results, indent=1, default=str), encoding="utf-8")
-
-
 if __name__ == "__main__":
-    truth = Truth()
-    print("truth cases:", {c: (str(a), str(b)) for c, (a, b) in truth.cases.items()}, flush=True)
-    results = {"generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ"), "truth_cases": sorted(truth.cases),
-               "thresholds_mm": {"1h": [20, 40, 90, 135], "12h": [60, 100, 180, 300]}}
-    tuned = {"sigma": {}, "bias": {}, "tau": {}}
-
-    # 48 h: also choose the neighbourhood radius
-    best = None
-    for radius in (12.0,):          # fixed: the event is "within 12 km", so other radii would score a different event
-        blocks = cached("mid", lambda: mid_blocks(truth, 1, radius))
-        if not blocks:
-            continue
-        sc = tune_dressing(blocks)[0]
-        print(f"48 h, radius {radius:.0f} km: {len(blocks)} blocks, mean BSS {sc:.3f}", flush=True)
-        if best is None or sc > best[0] + 0.003:
-            best = (sc, radius, blocks)
-    if best:
-        res = evaluate(best[2], "mid")
-        res["radius_km"] = best[1]
-        b2 = cached("mid_d2", lambda: mid_blocks(truth, 2, best[1]))
-        if b2:
-            t = res["tuned"]
-            res["lead_day2_same_settings"] = {k: {L: rates(v) for L, v in d.items()}
-                                              for k, d in contingency(b2, t["sigma"], t["bias"], t["tau"]).items()}
-        results["mid"] = res
-        for k in ("sigma", "bias", "tau"):
-            tuned[k]["mid"] = res["tuned"][k]
-        tuned["radius_km_mid"] = best[1]
-        print(json.dumps(res["tuned"]), flush=True)
-
-    dump(results)
-    blocks = cached("long", lambda: long_blocks(truth, 3) + long_blocks(truth, 5))
-    if blocks:
-        res = evaluate(blocks, "long")
-        results["long"] = res
-        for k in ("sigma", "bias", "tau"):
-            tuned[k]["long"] = res["tuned"][k]
-        print("long:", len(blocks), "blocks", json.dumps(res["tuned"]), flush=True)
-
-    if "--no-now" not in sys.argv:
-        dump(results)
-        blocks = cached("now", lambda: now_blocks(truth))
-        if blocks:
-            res = evaluate(blocks, "now")
-            results["now"] = res
-            for k in ("sigma", "bias", "tau"):
-                tuned[k]["now"] = res["tuned"][k]
-            print("now:", len(blocks), "blocks", json.dumps(res["tuned"]), flush=True)
-
-    results["hydrology_poyo_2024"] = poyo_check(truth)
-    (ROOT / "hindcast" / "results.json").write_text(json.dumps(results, indent=1, default=str), encoding="utf-8")
-
-    if "--write-params" in sys.argv:
-        out = {"version": f"hindcast-{results['generated'][:10]}", "sigma": tuned["sigma"], "bias": tuned["bias"],
-               "tau": {hz: {str(L): v for L, v in t.items()} for hz, t in tuned["tau"].items()}}
-        if "radius_km_mid" in tuned:
-            out["radius_km"] = {"mid": tuned["radius_km_mid"]}
-        P.save(out)
-        print("wrote", P.PARAMS_FILE)
-    print("done")
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    opt = {a.split("=")[0]: (a.split("=")[1] if "=" in a else True) for a in sys.argv[1:] if a.startswith("--")}
+    for k in ("--jobs", "--cases"):                      # also accept "--jobs 2"
+        if k in sys.argv and sys.argv.index(k) + 1 < len(sys.argv) and opt.get(k) is True:
+            opt[k] = sys.argv[sys.argv.index(k) + 1]
+            args = [a for a in args if a != opt[k]]
+    cmd = args[0] if args else "status"
+    jobs = int(opt.get("--jobs", 1))
+    cases = opt["--cases"].split(",") if isinstance(opt.get("--cases"), str) else None
+    hzs = [a for a in args[1:] if a in P.HORIZONS] or list(P.HORIZONS)
+    if cmd == "status":
+        status()
+    elif cmd in ("build", "all"):
+        build(hzs, jobs, cases, force="--force" in opt)
+    if cmd in ("fit", "all"):
+        import score
+        score.main(quick="--quick" in opt, hzs=[a for a in args[1:] if a in P.HORIZONS] or None)

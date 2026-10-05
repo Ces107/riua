@@ -69,7 +69,7 @@ DEFAULTS: dict = {
     # radius used only to bridge the 0.1 deg sampling lattice for members without neighbourhood
     "lattice_fill_km": 8.0,
     # rain already measured counts fully in a 12-h amount when the scenario still brings this much (mm)
-    "obs_gate_mm": 20.0,
+    "obs_gate_mm": 5.0,       # hindcast (q8): 5 mm scores 0.47 against 0.34 for 20 mm in 0-6 h
     "obs12_factor": 1.0,      # 0.88 if the measured hours were hourly cell maxima; they are pixel-consistent increments
     "sigma_obs": 0.15,
     # the 1-h criterion with its own kernel a day ahead: better in 7 of 7 hindcast cases
