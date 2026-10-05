@@ -323,3 +323,158 @@ def main(units_file: Path, out: Path) -> None:
     out.write_text(json.dumps(res, indent=1), encoding="utf-8")
     np.savez_compressed(out.with_suffix(".probs.npz"), **probs)
     print("wrote", out)
+
+
+# ------------------------------------------------------------------------------------- the deployed model
+
+def weighted_quantiles(v, w, probs):
+    o = np.argsort(v)
+    v, w = v[o], w[o]
+    c = (np.cumsum(w) - 0.5 * w) / w.sum()
+    return np.interp(probs, c, v)
+
+
+def fit(units_file: Path, out_model: Path, out_eval: Path, mult=None, lam: float = 30.0, levels=(2, 3, 4)) -> None:
+    """Fit the zone-day model of backend/riua/core/zoneday.py on every case, with its LOCO evaluation.
+    mult: member weight multipliers by model code (0 ENS, 1 IFS, 2 AIFS-ENS); default = production (ENS + IFS)."""
+    import sys as _s
+    _s.path.insert(0, str(Path(__file__).resolve().parents[1] / "backend"))
+    from riua.core import zoneday as ZD
+    import day_climatology as DC
+    pop = np.array(DC.load()["frequency"], float)
+    u = U(units_file, pop)
+    mult = mult or {0: 1.0, 1: 1.0}
+    Wn = u.wn(mult)
+    lR = u.lR
+    Sy = ZD.summaries(lR[:, :, 0], Wn, u.lead)
+    # LOCO: ranks against the other cases' climate (exact), model refitted without the held-out case
+    rk, rk90 = rank_feature(u, Sy[:, 0]), rank_feature(u, Sy[:, 3])
+    probs_tab = np.linspace(0, 1, 101)
+    model = {"version": "zoneday-1", "members": {str(k): v for k, v in mult.items()}, "lam": lam,
+             "features": ["mean", "fr1", "fr5", "q90", "lead", "rank_mean", "rank_q90"],
+             "climate": {"probs": probs_tab.round(3).tolist(), "mean": [], "q90": []}, "levels": {}}
+    for z in range(int(u.zone.max()) + 1):
+        rows_m, rows_q = [], []
+        for m in range(1, 13):
+            dm = np.minimum((u.month - m) % 12, (m - u.month) % 12)
+            sel = (u.zone == z) & (dm <= 1)
+            if sel.sum() < 20:
+                sel = u.zone == z
+            rows_m.append(weighted_quantiles(Sy[sel, 0], u.w[sel], probs_tab).round(4).tolist())
+            rows_q.append(weighted_quantiles(Sy[sel, 3], u.w[sel], probs_tab).round(4).tolist())
+        model["climate"]["mean"].append(rows_m)
+        model["climate"]["q90"].append(rows_q)
+    ev = {"units": u.n, "cases": u.C, "member_set": {str(k): v for k, v in mult.items()}, "levels": {}}
+    P_loco = np.zeros((4, u.n))
+    for L in levels:
+        k = L - 2
+        S = ZD.summaries(lR[:, :, k], Wn, u.lead)
+        X = np.hstack([S, ZD.rank_lg(rk)[:, None], ZD.rank_lg(rk90)[:, None]])
+        p, _ = loco_logit(u, k, X, lam)
+        P_loco[k] = p
+        # final model on every case, ranks from the shipped tables (what production computes)
+        Xt = ZD.features(u.R, Wn, u.lead, u.zone, u.month, model)[k]
+        mu, sd = Xt.mean(0), Xt.std(0) + 1e-9
+        beta = ridge((Xt - mu) / sd, u.obs[:, k].astype(float), u.w, lam)
+        model["levels"][str(L)] = {"mu": mu.round(5).tolist(), "sd": sd.round(5).tolist(), "beta": beta.round(5).tolist()}
+    P_loco = np.minimum.accumulate(P_loco, axis=0)
+    rng = np.random.default_rng(1)
+    for L in levels:
+        k = L - 2
+        p = P_loco[k]
+        dec, picks = nested(u, p, k)
+        o = u.obs[:, k].astype(float)
+        base = base_loco(u, k)
+        num = np.array([(u.w * (p - o) ** 2)[u.ci == c].sum() for c in range(u.C)])
+        ref = np.array([(u.w * (base - o) ** 2)[u.ci == c].sum() for c in range(u.C)])
+        boot = []
+        for _ in range(1000):
+            ix = rng.integers(0, u.C, u.C)
+            boot.append(1 - num[ix].sum() / max(ref[ix].sum(), 1e-12))
+        rel = []
+        for a, b in zip([0, .05, .1, .15, .2, .3, .4, .5, .7], [.05, .1, .15, .2, .3, .4, .5, .7, 1.01]):
+            s = (p >= a) & (p < b)
+            if s.any():
+                rel.append({"p": round(float(np.average(p[s], weights=u.w[s])), 3), "observed": round(float(np.average(o[s], weights=u.w[s])), 3),
+                            "n": round(float(u.w[s].sum()), 1)})
+        ev["levels"][str(L)] = {"BSS": bss(u, p, k), "BSS_p05": round(float(np.percentile(boot, 5)), 4),
+                                "BSS_p95": round(float(np.percentile(boot, 95)), 4), "BSS_episodes": bss(u, p, k, u.episode),
+                                "BSS_quiet": bss(u, p, k, ~u.episode), "ROC_area": roc_area(u, p, k),
+                                "BSS_by_lead": {n: bss(u, p, k, u.lcls == i) for i, n in enumerate(LEADS)},
+                                "taus_picked": {str(t): picks.count(t) for t in sorted(set(picks))},
+                                "nested": decisions_table(u, dec, k),
+                                "fixed_tau": {str(t): decisions_table(u, p >= t, k) for t in (0.1, 0.15, 0.2, 0.25, 0.3, 0.4)},
+                                "reliability": rel}
+        print(f"L{L}: LOCO BSS {ev['levels'][str(L)]['BSS']} (p05 {ev['levels'][str(L)]['BSS_p05']}) ROC {ev['levels'][str(L)]['ROC_area']} "
+              f"nested {ev['levels'][str(L)]['nested']['combined']} taus {ev['levels'][str(L)]['taus_picked']}", flush=True)
+    # in-sample check of the shipped model (table ranks) against the LOCO probabilities
+    Pt = ZD.probabilities(u.R, Wn, u.lead, u.zone, u.month, model)
+    ev["shipped_in_sample_BSS"] = {str(L): bss(u, Pt[L - 2], L - 2) for L in levels}
+    out_model.write_text(json.dumps(model, separators=(",", ":")), encoding="utf-8")
+    out_eval.write_text(json.dumps(ev, indent=1), encoding="utf-8")
+    np.save(out_eval.with_suffix(".loco.npy"), P_loco)
+    print("in-sample (shipped tables)", ev["shipped_in_sample_BSS"], "->", out_model, out_eval)
+
+
+if __name__ == "__main__":
+    import sys as _s
+    a = _s.argv[1:]
+    get = lambda n, d: a[a.index(n) + 1] if n in a else d          # noqa: E731
+    if a and a[0] == "fit":
+        ms = get("--members", "0,1")
+        fit(Path(get("--units", "hindcast/cache/long_units.npz")), Path(get("--model", "backend/riua/zoneday_model.json")),
+            Path(get("--eval", "hindcast/long_eval.json")), {int(x): 1.0 for x in ms.split(",")}, float(get("--lam", "30")))
+
+
+def to_results(units_file: Path, loco_file: Path, eval_file: Path, res_file: Path, tau: dict, cap: int | None) -> None:
+    """Write the days 2-7 block of hindcast/results.json (what make_pages.py shows) from the LOCO probabilities of
+    the zone-day model, with the deployed thresholds and level cap."""
+    import day_climatology as DC
+    u = U(units_file, np.array(DC.load()["frequency"], float))
+    P = np.load(loco_file)
+    ev = json.loads(eval_file.read_text(encoding="utf-8"))
+
+    def rates(dec, o, w):
+        h, m, fa, cn = (w * (dec & o)).sum(), (w * (~dec & o)).sum(), (w * (dec & ~o)).sum(), (w * (~dec & ~o)).sum()
+        return {"hits": int(round(h)), "misses": int(round(m)), "false_alarms": int(round(fa)), "correct_negatives": int(round(cn)),
+                "POD": round(h / (h + m), 3) if h + m else None, "FAR": round(fa / (h + fa), 3) if h + fa else None,
+                "CSI": round(h / (h + m + fa), 3) if h + m + fa else None, "freq_bias": round((h + fa) / (h + m), 2) if h + m else None}
+
+    def block(sel):
+        out = {}
+        for k, L in enumerate(LEVELS):
+            dec = (P[k] >= float(tau[str(L)])) & (cap is None or L <= cap)
+            out[str(L)] = rates(dec[sel], u.obs[sel, k], u.w[sel])
+        return out
+    allu = np.ones(u.n, bool)
+    rel = {}
+    for L in ("2", "3", "4"):
+        rel[L] = [{"p_forecast": r["p"], "observed_freq": r["observed"], "n": r["n"]} for r in ev["levels"][L]["reliability"]]
+    R = json.loads(res_file.read_text(encoding="utf-8")) if res_file.exists() else {}
+    R["long"] = {
+        "horizon": "long", "scale": "zone", "cases": u.cases, "n_frames": int(len(set(zip(u.z["issue"].tolist(), u.z["day"].tolist())))),
+        "n_issue_times": int(len(set(u.z["issue"].tolist()))), "n_zone_days": u.n,
+        "tuned": {"model": "zoneday (core/zoneday.py)", "sigma": None, "bias": None, "tau": tau,
+                  "loco_BSS": [ev["levels"][L]["BSS"] for L in ("2", "3", "4")] + [None],
+                  "loco_BSS_p05": [ev["levels"][L]["BSS_p05"] for L in ("2", "3", "4")] + [None]},
+        "level_cap": cap, "tau": tau, "deployed_tau": tau, "deployed_cap": cap,
+        "deployed": {"zone_day": block(allu)},
+        "deployed_split": {"combined": {"zone_day": block(allu)}, "episodes": {"zone_day": block(u.episode)},
+                           "quiet": {"zone_day": block(~u.episode)}},
+        "deployed_by_lead": {n: {"zone_day": block(u.lcls == i)} for i, n in enumerate(LEADS)},
+        "reliability": rel,
+        "note": "q13-long: issue 08Z with the 00Z ECMWF ENS + the 2 newest IFS runs (production's members), every lead "
+                "day 2..7, warning zone x UTC day, leave-one-case-out, days weighted by the real frequency of their kind",
+    }
+    res_file.write_text(json.dumps(R, indent=1, default=str), encoding="utf-8")
+    print(json.dumps(R["long"]["deployed"], indent=0)[:1500])
+
+
+if __name__ == "__main__":
+    import sys as _s
+    a = _s.argv[1:]
+    get = lambda n, d: a[a.index(n) + 1] if n in a else d          # noqa: E731
+    if a and a[0] == "results":
+        to_results(Path(get("--units", "hindcast/cache/long_units.npz")), Path(get("--loco", "hindcast/long_eval.loco.npy")),
+                   Path(get("--eval", "hindcast/long_eval.json")), Path(get("--results", "hindcast/results.json")),
+                   json.loads(get("--tau", '{"2": 0.3, "3": 0.2, "4": 0.2, "5": 0.5}')), int(get("--cap", "3")))

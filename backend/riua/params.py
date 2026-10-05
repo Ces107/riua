@@ -74,8 +74,14 @@ DEFAULTS: dict = {
     "sigma_obs": 0.15,
     # the 1-h criterion with its own kernel a day ahead: better in 7 of 7 hindcast cases
     "sigma1h": {"mid": 1.0}, "bias1h": {"mid": 1.0},
-    # days 2-7: no skill above "alto" outside the 2024 DANA (BSS about 0): the level stops at 3
+    # days 2-7: red not demonstrable at zone-day scale either (BSS 0.054, case-bootstrap p05 -0.001): the level stops at 3
     "level_cap": {"long": 3},
+    # days 2-7 by warning zone and day (core/zoneday.py, coefficients in zoneday_model.json): P(level reached somewhere in
+    # the zone that day), every cell of the zone shows it. Hindcast q13 (41 cases, LOCO, days weighted by frequency):
+    # tau 0.30 yellow = CSI optimum in 40 of 41 folds; 0.20 orange (cost/loss ~0.2, probabilities reliable)
+    "zoneday": {"long": {"on": True, "tau": {"2": 0.30, "3": 0.20, "4": 0.20, "5": 0.50}}},
+    # agreement rule: never fired on the 8448 zone-days 2-7 of the hindcast (ENS >= 30 % and an IFS run at red in the
+    # same cell): no effect on days 2-7
     # at least 2 different models (an ensemble counts as one when 30 % of its weight agrees) reaching the red or
     # extreme threshold outright raise the level to 4 or 5, in every horizon
     "agreement": {"on": False, "models": 2, "ens_share": 0.3},   # off until the hindcast shows it helps

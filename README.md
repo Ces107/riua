@@ -93,16 +93,16 @@ See `hindcast/results.json` and the Validación page. Method: forecasts that rea
 | 2 | 15 % | 687 | 1085 | 499 | 39 % | 42 % |
 | 3 | 15 % | 156 | 534 | 166 | 23 % | 52 % |
 | 4 | 15 % | 14 | 209 | 19 | 6 % | 57 % |
-| 5 | 40 % | 0 | 28 | 0 | 0 % | — |
+| 5 | 50 % | 0 | 28 | 0 | 0 % | — |
 
-**Days 2–7 (issued 3 and 5 days before)** — 41 cases, 316 frames, σ = 1.0, bias = 1.6; per warning zone and day:
+**Days 2–7 (per warning zone and day, issued 2 to 7 days before)** — 41 cases, 756 frames, zone-day model; per warning zone and day:
 
 | Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |
 |---|---|---|---|---|---|---|
-| 2 | 15 % | 185 | 371 | 192 | 33 % | 51 % |
-| 3 | 25 % | 14 | 213 | 32 | 6 % | 69 % |
-| 4 | 40 % | 0 | 66 | 0 | 0 % | — |
-| 5 | 40 % | 0 | 10 | 0 | 0 % | — |
+| 2 | 30 % | 608 | 734 | 726 | 45 % | 54 % |
+| 3 | 20 % | 151 | 388 | 434 | 28 % | 74 % |
+| 4 | 20 % | 0 | 155 | 0 | 0 % | — |
+| 5 | 50 % | 0 | 20 | 0 | 0 % | — |
 
 **Rambla del Poyo, 29 Oct 2024** (observed rain as input): 20 m³/s at the A-3 gauge (measured 2283 m³/s when the sensor was lost), 400 m³/s at Paiporta. Peak timing cannot be verified: the Cullera radar was attenuated during the maximum and no open sub-daily gauge data exist for 2024.
 <!-- /VALIDATION-TABLE -->

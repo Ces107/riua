@@ -493,6 +493,22 @@ def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: 
         z = np.zeros((4, F, grid.NY, grid.NX), np.float32)
         prob, p1, p12, e1, e12 = z, z.copy(), z.copy(), z[:2].copy(), z[:2].copy()
     level = risk.decide(prob, params["tau"][hz])
+    zones = None
+    zcfg = params.get("zoneday", {}).get(hz)
+    if zcfg and zcfg.get("on") and pred.a12 is not None:
+        try:
+            zones = zone_day(pred, frames, hnow, params, st, thr, zcfg)
+        except Exception:
+            log.error("zone-day %s failed: %s", hz, traceback.format_exc())
+        if zones is not None:
+            # every cell of a warning zone shows the zone-day probability and level; cells outside the zones keep theirs
+            zi = st.zone_idx
+            inz = zi >= 0
+            for f in range(F):
+                if not pred.valid[f]:
+                    continue
+                prob[:, f][:, inz] = zones["p"][:, f][:, zi[inz]]
+                level[f][inz] = zones["level"][f][zi[inz]]
     cap = params.get("level_cap", {}).get(hz)
     if cap:
         level = np.minimum(level, cap)
@@ -504,7 +520,7 @@ def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: 
     level[~pred.valid] = 0
     acc, acc_total = frame_accumulation(members, frames, params, hz, hnow)
     out = dict(frames=frames, pred=pred, prob=prob, p1=p1, p12=p12, level=level, e1=e1, e12=e12, cals=cals,
-               acc=acc, acc_total=acc_total)
+               acc=acc, acc_total=acc_total, zones=zones)
     out["basins"] = B.basin_product(members, frames, bs, params, hz, hnow)
     if net is not None:
         t_axis = np.unique(np.concatenate([m.t_end for m in members])) if members else np.array([], "datetime64[h]")
@@ -520,6 +536,26 @@ def horizon_product(hz: str, members: list[risk.Member], now: datetime, params: 
                 log.error("reservoirs %s failed: %s", hz, traceback.format_exc())
         out["points"] = H.hydro_product(members, frames, net, params, hz, hnow, t_axis, extra=extra)
     return out
+
+
+def zone_day(pred, frames, hnow: datetime, params: dict, st, thr, zcfg: dict) -> dict | None:
+    """Days 2-7 by warning zone and day (core/zoneday.py): P(>= L) (4, F, Z) and the level (F, Z) before the cap."""
+    from .core import zoneday as ZD
+    model = ZD.load_model()
+    if model is None:
+        return None
+    Z = len(st.zone_codes)
+    R, Wn = ZD.zone_ratios(pred, thr, params, st.zone_idx, Z)          # (F, Z, M, 4), (F, Z, M)
+    F, M = R.shape[0], R.shape[2]
+    h = np.datetime64(hnow, "h")
+    lead = np.repeat([float((t1 - h) / np.timedelta64(1, "h")) for _, t1 in frames], Z)       # hours to the end of the day
+    month = np.repeat([int(str(t0)[5:7]) for t0, _ in frames], Z)
+    zone = np.tile(np.arange(Z), F)
+    p = ZD.probabilities(R.reshape(F * Z, M, 4), Wn.reshape(F * Z, M), lead, zone, month, model)    # (4, F*Z)
+    p = p.reshape(4, F, Z).astype(np.float32)
+    p[:, ~pred.valid] = 0.0
+    return {"p": p, "level": risk.decide(p, zcfg["tau"]), "codes": list(st.zone_codes), "tau": zcfg["tau"],
+            "model": model.get("version")}
 
 
 def frame_accumulation(members, frames, params: dict, hz: str, now: datetime):
@@ -587,6 +623,15 @@ def pack_horizon(hz: str, o: dict, mask: np.ndarray, params: dict) -> tuple[dict
                   "m12": S.b64(_mm_na(cells(pred.m12))), "q12": S.b64(_mm_na(cells(pred.q12)))},
         "members": pred.audit,
     }
+    zd = o.get("zones")
+    if zd is not None:
+        # days 2-7: probability and level per warning zone and day (the cells of each zone carry the same values)
+        lv = zd["level"].copy()
+        if blk["level_cap"]:
+            lv = np.minimum(lv, blk["level_cap"])
+        blk["scale"] = "zone"
+        blk["zones"] = {"codes": zd["codes"], "tau": zd["tau"], "model": zd["model"],
+                        "p": np.floor(zd["p"] * 200.0).astype(int).tolist(), "level": lv.astype(int).tolist()}
     bp = o["basins"]
     blk["basins"] = {"level": S.r(bp.level, 0), "p": S.r(bp.prob, 3), "own12": S.r(bp.own12, 0),
                      "up12": S.r(bp.up12, 0), "q": S.r(bp.q, 2), "upstream": S.r(bp.upstream_driven, 2)}

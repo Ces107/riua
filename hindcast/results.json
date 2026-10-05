@@ -2868,6 +2868,7 @@
  },
  "long": {
   "horizon": "long",
+  "scale": "zone",
   "cases": [
    "2025-01-17",
    "2025-02-05",
@@ -2911,1864 +2912,73 @@
    "2026-09-22",
    "2026-09-28"
   ],
-  "n_frames": 316,
-  "n_issue_times": 231,
-  "n_cell_frames": 803272,
-  "observed_cell_frames": {
-   "2": 65528,
-   "3": 22348,
-   "4": 3310,
-   "5": 281
-  },
+  "n_frames": 756,
+  "n_issue_times": 288,
+  "n_zone_days": 8448,
   "tuned": {
-   "sigma": 1.0,
-   "bias": 1.6,
-   "sigma1h": 1.0,
-   "bias1h": 1.6,
+   "model": "zoneday (core/zoneday.py)",
+   "sigma": null,
+   "bias": null,
    "tau": {
-    "2": 0.15,
-    "3": 0.25,
-    "4": 0.4,
-    "5": 0.4
+    "2": 0.3,
+    "3": 0.2,
+    "4": 0.2,
+    "5": 0.5
    },
-   "mean_BSS": 0.0025,
-   "BSS": [
-    0.0052,
-    0.0021,
-    0.0001,
-    null
-   ],
    "loco_BSS": [
-    0.0008164563910803002,
-    -0.0030825261303726315,
-    -0.004233035352444903,
+    0.1534,
+    0.0856,
+    0.0544,
     null
    ],
    "loco_BSS_p05": [
-    -0.02281197308744356,
-    -0.024215509041945835,
-    -0.02217121864465591,
+    0.0752,
+    0.0227,
+    -0.001,
     null
    ]
   },
   "level_cap": 3,
   "tau": {
-   "2": 0.15,
-   "3": 0.25,
-   "4": 0.4,
-   "5": 0.4
+   "2": 0.3,
+   "3": 0.2,
+   "4": 0.2,
+   "5": 0.5
   },
-  "cross_validated": {
-   "zone_day": {
-    "2": {
-     "hits": 75,
-     "misses": 481,
-     "false_alarms": 66,
-     "correct_negatives": 2853,
-     "POD": 0.136,
-     "FAR": 0.468,
-     "CSI": 0.121,
-     "freq_bias": 0.25
-    },
-    "3": {
-     "hits": 0,
-     "misses": 227,
-     "false_alarms": 8,
-     "correct_negatives": 3241,
-     "POD": 0.002,
-     "FAR": 0.941,
-     "CSI": 0.002,
-     "freq_bias": 0.04
-    },
-    "4": {
-     "hits": 0,
-     "misses": 66,
-     "false_alarms": 0,
-     "correct_negatives": 3410,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    },
-    "5": {
-     "hits": 0,
-     "misses": 10,
-     "false_alarms": 0,
-     "correct_negatives": 3466,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    }
-   },
-   "cell": {
-    "2": {
-     "hits": 1602,
-     "misses": 30071,
-     "false_alarms": 8569,
-     "correct_negatives": 763030,
-     "POD": 0.051,
-     "FAR": 0.843,
-     "CSI": 0.04,
-     "freq_bias": 0.32
-    },
-    "3": {
-     "hits": 0,
-     "misses": 10358,
-     "false_alarms": 164,
-     "correct_negatives": 792750,
-     "POD": 0.0,
-     "FAR": 1.0,
-     "CSI": 0.0,
-     "freq_bias": 0.02
-    },
-    "4": {
-     "hits": 0,
-     "misses": 1719,
-     "false_alarms": 0,
-     "correct_negatives": 801553,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    },
-    "5": {
-     "hits": 0,
-     "misses": 116,
-     "false_alarms": 0,
-     "correct_negatives": 803156,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    }
-   },
-   "cell_zones": {
-    "2": {
-     "hits": 1414,
-     "misses": 14274,
-     "false_alarms": 5697,
-     "correct_negatives": 327795,
-     "POD": 0.09,
-     "FAR": 0.801,
-     "CSI": 0.066,
-     "freq_bias": 0.45
-    },
-    "3": {
-     "hits": 0,
-     "misses": 4833,
-     "false_alarms": 146,
-     "correct_negatives": 344201,
-     "POD": 0.0,
-     "FAR": 1.0,
-     "CSI": 0.0,
-     "freq_bias": 0.03
-    },
-    "4": {
-     "hits": 0,
-     "misses": 939,
-     "false_alarms": 0,
-     "correct_negatives": 348241,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    },
-    "5": {
-     "hits": 0,
-     "misses": 91,
-     "false_alarms": 0,
-     "correct_negatives": 349089,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    }
-   }
+  "deployed_tau": {
+   "2": 0.3,
+   "3": 0.2,
+   "4": 0.2,
+   "5": 0.5
   },
-  "in_sample": {
-   "zone_day": {
-    "2": {
-     "hits": 82,
-     "misses": 474,
-     "false_alarms": 60,
-     "correct_negatives": 2860,
-     "POD": 0.147,
-     "FAR": 0.422,
-     "CSI": 0.133,
-     "freq_bias": 0.26
-    },
-    "3": {
-     "hits": 0,
-     "misses": 227,
-     "false_alarms": 4,
-     "correct_negatives": 3245,
-     "POD": 0.0,
-     "FAR": 1.0,
-     "CSI": 0.0,
-     "freq_bias": 0.02
-    },
-    "4": {
-     "hits": 0,
-     "misses": 66,
-     "false_alarms": 0,
-     "correct_negatives": 3410,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    },
-    "5": {
-     "hits": 0,
-     "misses": 10,
-     "false_alarms": 0,
-     "correct_negatives": 3466,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    }
-   },
-   "cell": {
-    "2": {
-     "hits": 1789,
-     "misses": 29884,
-     "false_alarms": 6980,
-     "correct_negatives": 764619,
-     "POD": 0.056,
-     "FAR": 0.796,
-     "CSI": 0.046,
-     "freq_bias": 0.28
-    },
-    "3": {
-     "hits": 0,
-     "misses": 10358,
-     "false_alarms": 59,
-     "correct_negatives": 792855,
-     "POD": 0.0,
-     "FAR": 1.0,
-     "CSI": 0.0,
-     "freq_bias": 0.01
-    },
-    "4": {
-     "hits": 0,
-     "misses": 1719,
-     "false_alarms": 0,
-     "correct_negatives": 801553,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    },
-    "5": {
-     "hits": 0,
-     "misses": 116,
-     "false_alarms": 0,
-     "correct_negatives": 803156,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    }
-   },
-   "cell_zones": {
-    "2": {
-     "hits": 1626,
-     "misses": 14062,
-     "false_alarms": 5013,
-     "correct_negatives": 328478,
-     "POD": 0.104,
-     "FAR": 0.755,
-     "CSI": 0.079,
-     "freq_bias": 0.42
-    },
-    "3": {
-     "hits": 0,
-     "misses": 4833,
-     "false_alarms": 51,
-     "correct_negatives": 344296,
-     "POD": 0.0,
-     "FAR": 1.0,
-     "CSI": 0.0,
-     "freq_bias": 0.01
-    },
-    "4": {
-     "hits": 0,
-     "misses": 939,
-     "false_alarms": 0,
-     "correct_negatives": 348241,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    },
-    "5": {
-     "hits": 0,
-     "misses": 91,
-     "false_alarms": 0,
-     "correct_negatives": 349089,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    }
-   }
-  },
-  "split": {
-   "episodes": {
-    "zone_day": {
-     "2": {
-      "hits": 168,
-      "misses": 631,
-      "false_alarms": 84,
-      "correct_negatives": 647,
-      "POD": 0.21,
-      "FAR": 0.334,
-      "CSI": 0.19,
-      "freq_bias": 0.32
-     },
-     "3": {
-      "hits": 1,
-      "misses": 423,
-      "false_alarms": 13,
-      "correct_negatives": 1092,
-      "POD": 0.003,
-      "FAR": 0.906,
-      "CSI": 0.003,
-      "freq_bias": 0.03
-     },
-     "4": {
-      "hits": 0,
-      "misses": 102,
-      "false_alarms": 0,
-      "correct_negatives": 1427,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 14,
-      "false_alarms": 0,
-      "correct_negatives": 1515,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 3653,
-      "misses": 43682,
-      "false_alarms": 12644,
-      "correct_negatives": 293359,
-      "POD": 0.077,
-      "FAR": 0.776,
-      "CSI": 0.061,
-      "freq_bias": 0.34
-     },
-     "3": {
-      "hits": 0,
-      "misses": 15947,
-      "false_alarms": 358,
-      "correct_negatives": 337032,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.02
-     },
-     "4": {
-      "hits": 0,
-      "misses": 2025,
-      "false_alarms": 0,
-      "correct_negatives": 351313,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 169,
-      "false_alarms": 0,
-      "correct_negatives": 353169,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 3327,
-      "misses": 24184,
-      "false_alarms": 9130,
-      "correct_negatives": 116954,
-      "POD": 0.121,
-      "FAR": 0.733,
-      "CSI": 0.091,
-      "freq_bias": 0.45
-     },
-     "3": {
-      "hits": 0,
-      "misses": 9560,
-      "false_alarms": 331,
-      "correct_negatives": 143704,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.03
-     },
-     "4": {
-      "hits": 0,
-      "misses": 1132,
-      "false_alarms": 0,
-      "correct_negatives": 152463,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 100,
-      "false_alarms": 0,
-      "correct_negatives": 153495,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    }
-   },
-   "quiet": {
-    "zone_day": {
-     "2": {
-      "hits": 10,
-      "misses": 170,
-      "false_alarms": 24,
-      "correct_negatives": 1743,
-      "POD": 0.057,
-      "FAR": 0.701,
-      "CSI": 0.05,
-      "freq_bias": 0.19
-     },
-     "3": {
-      "hits": 0,
-      "misses": 50,
-      "false_alarms": 2,
-      "correct_negatives": 1895,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.04
-     },
-     "4": {
-      "hits": 0,
-      "misses": 20,
-      "false_alarms": 0,
-      "correct_negatives": 1927,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 3,
-      "false_alarms": 0,
-      "correct_negatives": 1944,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 195,
-      "misses": 9590,
-      "false_alarms": 2686,
-      "correct_negatives": 437463,
-      "POD": 0.02,
-      "FAR": 0.932,
-      "CSI": 0.016,
-      "freq_bias": 0.29
-     },
-     "3": {
-      "hits": 0,
-      "misses": 3089,
-      "false_alarms": 24,
-      "correct_negatives": 446822,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.01
-     },
-     "4": {
-      "hits": 0,
-      "misses": 661,
-      "false_alarms": 0,
-      "correct_negatives": 449273,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 37,
-      "false_alarms": 0,
-      "correct_negatives": 449897,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 148,
-      "misses": 3731,
-      "false_alarms": 1613,
-      "correct_negatives": 190093,
-      "POD": 0.038,
-      "FAR": 0.916,
-      "CSI": 0.027,
-      "freq_bias": 0.45
-     },
-     "3": {
-      "hits": 0,
-      "misses": 937,
-      "false_alarms": 18,
-      "correct_negatives": 194630,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.02
-     },
-     "4": {
-      "hits": 0,
-      "misses": 354,
-      "false_alarms": 0,
-      "correct_negatives": 195231,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 37,
-      "false_alarms": 0,
-      "correct_negatives": 195548,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    }
-   },
-   "combined": {
-    "zone_day": {
-     "2": {
-      "hits": 75,
-      "misses": 481,
-      "false_alarms": 66,
-      "correct_negatives": 2853,
-      "POD": 0.136,
-      "FAR": 0.468,
-      "CSI": 0.121,
-      "freq_bias": 0.25
-     },
-     "3": {
-      "hits": 0,
-      "misses": 227,
-      "false_alarms": 8,
-      "correct_negatives": 3241,
-      "POD": 0.002,
-      "FAR": 0.941,
-      "CSI": 0.002,
-      "freq_bias": 0.04
-     },
-     "4": {
-      "hits": 0,
-      "misses": 66,
-      "false_alarms": 0,
-      "correct_negatives": 3410,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 10,
-      "false_alarms": 0,
-      "correct_negatives": 3466,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 1602,
-      "misses": 30071,
-      "false_alarms": 8569,
-      "correct_negatives": 763030,
-      "POD": 0.051,
-      "FAR": 0.843,
-      "CSI": 0.04,
-      "freq_bias": 0.32
-     },
-     "3": {
-      "hits": 0,
-      "misses": 10358,
-      "false_alarms": 164,
-      "correct_negatives": 792750,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.02
-     },
-     "4": {
-      "hits": 0,
-      "misses": 1719,
-      "false_alarms": 0,
-      "correct_negatives": 801553,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 116,
-      "false_alarms": 0,
-      "correct_negatives": 803156,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 1414,
-      "misses": 14274,
-      "false_alarms": 5697,
-      "correct_negatives": 327795,
-      "POD": 0.09,
-      "FAR": 0.801,
-      "CSI": 0.066,
-      "freq_bias": 0.45
-     },
-     "3": {
-      "hits": 0,
-      "misses": 4833,
-      "false_alarms": 146,
-      "correct_negatives": 344201,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.03
-     },
-     "4": {
-      "hits": 0,
-      "misses": 939,
-      "false_alarms": 0,
-      "correct_negatives": 348241,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 91,
-      "false_alarms": 0,
-      "correct_negatives": 349089,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    }
-   },
-   "sample": {
-    "zone_day": {
-     "2": {
-      "hits": 230,
-      "misses": 873,
-      "false_alarms": 139,
-      "correct_negatives": 2234,
-      "POD": 0.209,
-      "FAR": 0.377,
-      "CSI": 0.185,
-      "freq_bias": 0.33
-     },
-     "3": {
-      "hits": 2,
-      "misses": 526,
-      "false_alarms": 22,
-      "correct_negatives": 2926,
-      "POD": 0.004,
-      "FAR": 0.917,
-      "CSI": 0.004,
-      "freq_bias": 0.05
-     },
-     "4": {
-      "hits": 0,
-      "misses": 152,
-      "false_alarms": 0,
-      "correct_negatives": 3324,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 24,
-      "false_alarms": 0,
-      "correct_negatives": 3452,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 5081,
-      "misses": 60447,
-      "false_alarms": 20875,
-      "correct_negatives": 716869,
-      "POD": 0.078,
-      "FAR": 0.804,
-      "CSI": 0.059,
-      "freq_bias": 0.4
-     },
-     "3": {
-      "hits": 0,
-      "misses": 22348,
-      "false_alarms": 543,
-      "correct_negatives": 780381,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.02
-     },
-     "4": {
-      "hits": 0,
-      "misses": 3310,
-      "false_alarms": 0,
-      "correct_negatives": 799962,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 281,
-      "false_alarms": 0,
-      "correct_negatives": 802991,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 4517,
-      "misses": 30742,
-      "false_alarms": 14041,
-      "correct_negatives": 299880,
-      "POD": 0.128,
-      "FAR": 0.757,
-      "CSI": 0.092,
-      "freq_bias": 0.53
-     },
-     "3": {
-      "hits": 0,
-      "misses": 11781,
-      "false_alarms": 497,
-      "correct_negatives": 336902,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.04
-     },
-     "4": {
-      "hits": 0,
-      "misses": 1876,
-      "false_alarms": 0,
-      "correct_negatives": 347304,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 198,
-      "false_alarms": 0,
-      "correct_negatives": 348982,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    }
-   }
-  },
-  "split_note": "episodes = days with >= 30 mm at the wettest SAIH gauge, quiet = the other days, combined = both weighted with the real frequency of each kind of day (hindcast/day_climatology.json), sample = unweighted",
-  "by_lead": {
-   "d2-3": {
-    "combined": {
-     "zone_day": {
-      "2": {
-       "hits": 30,
-       "misses": 170,
-       "false_alarms": 26,
-       "correct_negatives": 1039,
-       "POD": 0.149,
-       "FAR": 0.468,
-       "CSI": 0.132,
-       "freq_bias": 0.28
-      },
-      "3": {
-       "hits": 1,
-       "misses": 80,
-       "false_alarms": 6,
-       "correct_negatives": 1178,
-       "POD": 0.006,
-       "FAR": 0.92,
-       "CSI": 0.006,
-       "freq_bias": 0.08
-      },
-      "4": {
-       "hits": 0,
-       "misses": 23,
-       "false_alarms": 0,
-       "correct_negatives": 1242,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 3,
-       "false_alarms": 0,
-       "correct_negatives": 1262,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell": {
-      "2": {
-       "hits": 806,
-       "misses": 10710,
-       "false_alarms": 3852,
-       "correct_negatives": 276963,
-       "POD": 0.07,
-       "FAR": 0.827,
-       "CSI": 0.052,
-       "freq_bias": 0.4
-      },
-      "3": {
-       "hits": 0,
-       "misses": 3751,
-       "false_alarms": 154,
-       "correct_negatives": 288425,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.04
-      },
-      "4": {
-       "hits": 0,
-       "misses": 612,
-       "false_alarms": 0,
-       "correct_negatives": 291718,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 41,
-       "false_alarms": 0,
-       "correct_negatives": 292289,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell_zones": {
-      "2": {
-       "hits": 663,
-       "misses": 4991,
-       "false_alarms": 2423,
-       "correct_negatives": 118998,
-       "POD": 0.117,
-       "FAR": 0.785,
-       "CSI": 0.082,
-       "freq_bias": 0.55
-      },
-      "3": {
-       "hits": 0,
-       "misses": 1725,
-       "false_alarms": 139,
-       "correct_negatives": 125211,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.08
-      },
-      "4": {
-       "hits": 0,
-       "misses": 330,
-       "false_alarms": 0,
-       "correct_negatives": 126745,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 32,
-       "false_alarms": 0,
-       "correct_negatives": 127043,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     }
-    },
-    "episodes": {
-     "zone_day": {
-      "2": {
-       "hits": 66,
-       "misses": 208,
-       "false_alarms": 28,
-       "correct_negatives": 237,
-       "POD": 0.24,
-       "FAR": 0.302,
-       "CSI": 0.217,
-       "freq_bias": 0.34
-      },
-      "3": {
-       "hits": 1,
-       "misses": 145,
-       "false_alarms": 12,
-       "correct_negatives": 381,
-       "POD": 0.01,
-       "FAR": 0.894,
-       "CSI": 0.009,
-       "freq_bias": 0.09
-      },
-      "4": {
-       "hits": 0,
-       "misses": 36,
-       "false_alarms": 0,
-       "correct_negatives": 503,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 5,
-       "false_alarms": 0,
-       "correct_negatives": 534,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell": {
-      "2": {
-       "hits": 1614,
-       "misses": 14888,
-       "false_alarms": 5550,
-       "correct_negatives": 102506,
-       "POD": 0.098,
-       "FAR": 0.775,
-       "CSI": 0.073,
-       "freq_bias": 0.43
-      },
-      "3": {
-       "hits": 0,
-       "misses": 5639,
-       "false_alarms": 350,
-       "correct_negatives": 118569,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.06
-      },
-      "4": {
-       "hits": 0,
-       "misses": 717,
-       "false_alarms": 0,
-       "correct_negatives": 123841,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 60,
-       "false_alarms": 0,
-       "correct_negatives": 124498,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell_zones": {
-      "2": {
-       "hits": 1386,
-       "misses": 8093,
-       "false_alarms": 3563,
-       "correct_negatives": 41104,
-       "POD": 0.146,
-       "FAR": 0.72,
-       "CSI": 0.106,
-       "freq_bias": 0.52
-      },
-      "3": {
-       "hits": 0,
-       "misses": 3321,
-       "false_alarms": 325,
-       "correct_negatives": 50500,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.1
-      },
-      "4": {
-       "hits": 0,
-       "misses": 396,
-       "false_alarms": 0,
-       "correct_negatives": 53749,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 35,
-       "false_alarms": 0,
-       "correct_negatives": 54110,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     }
-    },
-    "quiet": {
-     "zone_day": {
-      "2": {
-       "hits": 4,
-       "misses": 63,
-       "false_alarms": 11,
-       "correct_negatives": 648,
-       "POD": 0.056,
-       "FAR": 0.741,
-       "CSI": 0.048,
-       "freq_bias": 0.22
-      },
-      "3": {
-       "hits": 0,
-       "misses": 18,
-       "false_alarms": 1,
-       "correct_negatives": 707,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.06
-      },
-      "4": {
-       "hits": 0,
-       "misses": 7,
-       "false_alarms": 0,
-       "correct_negatives": 719,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 1,
-       "false_alarms": 0,
-       "correct_negatives": 725,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell": {
-      "2": {
-       "hits": 142,
-       "misses": 3546,
-       "false_alarms": 1226,
-       "correct_negatives": 162858,
-       "POD": 0.039,
-       "FAR": 0.896,
-       "CSI": 0.029,
-       "freq_bias": 0.37
-      },
-      "3": {
-       "hits": 0,
-       "misses": 1135,
-       "false_alarms": 17,
-       "correct_negatives": 166621,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.01
-      },
-      "4": {
-       "hits": 0,
-       "misses": 236,
-       "false_alarms": 0,
-       "correct_negatives": 167536,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 13,
-       "false_alarms": 0,
-       "correct_negatives": 167759,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell_zones": {
-      "2": {
-       "hits": 103,
-       "misses": 1361,
-       "false_alarms": 753,
-       "correct_negatives": 70713,
-       "POD": 0.07,
-       "FAR": 0.88,
-       "CSI": 0.046,
-       "freq_bias": 0.58
-      },
-      "3": {
-       "hits": 0,
-       "misses": 339,
-       "false_alarms": 13,
-       "correct_negatives": 72579,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.04
-      },
-      "4": {
-       "hits": 0,
-       "misses": 125,
-       "false_alarms": 0,
-       "correct_negatives": 72805,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 13,
-       "false_alarms": 0,
-       "correct_negatives": 72917,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     }
-    }
-   },
-   "d4-5": {
-    "combined": {
-     "zone_day": {
-      "2": {
-       "hits": 46,
-       "misses": 311,
-       "false_alarms": 40,
-       "correct_negatives": 1814,
-       "POD": 0.129,
-       "FAR": 0.469,
-       "CSI": 0.116,
-       "freq_bias": 0.24
-      },
-      "3": {
-       "hits": 0,
-       "misses": 146,
-       "false_alarms": 2,
-       "correct_negatives": 2063,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.01
-      },
-      "4": {
-       "hits": 0,
-       "misses": 43,
-       "false_alarms": 0,
-       "correct_negatives": 2168,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 6,
-       "false_alarms": 0,
-       "correct_negatives": 2205,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell": {
-      "2": {
-       "hits": 815,
-       "misses": 19338,
-       "false_alarms": 4788,
-       "correct_negatives": 486001,
-       "POD": 0.04,
-       "FAR": 0.854,
-       "CSI": 0.033,
-       "freq_bias": 0.28
-      },
-      "3": {
-       "hits": 0,
-       "misses": 6602,
-       "false_alarms": 19,
-       "correct_negatives": 504321,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "4": {
-       "hits": 0,
-       "misses": 1106,
-       "false_alarms": 0,
-       "correct_negatives": 509836,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 75,
-       "false_alarms": 0,
-       "correct_negatives": 510867,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell_zones": {
-      "2": {
-       "hits": 765,
-       "misses": 9261,
-       "false_alarms": 3307,
-       "correct_negatives": 208771,
-       "POD": 0.076,
-       "FAR": 0.812,
-       "CSI": 0.057,
-       "freq_bias": 0.41
-      },
-      "3": {
-       "hits": 0,
-       "misses": 3103,
-       "false_alarms": 16,
-       "correct_negatives": 218986,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.01
-      },
-      "4": {
-       "hits": 0,
-       "misses": 608,
-       "false_alarms": 0,
-       "correct_negatives": 221497,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 59,
-       "false_alarms": 0,
-       "correct_negatives": 222046,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     }
-    },
-    "episodes": {
-     "zone_day": {
-      "2": {
-       "hits": 102,
-       "misses": 422,
-       "false_alarms": 57,
-       "correct_negatives": 409,
-       "POD": 0.195,
-       "FAR": 0.356,
-       "CSI": 0.176,
-       "freq_bias": 0.3
-      },
-      "3": {
-       "hits": 0,
-       "misses": 278,
-       "false_alarms": 2,
-       "correct_negatives": 711,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.01
-      },
-      "4": {
-       "hits": 0,
-       "misses": 66,
-       "false_alarms": 0,
-       "correct_negatives": 924,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 9,
-       "false_alarms": 0,
-       "correct_negatives": 981,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell": {
-      "2": {
-       "hits": 2068,
-       "misses": 28774,
-       "false_alarms": 7211,
-       "correct_negatives": 190727,
-       "POD": 0.067,
-       "FAR": 0.777,
-       "CSI": 0.054,
-       "freq_bias": 0.3
-      },
-      "3": {
-       "hits": 0,
-       "misses": 10303,
-       "false_alarms": 22,
-       "correct_negatives": 218455,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "4": {
-       "hits": 0,
-       "misses": 1307,
-       "false_alarms": 0,
-       "correct_negatives": 227473,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 109,
-       "false_alarms": 0,
-       "correct_negatives": 228671,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell_zones": {
-      "2": {
-       "hits": 1964,
-       "misses": 16066,
-       "false_alarms": 5626,
-       "correct_negatives": 75794,
-       "POD": 0.109,
-       "FAR": 0.741,
-       "CSI": 0.083,
-       "freq_bias": 0.42
-      },
-      "3": {
-       "hits": 0,
-       "misses": 6236,
-       "false_alarms": 19,
-       "correct_negatives": 93195,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "4": {
-       "hits": 0,
-       "misses": 736,
-       "false_alarms": 0,
-       "correct_negatives": 98714,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 65,
-       "false_alarms": 0,
-       "correct_negatives": 99385,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     }
-    },
-    "quiet": {
-     "zone_day": {
-      "2": {
-       "hits": 6,
-       "misses": 106,
-       "false_alarms": 13,
-       "correct_negatives": 1095,
-       "POD": 0.058,
-       "FAR": 0.675,
-       "CSI": 0.051,
-       "freq_bias": 0.18
-      },
-      "3": {
-       "hits": 0,
-       "misses": 32,
-       "false_alarms": 1,
-       "correct_negatives": 1188,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.03
-      },
-      "4": {
-       "hits": 0,
-       "misses": 13,
-       "false_alarms": 0,
-       "correct_negatives": 1208,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 2,
-       "false_alarms": 0,
-       "correct_negatives": 1219,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell": {
-      "2": {
-       "hits": 57,
-       "misses": 6039,
-       "false_alarms": 1475,
-       "correct_negatives": 274590,
-       "POD": 0.009,
-       "FAR": 0.963,
-       "CSI": 0.008,
-       "freq_bias": 0.25
-      },
-      "3": {
-       "hits": 0,
-       "misses": 1951,
-       "false_alarms": 7,
-       "correct_negatives": 280204,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "4": {
-       "hits": 0,
-       "misses": 423,
-       "false_alarms": 0,
-       "correct_negatives": 281739,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 24,
-       "false_alarms": 0,
-       "correct_negatives": 282138,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     },
-     "cell_zones": {
-      "2": {
-       "hits": 48,
-       "misses": 2365,
-       "false_alarms": 870,
-       "correct_negatives": 119371,
-       "POD": 0.02,
-       "FAR": 0.947,
-       "CSI": 0.015,
-       "freq_bias": 0.38
-      },
-      "3": {
-       "hits": 0,
-       "misses": 596,
-       "false_alarms": 6,
-       "correct_negatives": 122053,
-       "POD": 0.0,
-       "FAR": 1.0,
-       "CSI": 0.0,
-       "freq_bias": 0.01
-      },
-      "4": {
-       "hits": 0,
-       "misses": 229,
-       "false_alarms": 0,
-       "correct_negatives": 122426,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      },
-      "5": {
-       "hits": 0,
-       "misses": 24,
-       "false_alarms": 0,
-       "correct_negatives": 122631,
-       "POD": 0.0,
-       "FAR": null,
-       "CSI": 0.0,
-       "freq_bias": 0.0
-      }
-     }
-    }
-   }
-  },
-  "reliability": {
-   "2": [
-    {
-     "p_forecast": 0.003,
-     "observed_freq": 0.028,
-     "n": 627808,
-     "events": 17806
-    },
-    {
-     "p_forecast": 0.032,
-     "observed_freq": 0.063,
-     "n": 102330,
-     "events": 6488
-    },
-    {
-     "p_forecast": 0.069,
-     "observed_freq": 0.085,
-     "n": 51494,
-     "events": 4386
-    },
-    {
-     "p_forecast": 0.12,
-     "observed_freq": 0.121,
-     "n": 11468,
-     "events": 1390
-    },
-    {
-     "p_forecast": 0.173,
-     "observed_freq": 0.201,
-     "n": 4654,
-     "events": 936
-    },
-    {
-     "p_forecast": 0.238,
-     "observed_freq": 0.117,
-     "n": 4482,
-     "events": 525
-    },
-    {
-     "p_forecast": 0.34,
-     "observed_freq": 0.127,
-     "n": 776,
-     "events": 98
-    },
-    {
-     "p_forecast": 0.438,
-     "observed_freq": 0.146,
-     "n": 237,
-     "events": 35
-    },
-    {
-     "p_forecast": 0.52,
-     "observed_freq": 0.357,
-     "n": 22,
-     "events": 8
-    }
-   ],
-   "3": [
-    {
-     "p_forecast": 0.002,
-     "observed_freq": 0.011,
-     "n": 732701,
-     "events": 8240
-    },
-    {
-     "p_forecast": 0.03,
-     "observed_freq": 0.023,
-     "n": 53395,
-     "events": 1209
-    },
-    {
-     "p_forecast": 0.069,
-     "observed_freq": 0.056,
-     "n": 11997,
-     "events": 670
-    },
-    {
-     "p_forecast": 0.119,
-     "observed_freq": 0.049,
-     "n": 3826,
-     "events": 188
-    },
-    {
-     "p_forecast": 0.17,
-     "observed_freq": 0.042,
-     "n": 853,
-     "events": 36
-    },
-    {
-     "p_forecast": 0.234,
-     "observed_freq": 0.034,
-     "n": 458,
-     "events": 16
-    },
-    {
-     "p_forecast": 0.32,
-     "observed_freq": 0.0,
-     "n": 43,
-     "events": 0
-    }
-   ],
-   "4": [
-    {
-     "p_forecast": 0.001,
-     "observed_freq": 0.002,
-     "n": 790231,
-     "events": 1514
-    },
-    {
-     "p_forecast": 0.031,
-     "observed_freq": 0.015,
-     "n": 10862,
-     "events": 162
-    },
-    {
-     "p_forecast": 0.066,
-     "observed_freq": 0.021,
-     "n": 1941,
-     "events": 41
-    },
-    {
-     "p_forecast": 0.117,
-     "observed_freq": 0.006,
-     "n": 218,
-     "events": 1
-    },
-    {
-     "p_forecast": 0.161,
-     "observed_freq": 0.0,
-     "n": 22,
-     "events": 0
-    }
-   ],
-   "5": [
-    {
-     "p_forecast": 0.0,
-     "observed_freq": 0.0,
-     "n": 801431,
-     "events": 116
-    },
-    {
-     "p_forecast": 0.028,
-     "observed_freq": 0.0,
-     "n": 1756,
-     "events": 0
-    },
-    {
-     "p_forecast": 0.06,
-     "observed_freq": 0.0,
-     "n": 86,
-     "events": 0
-    }
-   ]
-  },
-  "tau_source": "params.json at fit time; hindcast/deploy_params.py rewrites these tables for the deployed policy",
+  "deployed_cap": 3,
   "deployed": {
    "zone_day": {
     "2": {
-     "hits": 185,
-     "misses": 371,
-     "false_alarms": 192,
-     "correct_negatives": 2728,
-     "POD": 0.333,
-     "FAR": 0.509,
-     "CSI": 0.248,
-     "freq_bias": 0.68
-    },
-    "3": {
-     "hits": 14,
-     "misses": 213,
-     "false_alarms": 32,
-     "correct_negatives": 3216,
-     "POD": 0.063,
-     "FAR": 0.694,
-     "CSI": 0.055,
-     "freq_bias": 0.2
-    },
-    "4": {
-     "hits": 0,
-     "misses": 66,
-     "false_alarms": 0,
-     "correct_negatives": 3410,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    },
-    "5": {
-     "hits": 0,
-     "misses": 10,
-     "false_alarms": 0,
-     "correct_negatives": 3466,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    }
-   },
-   "cell": {
-    "2": {
-     "hits": 4419,
-     "misses": 27254,
-     "false_alarms": 29609,
-     "correct_negatives": 741990,
-     "POD": 0.14,
-     "FAR": 0.87,
-     "CSI": 0.072,
-     "freq_bias": 1.07
-    },
-    "3": {
-     "hits": 157,
-     "misses": 10202,
-     "false_alarms": 1171,
-     "correct_negatives": 791743,
-     "POD": 0.015,
-     "FAR": 0.882,
-     "CSI": 0.014,
-     "freq_bias": 0.13
-    },
-    "4": {
-     "hits": 0,
-     "misses": 1719,
-     "false_alarms": 0,
-     "correct_negatives": 801553,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    },
-    "5": {
-     "hits": 0,
-     "misses": 116,
-     "false_alarms": 0,
-     "correct_negatives": 803156,
-     "POD": 0.0,
-     "FAR": null,
-     "CSI": 0.0,
-     "freq_bias": 0.0
-    }
-   },
-   "cell_zones": {
-    "2": {
-     "hits": 3810,
-     "misses": 11878,
-     "false_alarms": 16494,
-     "correct_negatives": 316998,
-     "POD": 0.243,
-     "FAR": 0.812,
-     "CSI": 0.118,
-     "freq_bias": 1.29
+     "hits": 608,
+     "misses": 734,
+     "false_alarms": 726,
+     "correct_negatives": 6380,
+     "POD": 0.453,
+     "FAR": 0.544,
+     "CSI": 0.294,
+     "freq_bias": 0.99
     },
     "3": {
      "hits": 151,
-     "misses": 4682,
-     "false_alarms": 1081,
-     "correct_negatives": 343266,
-     "POD": 0.031,
-     "FAR": 0.877,
-     "CSI": 0.026,
-     "freq_bias": 0.26
+     "misses": 388,
+     "false_alarms": 434,
+     "correct_negatives": 7475,
+     "POD": 0.279,
+     "FAR": 0.742,
+     "CSI": 0.155,
+     "freq_bias": 1.08
     },
     "4": {
      "hits": 0,
-     "misses": 939,
+     "misses": 155,
      "false_alarms": 0,
-     "correct_negatives": 348241,
+     "correct_negatives": 8293,
      "POD": 0.0,
      "FAR": null,
      "CSI": 0.0,
@@ -4776,9 +2986,9 @@
     },
     "5": {
      "hits": 0,
-     "misses": 91,
+     "misses": 20,
      "false_alarms": 0,
-     "correct_negatives": 349089,
+     "correct_negatives": 8428,
      "POD": 0.0,
      "FAR": null,
      "CSI": 0.0,
@@ -4787,33 +2997,77 @@
    }
   },
   "deployed_split": {
+   "combined": {
+    "zone_day": {
+     "2": {
+      "hits": 608,
+      "misses": 734,
+      "false_alarms": 726,
+      "correct_negatives": 6380,
+      "POD": 0.453,
+      "FAR": 0.544,
+      "CSI": 0.294,
+      "freq_bias": 0.99
+     },
+     "3": {
+      "hits": 151,
+      "misses": 388,
+      "false_alarms": 434,
+      "correct_negatives": 7475,
+      "POD": 0.279,
+      "FAR": 0.742,
+      "CSI": 0.155,
+      "freq_bias": 1.08
+     },
+     "4": {
+      "hits": 0,
+      "misses": 155,
+      "false_alarms": 0,
+      "correct_negatives": 8293,
+      "POD": 0.0,
+      "FAR": null,
+      "CSI": 0.0,
+      "freq_bias": 0.0
+     },
+     "5": {
+      "hits": 0,
+      "misses": 20,
+      "false_alarms": 0,
+      "correct_negatives": 8428,
+      "POD": 0.0,
+      "FAR": null,
+      "CSI": 0.0,
+      "freq_bias": 0.0
+     }
+    }
+   },
    "episodes": {
     "zone_day": {
      "2": {
-      "hits": 373,
-      "misses": 425,
-      "false_alarms": 222,
-      "correct_negatives": 509,
-      "POD": 0.468,
-      "FAR": 0.372,
-      "CSI": 0.366,
-      "freq_bias": 0.75
+      "hits": 387,
+      "misses": 291,
+      "false_alarms": 226,
+      "correct_negatives": 427,
+      "POD": 0.571,
+      "FAR": 0.369,
+      "CSI": 0.428,
+      "freq_bias": 0.9
      },
      "3": {
-      "hits": 40,
-      "misses": 385,
-      "false_alarms": 49,
-      "correct_negatives": 1055,
-      "POD": 0.094,
-      "FAR": 0.554,
-      "CSI": 0.084,
-      "freq_bias": 0.21
+      "hits": 130,
+      "misses": 239,
+      "false_alarms": 194,
+      "correct_negatives": 768,
+      "POD": 0.352,
+      "FAR": 0.599,
+      "CSI": 0.23,
+      "freq_bias": 0.88
      },
      "4": {
       "hits": 0,
-      "misses": 102,
+      "misses": 93,
       "false_alarms": 0,
-      "correct_negatives": 1427,
+      "correct_negatives": 1238,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -4821,93 +3075,9 @@
      },
      "5": {
       "hits": 0,
-      "misses": 14,
+      "misses": 11,
       "false_alarms": 0,
-      "correct_negatives": 1515,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 10002,
-      "misses": 37333,
-      "false_alarms": 43374,
-      "correct_negatives": 262629,
-      "POD": 0.211,
-      "FAR": 0.813,
-      "CSI": 0.11,
-      "freq_bias": 1.13
-     },
-     "3": {
-      "hits": 437,
-      "misses": 15510,
-      "false_alarms": 2274,
-      "correct_negatives": 335116,
-      "POD": 0.027,
-      "FAR": 0.839,
-      "CSI": 0.024,
-      "freq_bias": 0.17
-     },
-     "4": {
-      "hits": 0,
-      "misses": 2025,
-      "false_alarms": 0,
-      "correct_negatives": 351313,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 169,
-      "false_alarms": 0,
-      "correct_negatives": 353169,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 8860,
-      "misses": 18651,
-      "false_alarms": 25730,
-      "correct_negatives": 100354,
-      "POD": 0.322,
-      "FAR": 0.744,
-      "CSI": 0.166,
-      "freq_bias": 1.26
-     },
-     "3": {
-      "hits": 422,
-      "misses": 9137,
-      "false_alarms": 2091,
-      "correct_negatives": 141944,
-      "POD": 0.044,
-      "FAR": 0.832,
-      "CSI": 0.036,
-      "freq_bias": 0.26
-     },
-     "4": {
-      "hits": 0,
-      "misses": 1132,
-      "false_alarms": 0,
-      "correct_negatives": 152463,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 100,
-      "false_alarms": 0,
-      "correct_negatives": 153495,
+      "correct_negatives": 1320,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -4918,158 +3088,30 @@
    "quiet": {
     "zone_day": {
      "2": {
-      "hits": 34,
-      "misses": 146,
-      "false_alarms": 75,
-      "correct_negatives": 1692,
-      "POD": 0.191,
-      "FAR": 0.685,
-      "CSI": 0.135,
-      "freq_bias": 0.61
-     },
-     "3": {
-      "hits": 0,
-      "misses": 50,
-      "false_alarms": 10,
-      "correct_negatives": 1887,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.19
-     },
-     "4": {
-      "hits": 0,
-      "misses": 20,
-      "false_alarms": 0,
-      "correct_negatives": 1927,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 3,
-      "false_alarms": 0,
-      "correct_negatives": 1944,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 556,
-      "misses": 9229,
-      "false_alarms": 9356,
-      "correct_negatives": 430793,
-      "POD": 0.057,
-      "FAR": 0.944,
-      "CSI": 0.029,
-      "freq_bias": 1.01
-     },
-     "3": {
-      "hits": 0,
-      "misses": 3089,
-      "false_alarms": 237,
-      "correct_negatives": 446608,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.08
-     },
-     "4": {
-      "hits": 0,
-      "misses": 661,
-      "false_alarms": 0,
-      "correct_negatives": 449273,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 37,
-      "false_alarms": 0,
-      "correct_negatives": 449897,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 423,
-      "misses": 3455,
-      "false_alarms": 4839,
-      "correct_negatives": 186868,
-      "POD": 0.109,
-      "FAR": 0.92,
-      "CSI": 0.049,
-      "freq_bias": 1.36
-     },
-     "3": {
-      "hits": 0,
-      "misses": 937,
-      "false_alarms": 221,
-      "correct_negatives": 194428,
-      "POD": 0.0,
-      "FAR": 1.0,
-      "CSI": 0.0,
-      "freq_bias": 0.24
-     },
-     "4": {
-      "hits": 0,
-      "misses": 354,
-      "false_alarms": 0,
-      "correct_negatives": 195231,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 37,
-      "false_alarms": 0,
-      "correct_negatives": 195548,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    }
-   },
-   "combined": {
-    "zone_day": {
-     "2": {
-      "hits": 185,
-      "misses": 371,
-      "false_alarms": 192,
-      "correct_negatives": 2728,
+      "hits": 221,
+      "misses": 443,
+      "false_alarms": 500,
+      "correct_negatives": 5953,
       "POD": 0.333,
-      "FAR": 0.509,
-      "CSI": 0.248,
-      "freq_bias": 0.68
+      "FAR": 0.693,
+      "CSI": 0.19,
+      "freq_bias": 1.09
      },
      "3": {
-      "hits": 14,
-      "misses": 213,
-      "false_alarms": 32,
-      "correct_negatives": 3216,
-      "POD": 0.063,
-      "FAR": 0.694,
-      "CSI": 0.055,
-      "freq_bias": 0.2
+      "hits": 21,
+      "misses": 149,
+      "false_alarms": 240,
+      "correct_negatives": 6707,
+      "POD": 0.123,
+      "FAR": 0.92,
+      "CSI": 0.051,
+      "freq_bias": 1.53
      },
      "4": {
       "hits": 0,
-      "misses": 66,
+      "misses": 63,
       "false_alarms": 0,
-      "correct_negatives": 3410,
+      "correct_negatives": 7054,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -5077,221 +3119,9 @@
      },
      "5": {
       "hits": 0,
-      "misses": 10,
+      "misses": 9,
       "false_alarms": 0,
-      "correct_negatives": 3466,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 4419,
-      "misses": 27254,
-      "false_alarms": 29609,
-      "correct_negatives": 741990,
-      "POD": 0.14,
-      "FAR": 0.87,
-      "CSI": 0.072,
-      "freq_bias": 1.07
-     },
-     "3": {
-      "hits": 157,
-      "misses": 10202,
-      "false_alarms": 1171,
-      "correct_negatives": 791743,
-      "POD": 0.015,
-      "FAR": 0.882,
-      "CSI": 0.014,
-      "freq_bias": 0.13
-     },
-     "4": {
-      "hits": 0,
-      "misses": 1719,
-      "false_alarms": 0,
-      "correct_negatives": 801553,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 116,
-      "false_alarms": 0,
-      "correct_negatives": 803156,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 3810,
-      "misses": 11878,
-      "false_alarms": 16494,
-      "correct_negatives": 316998,
-      "POD": 0.243,
-      "FAR": 0.812,
-      "CSI": 0.118,
-      "freq_bias": 1.29
-     },
-     "3": {
-      "hits": 151,
-      "misses": 4682,
-      "false_alarms": 1081,
-      "correct_negatives": 343266,
-      "POD": 0.031,
-      "FAR": 0.877,
-      "CSI": 0.026,
-      "freq_bias": 0.26
-     },
-     "4": {
-      "hits": 0,
-      "misses": 939,
-      "false_alarms": 0,
-      "correct_negatives": 348241,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 91,
-      "false_alarms": 0,
-      "correct_negatives": 349089,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    }
-   },
-   "sample": {
-    "zone_day": {
-     "2": {
-      "hits": 478,
-      "misses": 625,
-      "false_alarms": 347,
-      "correct_negatives": 2026,
-      "POD": 0.433,
-      "FAR": 0.421,
-      "CSI": 0.33,
-      "freq_bias": 0.75
-     },
-     "3": {
-      "hits": 52,
-      "misses": 476,
-      "false_alarms": 77,
-      "correct_negatives": 2871,
-      "POD": 0.098,
-      "FAR": 0.597,
-      "CSI": 0.086,
-      "freq_bias": 0.24
-     },
-     "4": {
-      "hits": 0,
-      "misses": 152,
-      "false_alarms": 0,
-      "correct_negatives": 3324,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 24,
-      "false_alarms": 0,
-      "correct_negatives": 3452,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 12754,
-      "misses": 52774,
-      "false_alarms": 64488,
-      "correct_negatives": 673256,
-      "POD": 0.195,
-      "FAR": 0.835,
-      "CSI": 0.098,
-      "freq_bias": 1.18
-     },
-     "3": {
-      "hits": 566,
-      "misses": 21782,
-      "false_alarms": 3492,
-      "correct_negatives": 777432,
-      "POD": 0.025,
-      "FAR": 0.861,
-      "CSI": 0.022,
-      "freq_bias": 0.18
-     },
-     "4": {
-      "hits": 0,
-      "misses": 3310,
-      "false_alarms": 0,
-      "correct_negatives": 799962,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 281,
-      "false_alarms": 0,
-      "correct_negatives": 802991,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 11132,
-      "misses": 24127,
-      "false_alarms": 37082,
-      "correct_negatives": 276839,
-      "POD": 0.316,
-      "FAR": 0.769,
-      "CSI": 0.154,
-      "freq_bias": 1.37
-     },
-     "3": {
-      "hits": 547,
-      "misses": 11234,
-      "false_alarms": 3216,
-      "correct_negatives": 334183,
-      "POD": 0.046,
-      "FAR": 0.855,
-      "CSI": 0.036,
-      "freq_bias": 0.32
-     },
-     "4": {
-      "hits": 0,
-      "misses": 1876,
-      "false_alarms": 0,
-      "correct_negatives": 347304,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 198,
-      "false_alarms": 0,
-      "correct_negatives": 348982,
+      "correct_negatives": 7107,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -5304,30 +3134,30 @@
    "d2-3": {
     "zone_day": {
      "2": {
-      "hits": 74,
-      "misses": 125,
-      "false_alarms": 71,
-      "correct_negatives": 995,
-      "POD": 0.373,
-      "FAR": 0.488,
-      "CSI": 0.275,
-      "freq_bias": 0.73
+      "hits": 240,
+      "misses": 207,
+      "false_alarms": 258,
+      "correct_negatives": 2111,
+      "POD": 0.536,
+      "FAR": 0.518,
+      "CSI": 0.34,
+      "freq_bias": 1.11
      },
      "3": {
-      "hits": 9,
-      "misses": 72,
-      "false_alarms": 16,
-      "correct_negatives": 1168,
-      "POD": 0.109,
-      "FAR": 0.644,
-      "CSI": 0.091,
-      "freq_bias": 0.3
+      "hits": 61,
+      "misses": 119,
+      "false_alarms": 191,
+      "correct_negatives": 2446,
+      "POD": 0.339,
+      "FAR": 0.758,
+      "CSI": 0.164,
+      "freq_bias": 1.4
      },
      "4": {
       "hits": 0,
-      "misses": 23,
+      "misses": 52,
       "false_alarms": 0,
-      "correct_negatives": 1242,
+      "correct_negatives": 2764,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -5335,93 +3165,9 @@
      },
      "5": {
       "hits": 0,
-      "misses": 3,
+      "misses": 7,
       "false_alarms": 0,
-      "correct_negatives": 1262,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 1885,
-      "misses": 9631,
-      "false_alarms": 12405,
-      "correct_negatives": 268410,
-      "POD": 0.164,
-      "FAR": 0.868,
-      "CSI": 0.079,
-      "freq_bias": 1.24
-     },
-     "3": {
-      "hits": 96,
-      "misses": 3655,
-      "false_alarms": 761,
-      "correct_negatives": 287818,
-      "POD": 0.026,
-      "FAR": 0.888,
-      "CSI": 0.021,
-      "freq_bias": 0.23
-     },
-     "4": {
-      "hits": 0,
-      "misses": 612,
-      "false_alarms": 0,
-      "correct_negatives": 291718,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 41,
-      "false_alarms": 0,
-      "correct_negatives": 292289,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell_zones": {
-     "2": {
-      "hits": 1547,
-      "misses": 4107,
-      "false_alarms": 6767,
-      "correct_negatives": 114654,
-      "POD": 0.274,
-      "FAR": 0.814,
-      "CSI": 0.125,
-      "freq_bias": 1.47
-     },
-     "3": {
-      "hits": 92,
-      "misses": 1633,
-      "false_alarms": 695,
-      "correct_negatives": 124655,
-      "POD": 0.053,
-      "FAR": 0.884,
-      "CSI": 0.038,
-      "freq_bias": 0.46
-     },
-     "4": {
-      "hits": 0,
-      "misses": 330,
-      "false_alarms": 0,
-      "correct_negatives": 126745,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 32,
-      "false_alarms": 0,
-      "correct_negatives": 127043,
+      "correct_negatives": 2809,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -5432,72 +3178,30 @@
    "d4-5": {
     "zone_day": {
      "2": {
-      "hits": 111,
-      "misses": 246,
-      "false_alarms": 121,
-      "correct_negatives": 1734,
-      "POD": 0.311,
-      "FAR": 0.521,
-      "CSI": 0.232,
-      "freq_bias": 0.65
-     },
-     "3": {
-      "hits": 6,
-      "misses": 140,
-      "false_alarms": 17,
-      "correct_negatives": 2048,
-      "POD": 0.04,
-      "FAR": 0.741,
-      "CSI": 0.036,
-      "freq_bias": 0.16
-     },
-     "4": {
-      "hits": 0,
-      "misses": 43,
-      "false_alarms": 0,
-      "correct_negatives": 2168,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     },
-     "5": {
-      "hits": 0,
-      "misses": 6,
-      "false_alarms": 0,
-      "correct_negatives": 2205,
-      "POD": 0.0,
-      "FAR": null,
-      "CSI": 0.0,
-      "freq_bias": 0.0
-     }
-    },
-    "cell": {
-     "2": {
-      "hits": 2550,
-      "misses": 17604,
-      "false_alarms": 17277,
-      "correct_negatives": 473512,
-      "POD": 0.127,
-      "FAR": 0.871,
-      "CSI": 0.068,
+      "hits": 200,
+      "misses": 247,
+      "false_alarms": 236,
+      "correct_negatives": 2133,
+      "POD": 0.448,
+      "FAR": 0.541,
+      "CSI": 0.293,
       "freq_bias": 0.98
      },
      "3": {
-      "hits": 65,
-      "misses": 6536,
-      "false_alarms": 444,
-      "correct_negatives": 503896,
-      "POD": 0.01,
-      "FAR": 0.872,
-      "CSI": 0.009,
-      "freq_bias": 0.08
+      "hits": 60,
+      "misses": 120,
+      "false_alarms": 137,
+      "correct_negatives": 2499,
+      "POD": 0.332,
+      "FAR": 0.696,
+      "CSI": 0.189,
+      "freq_bias": 1.09
      },
      "4": {
       "hits": 0,
-      "misses": 1106,
+      "misses": 52,
       "false_alarms": 0,
-      "correct_negatives": 509836,
+      "correct_negatives": 2764,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -5505,41 +3209,43 @@
      },
      "5": {
       "hits": 0,
-      "misses": 75,
+      "misses": 7,
       "false_alarms": 0,
-      "correct_negatives": 510867,
+      "correct_negatives": 2809,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
       "freq_bias": 0.0
      }
-    },
-    "cell_zones": {
+    }
+   },
+   "d6-7": {
+    "zone_day": {
      "2": {
-      "hits": 2270,
-      "misses": 7757,
-      "false_alarms": 9753,
-      "correct_negatives": 202326,
-      "POD": 0.226,
-      "FAR": 0.811,
-      "CSI": 0.115,
-      "freq_bias": 1.2
+      "hits": 168,
+      "misses": 280,
+      "false_alarms": 233,
+      "correct_negatives": 2136,
+      "POD": 0.375,
+      "FAR": 0.581,
+      "CSI": 0.247,
+      "freq_bias": 0.9
      },
      "3": {
-      "hits": 64,
-      "misses": 3039,
-      "false_alarms": 415,
-      "correct_negatives": 218586,
-      "POD": 0.021,
-      "FAR": 0.866,
-      "CSI": 0.018,
-      "freq_bias": 0.15
+      "hits": 30,
+      "misses": 150,
+      "false_alarms": 107,
+      "correct_negatives": 2530,
+      "POD": 0.167,
+      "FAR": 0.78,
+      "CSI": 0.105,
+      "freq_bias": 0.76
      },
      "4": {
       "hits": 0,
-      "misses": 608,
+      "misses": 52,
       "false_alarms": 0,
-      "correct_negatives": 221497,
+      "correct_negatives": 2764,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -5547,9 +3253,9 @@
      },
      "5": {
       "hits": 0,
-      "misses": 59,
+      "misses": 7,
       "false_alarms": 0,
-      "correct_negatives": 222046,
+      "correct_negatives": 2809,
       "POD": 0.0,
       "FAR": null,
       "CSI": 0.0,
@@ -5558,26 +3264,140 @@
     }
    }
   },
-  "deployed_tau": {
-   "2": 0.15,
-   "3": 0.25,
-   "4": 0.4,
-   "5": 0.4
+  "reliability": {
+   "2": [
+    {
+     "p_forecast": 0.028,
+     "observed_freq": 0.037,
+     "n": 1988.1
+    },
+    {
+     "p_forecast": 0.072,
+     "observed_freq": 0.089,
+     "n": 1832.1
+    },
+    {
+     "p_forecast": 0.124,
+     "observed_freq": 0.129,
+     "n": 1256.1
+    },
+    {
+     "p_forecast": 0.175,
+     "observed_freq": 0.139,
+     "n": 979.1
+    },
+    {
+     "p_forecast": 0.244,
+     "observed_freq": 0.187,
+     "n": 1058.5
+    },
+    {
+     "p_forecast": 0.346,
+     "observed_freq": 0.361,
+     "n": 608.9
+    },
+    {
+     "p_forecast": 0.446,
+     "observed_freq": 0.484,
+     "n": 354.9
+    },
+    {
+     "p_forecast": 0.579,
+     "observed_freq": 0.584,
+     "n": 331.3
+    },
+    {
+     "p_forecast": 0.74,
+     "observed_freq": 0.579,
+     "n": 38.9
+    }
+   ],
+   "3": [
+    {
+     "p_forecast": 0.019,
+     "observed_freq": 0.02,
+     "n": 4849.2
+    },
+    {
+     "p_forecast": 0.071,
+     "observed_freq": 0.068,
+     "n": 1819.6
+    },
+    {
+     "p_forecast": 0.122,
+     "observed_freq": 0.11,
+     "n": 762.8
+    },
+    {
+     "p_forecast": 0.173,
+     "observed_freq": 0.187,
+     "n": 431.7
+    },
+    {
+     "p_forecast": 0.244,
+     "observed_freq": 0.228,
+     "n": 393.3
+    },
+    {
+     "p_forecast": 0.342,
+     "observed_freq": 0.333,
+     "n": 154.7
+    },
+    {
+     "p_forecast": 0.436,
+     "observed_freq": 0.297,
+     "n": 29.9
+    },
+    {
+     "p_forecast": 0.54,
+     "observed_freq": 0.107,
+     "n": 6.8
+    }
+   ],
+   "4": [
+    {
+     "p_forecast": 0.012,
+     "observed_freq": 0.014,
+     "n": 7924.8
+    },
+    {
+     "p_forecast": 0.069,
+     "observed_freq": 0.04,
+     "n": 360.9
+    },
+    {
+     "p_forecast": 0.12,
+     "observed_freq": 0.099,
+     "n": 98.3
+    },
+    {
+     "p_forecast": 0.171,
+     "observed_freq": 0.079,
+     "n": 18.7
+    },
+    {
+     "p_forecast": 0.247,
+     "observed_freq": 0.292,
+     "n": 30.6
+    },
+    {
+     "p_forecast": 0.364,
+     "observed_freq": 0.392,
+     "n": 10.2
+    },
+    {
+     "p_forecast": 0.433,
+     "observed_freq": 0.713,
+     "n": 3.7
+    },
+    {
+     "p_forecast": 0.525,
+     "observed_freq": 1.0,
+     "n": 0.7
+    }
+   ]
   },
-  "deployed_cap": 3,
-  "deployed_kernel": {
-   "source": "production values kept",
-   "sigma": 1.0,
-   "bias": 1.6,
-   "sigma1h": 1.0,
-   "bias1h": 1.6
-  },
-  "fitted_kernel": {
-   "sigma": 1.0,
-   "bias": 1.0,
-   "sigma1h": 1.0,
-   "bias1h": 1.6
-  }
+  "note": "q13-long: issue 08Z with the 00Z ECMWF ENS + the 2 newest IFS runs (production's members), every lead day 2..7, warning zone x UTC day, leave-one-case-out, days weighted by the real frequency of their kind"
  },
  "now": {
   "horizon": "now",

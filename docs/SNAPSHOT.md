@@ -68,6 +68,13 @@ points   (only when the control-point network exists) level[F][P], p[4][F][P], q
          qpeak and hover are [median, p90]; p is P(>=2..5), and p[2] (level 4) is the probability of overflow
          where the point has a capacity
          P and order = geo/hydro/catchments/out/control_points.json (= web/geo/points.json)
+scale    (optional, `long` only) "zone": levels and probabilities are per warning zone and day
+zones    (with scale "zone") {codes:[Z zone codes, order of static zone_idx], tau:{"2".."5"}, model:string,
+         p[4][F][Z] P(>=2..5) that the level is reached SOMEWHERE in the zone that UTC day, integer v (P = v/200,
+         rounded down), level[F][Z] (after level_cap)}. Every masked cell of a zone carries these values in
+         cells.level / cells.p; cells outside the warning zones keep their own cell values (tau above).
+         Model: backend/riua/core/zoneday.py (logistic on the scenarios' zone maxima ranked in the model's own
+         climate, coefficients in backend/riua/zoneday_model.json), scored in coord/findings/q13-long.md
 ```
 
 Frames: `now` = 6 hourly frames from the top of the current hour; `mid` = 14 three-hour frames from +6 h; `long` = 6 UTC days (day+2 … day+7).

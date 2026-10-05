@@ -135,7 +135,12 @@ async function auditDressing(ctx) {
     + `<tr><th></th><th class="wrap">mínimo τ</th>${blank}${[2, 3, 4, 5].map((L) => `<td>${fx(Number(h.tau[String(L)]), 2)}</td>`).join('')}</tr>`;
   const cc = cellCentre(snap, n);
   const sw = (L) => `<span class="lv lv${L}">${L || '–'}</span>`;
-  return `<p class="num">${fx(cc.lat, 3)}° N ${fx(cc.lon, 3)}° · ${esc(frameExact(fr))}</p>
+  // days 2-7: the published colour is the zone's (P that the level is reached somewhere in the zone that day)
+  const zi = h.scale === 'zone' && h.zones && ctx.zone ? h.zones.codes.indexOf(ctx.zone.code) : -1;
+  const zoneBlock = zi < 0 ? '' : `<table class="data" style="margin:.3rem 0"><tbody>`
+    + `<tr><th class="wrap">${esc(ctx.zone.name)} · día</th>${[0, 1, 2, 3].map((k) => `<td><b>${fx(h.zones.p[k][f][zi] / 200, 2)}</b></td>`).join('')}<td>${sw(h.zones.level[f][zi])}</td></tr>`
+    + `<tr><th class="wrap">τ</th>${[2, 3, 4, 5].map((L) => `<td>${fx(Number(h.zones.tau[String(L)]), 2)}</td>`).join('')}<td></td></tr></tbody></table>`;
+  return `<p class="num">${fx(cc.lat, 3)}° N ${fx(cc.lon, 3)}° · ${esc(frameExact(fr))}</p>${zoneBlock}
 <pre class="calc">A₁ = s₁·lluvia1h     A₁₂ = s₁₂·lluvia12h
 φ = min(1, medido / A₁₂)     medido = ${fx(c.o12 || 0, 1)} mm
 P₁  = Φ( ln(b₁·A₁ / U₁) / σ₁ )

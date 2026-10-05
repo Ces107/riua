@@ -69,6 +69,7 @@ export function prepare(raw, origin) {
       e1: b64(h.cells.e1), e12: b64(h.cells.e12), acc: h.cells.acc ? b64(h.cells.acc) : new Uint8Array(0), accTotal: h.cells.acc_total ? b64(h.cells.acc_total) : new Uint8Array(0),
       m1: b64(h.cells.m1), q1: b64(h.cells.q1), m12: b64(h.cells.m12), q12: b64(h.cells.q12),
       members: h.members || [], basins: h.basins || null, points: h.points || null,
+      scale: h.scale || 'cell', zones: h.zones || null,   // days 2-7: level and P per warning zone and day
       explain: (raw.explain || {})[key] || null,
     };
     h.cells = null;                                    // free the base64 strings

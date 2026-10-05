@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 R = json.loads((ROOT / "hindcast" / "results.json").read_text(encoding="utf-8"))
 PARAMS = json.loads((ROOT / "backend" / "riua" / "params.json").read_text(encoding="utf-8")) if (ROOT / "backend" / "riua" / "params.json").exists() else {}
 HZ = {"now": ("Ahora (0–6 h)", "Now (0–6 h)"), "mid": ("48 h (predicción del día anterior)", "48 h (day-ahead runs)"),
-      "long": ("Días 2–7 (emitida 3 y 5 días antes)", "Days 2–7 (issued 3 and 5 days before)")}
+      "long": ("Días 2–7 (por zona de aviso y día, emitida 2 a 7 días antes)", "Days 2–7 (per warning zone and day, issued 2 to 7 days before)")}
 LV = {"2": "2 medio", "3": "3 alto", "4": "4 muy alto", "5": "5 extremo"}
 pc = lambda v: "—" if v is None else f"{round(100 * v)} %"
 MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
@@ -53,7 +53,7 @@ def month(case: str) -> str:
 
 def counts(res: dict, key: str):
     """Scores of the thresholds in use, cross-validated when there are enough cases."""
-    tau = (PARAMS.get("tau") or {}).get(key)
+    tau = res.get("deployed_tau") if res.get("scale") == "zone" else (PARAMS.get("tau") or {}).get(key)
     block = res.get("deployed") or res.get("cross_validated") or res.get("in_sample")
     return block, tau, "deployed" if res.get("deployed") else "cross_validated" if res.get("cross_validated") else "in_sample"
 
@@ -69,8 +69,11 @@ def html() -> str:
         block, tau, kind = counts(res, key)
         t = res["tuned"]
         out.append(f"<h2>{HZ[key][0]}</h2>")
-        out.append(f'<p class="n">{len(res["cases"])} casos · {es(res["n_frames"])} tramos · σ {es(t["sigma"])} · sesgo {es(t["bias"])}</p>')
+        kern = "modelo por zona y día" if t.get("model") else f'σ {es(t["sigma"])} · sesgo {es(t["bias"])}'
+        out.append(f'<p class="n">{len(res["cases"])} casos · {es(res["n_frames"])} tramos · {kern}</p>')
         for scope, title in (("zone_day", "Por zona de aviso y día"), ("cell", "Por celda y tramo")):
+            if scope not in block:
+                continue
             rows = "".join(
                 f'<tr><td>{LV[L]}</td><td class="n">{pc(float(tau[L])) if tau else "—"}</td><td class="n">{es(v["hits"])}</td><td class="n">{es(v["misses"])}</td>'
                 f'<td class="n">{es(v["false_alarms"])}</td><td class="n">{pc(v["POD"])}</td><td class="n">{pc(v["FAR"])}</td></tr>'
@@ -122,7 +125,8 @@ def markdown() -> str:
             continue
         block, tau, kind = counts(res, key)
         t = res["tuned"]
-        out.append(f"**{HZ[key][1]}** — {len(res['cases'])} cases, {res['n_frames']} frames, σ = {t['sigma']}, bias = {t['bias']}; per warning zone and day:\n")
+        kern = "zone-day model" if t.get("model") else f"σ = {t['sigma']}, bias = {t['bias']}"
+        out.append(f"**{HZ[key][1]}** — {len(res['cases'])} cases, {res['n_frames']} frames, {kern}; per warning zone and day:\n")
         out.append("| Level | Min. P | Hits | Misses | False alarms | Detected | False-alarm ratio |\n|---|---|---|---|---|---|---|")
         for L, v in block["zone_day"].items():
             out.append(f"| {L} | {pc(float(tau[L])) if tau else '—'} | {v['hits']} | {v['misses']} | {v['false_alarms']} | {pc(v['POD'])} | {pc(v['FAR'])} |")
