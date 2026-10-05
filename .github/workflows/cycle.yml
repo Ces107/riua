@@ -102,5 +102,12 @@ jobs:
         run: |
           elapsed=$(( $(date +%s) - START ))
           [ "$elapsed" -lt 540 ] && sleep $(( 540 - elapsed ))
-          others=$(gh run list --workflow cycle.yml --limit 20 --json status,databaseId             --jq '[.[] | select((.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="waiting" or .status=="requested") and .databaseId != ${{ github.run_id }})] | length')
+          # a run stuck in the queue for more than 15 min blocked the chain for 7 h on 2026-10-05: cancel it
+          now=$(date +%s)
+          gh run list --workflow cycle.yml --limit 20 --json status,databaseId,createdAt             --jq '.[] | select((.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested") and .databaseId != ${{ github.run_id }}) | "\(.databaseId) \(.createdAt)"' |
+          while read id t; do
+            age=$(( now - $(date -d "$t" +%s) ))
+            if [ "$age" -gt 900 ]; then echo "cancel stale $id ($age s)"; gh run cancel "$id" || true; fi
+          done
+          others=$(gh run list --workflow cycle.yml --limit 20 --json status,databaseId,createdAt             --jq "[.[] | select((.status==\"queued\" or .status==\"in_progress\" or .status==\"pending\" or .status==\"waiting\" or .status==\"requested\") and .databaseId != ${{ github.run_id }} and ((now - (.createdAt | fromdate)) < 900))] | length")
           if [ "$others" = "0" ]; then gh workflow run cycle.yml --ref main; else echo "another run is already waiting"; fi
