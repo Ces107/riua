@@ -16,7 +16,7 @@ on:
         description: "optional: comma-separated block indices to run (e.g. 3,17); empty = all"
         default: ""
       degrade:
-        description: "yes = every day at 2 km / 15 min, the resolution of the archive before July 2024"
+        description: "yes = every day at 2 km / 15 min (the archive before July 2024); 10 = 2 km / 10 min; no = native"
         default: "no"
 
 permissions:
@@ -63,12 +63,13 @@ jobs:
         run: |
           extra=""
           [ "${{ github.event.inputs.degrade }}" = "yes" ] && extra="--degrade"
+          [ "${{ github.event.inputs.degrade }}" = "10" ] && extra="--degrade10"
           python hindcast/subhourly/features.py --chunk ${{ matrix.k }}/${{ github.event.inputs.chunks }} --out out --raw /tmp/radar $extra
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: subhourly${{ github.event.inputs.degrade == 'yes' && '-2km' || '' }}-${{ matrix.k }}
+          name: subhourly${{ github.event.inputs.degrade == 'yes' && '-2km' || github.event.inputs.degrade == '10' && '-2km10' || '' }}-${{ matrix.k }}
           path: out/*.npz
           retention-days: 30
           if-no-files-found: warn

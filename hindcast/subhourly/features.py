@@ -36,6 +36,8 @@ LOCAL = [ROOT / "hindcast" / "floods" / "cache" / "radar"]
 
 if "--degrade" in sys.argv:              # the whole period at the resolution of the pre-2024 archive (2 km, 15 min)
     archive.DEGRADE, archive.STEP_MIN = True, 15
+if "--degrade10" in sys.argv:            # 2 km every 10 min: what production can compute from its 10-min frames
+    archive.DEGRADE, archive.STEP_MIN = True, 10
 
 if "--no-advection" in sys.argv:          # no pysteps on this machine: plain interpolation between scans
     qpe.motion_field = lambda rates, coarse=2: np.zeros((2, *rates[-1].shape))
