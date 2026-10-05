@@ -42,7 +42,7 @@ import numpy as np
 from scipy import sparse
 from scipy.signal import lfilter
 
-from . import grid
+from . import flood_ml, grid
 from .risk import Member, decide, dress, member_weight, weighted_quantile, _bw
 
 
@@ -202,6 +202,7 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
     shift_km = params["basin_shift_km"][horizon]
     dj, di = int(round(shift_km / grid.DY_KM)), int(round(shift_km / grid.DX_KM))
     thr = level_thresholds(net_, hp)                                  # (4, P)
+    fml = flood_ml.load() if hp.get("ml_vote", True) else None
     F, T, P = len(frames), len(t_axis), net_.n
     psum, wsum = np.zeros((4, F, P)), np.zeros(F)
     QS, QP, WF, WT = [], [], [], []
@@ -218,6 +219,7 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
             q = route(net_rain(p, hp["p0_mm"], hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm"),
                                alpha=net_.alpha, p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0)),
                       net_, hp["clark_k"])      # (Tm, P)
+            q0 = route(p, net_, hp["clark_k"]) if fml is not None else None      # zero-loss: rain arriving at each point
             # onto the common axis
             pos = np.searchsorted(t_axis, m.t_end)
             inside = (pos < T) & (t_axis[np.minimum(pos, T - 1)] == m.t_end)
@@ -234,7 +236,10 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
             wv = w * share * valid
             with np.errstate(invalid="ignore", divide="ignore"):
                 ratio = np.where(np.isfinite(thr)[:, None, :], peak[None] / thr[:, None, :], 0.0)
-            psum += wv[None, :, None] * dress(ratio, sigma)
+            pd_ = dress(ratio, sigma)
+            if fml is not None:     # statistical vote: may raise levels 2-3, never lowers (coord/findings/q11-ml.md)
+                pd_[:2] = np.maximum(pd_[:2], flood_ml.prob(fml, peak, q0, m.t_end, frames, thr, net_.area) * valid[None, :, None])
+            psum += wv[None, :, None] * pd_
             wsum += wv
             QS.append(qa); QP.append(peak); WF.append(wv); WT.append(w * share)
     ok = wsum > 0

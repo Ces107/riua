@@ -87,6 +87,7 @@ DEFAULTS: dict = {
         # (leave-one-episode-out error of ln peak 0.58 -> 0.38; floods hit / missed 20 / 53 -> 42 / 31).
         "p0_mm": 150.0,       # runoff threshold of most of the ground
         "s_mm": 150.0,        # retention still to fill above the threshold
+        "ml_vote": True,      # max(physical, logistic vote on rain arriving and simulated peak) on levels 2-3 only
         "p0b_mm": 10.0, "sb_mm": 100.0,   # the quick share alpha of each catchment (geo/hydro/loss_params.json)
         # intensity excess: rain above this rate on a 5-km cell-hour runs off even on dry ground
         # (flow starts after 10 mm at 139 mm/h, after 72 mm at 57 mm/h: Camarasa-Belmonte 2021).

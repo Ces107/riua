@@ -1,0 +1,29 @@
+{
+ "version": "q11-ml 2026-10-05",
+ "description": "Independent vote that may raise flood levels 2 and 3 at the control points: logistic on the conceptual peak ratio, the potential flow (12-h mean of the zero-loss routed flow) and the arriving rain depth (24 h). Use P = max(P_dressed, P_ml); never lowers a level; not applied to levels 4-5 (no data above level 3).",
+ "features": [
+  "x_sim = ln((q_sim + 0.1 c) / T)",
+  "x_pot = ln((q_pot + 0.1 c) / T)",
+  "l_dep = ln(1 + d24)"
+ ],
+ "c": "5 * (A / 184) ** 0.75  [m3/s]",
+ "beta": [
+  -6.768986374145211,
+  0.5866359895714746,
+  0.898469750909088,
+  0.8373875301101608
+ ],
+ "levels": [
+  2,
+  3
+ ],
+ "pot_hours": 12,
+ "dep_hours": 24,
+ "trained_on": {
+  "events": 380,
+  "catchments": 26,
+  "episodes": 35,
+  "runs": 73,
+  "level2": 17
+ }
+}
