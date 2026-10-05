@@ -1000,5 +1000,344 @@ def main(what="all"):
         print(f"  {pid:24s} alpha {lp[pid]['alpha']:.4f}  {lp[pid]['how']}")
 
 
+# ====================================================================================================== peak-intensity excess
+# The intensity-excess term of production sees the hourly MEAN of a 5-km cell; the bursts that make the big floods live inside
+# the cell (Moixent 12 Sep 2019: wettest cell-hour mean 43 mm/h, 1-km maximum 76 mm/h).  The rain fields carry the cell maximum
+# (radar analysis: 1-km max o_max; Member.p in the pipeline).  Sub-cell model without new parameters ("cone"): the intensities
+# of the cell, sorted, fall as i(a) = P (1 - a)^k over the area share a, with k = P/m - 1 so that their mean is m.  The volume
+# above phi is then, for P > phi (r = phi / P):
+#     excess = m (1 - r^((k+1)/k)) - phi (1 - r^(1/k))         (k -> 0: max(m - phi, 0), the production term)
+# form 3 = that; form 4 = the simpler (m / P) * max(P - phi, 0); form 1 = production (mean only).
+
+@njit(cache=True)
+def _excess(pt, pk, phi, form):
+    if form == 1:
+        return pt - phi if pt > phi else 0.0
+    if form == 5:               # pk IS the excess, precomputed (sub-hourly radar ladder, see sub_pk)
+        return pk if pk < pt else pt
+    P = pk if pk > pt else pt
+    if P <= phi:
+        return 0.0
+    if form == 4:
+        return pt / P * (P - phi)
+    k = P / pt - 1.0
+    if k < 1e-3:
+        return pt - phi if pt > phi else 0.0
+    r = phi / P
+    return pt * (1.0 - r ** ((k + 1.0) / k)) - phi * (1.0 - r ** (1.0 / k))
+
+
+@njit(cache=True, nogil=True)
+def sim_pk(p, pk, p0, s, decay, phi, form, alpha, p0b, sb, lag, loc, a, K):
+    """sim() with the excess term computed from the cell mean p AND the cell maximum pk (T, n); forms 1 / 3 / 4 above."""
+    T, n = p.shape
+    w = np.zeros(n)
+    last = np.zeros(n, np.int64)
+    ptr = np.zeros(n + 1, np.int64)
+    for j in range(lag.size):
+        ptr[loc[j] + 1] += 1
+    for c in range(n):
+        ptr[c + 1] += ptr[c]
+    raw = np.zeros(T + lag.max() + 2)
+    for t in range(T):
+        for c in range(n):
+            pt = p[t, c]
+            if pt <= 0.0:
+                continue
+            wd = w[c] * decay ** (t - last[c] + 1)
+            wm = wd + 0.5 * pt
+            x = wm - p0[c]
+            cc = 0.0
+            if x > 0.0:
+                cc = x * (x + 2.0 * s[c]) / ((x + s[c]) * (x + s[c]))
+            e = pt * cc + (1.0 - cc) * _excess(pt, pk[t, c], phi, form)
+            al = alpha[c]
+            if al > 0.0:
+                xb = wm - p0b
+                cb = 0.0
+                if xb > 0.0:
+                    cb = xb * (xb + 2.0 * sb) / ((xb + sb) * (xb + sb))
+                e = (1.0 - al) * e + al * pt * cb
+            w[c] = wd + pt
+            last[c] = t + 1
+            if e > 0.0:
+                for j in range(ptr[c], ptr[c + 1]):
+                    raw[t + lag[j]] += a[j] * e
+    c1 = 1.0 - np.exp(-1.0 / K)
+    q = np.zeros(T)
+    prev = 0.0
+    for t in range(T):
+        prev = c1 * 0.278 * raw[t] + (1.0 - c1) * prev
+        q[t] = prev
+    return q
+
+
+PK_VARIANTS = [("production: hard 45 on the cell mean", 1, 45.0)] + \
+              [(f"cone on the cell max, phi {f:g}", 3, f) for f in (30.0, 45.0, 60.0, 80.0, 100.0, 130.0)] + \
+              [(f"(mean/max) x (max - phi), phi {f:g}", 4, f) for f in (30.0, 45.0, 60.0, 80.0, 100.0, 130.0)]
+
+
+def _tables(net):
+    """per point: cells, lag/loc/a sorted by loc"""
+    out = []
+    for k in range(net.n):
+        lag = np.concatenate([np.full(A.getrow(k).nnz, L) for L, A in enumerate(net.lags)]).astype(np.int64)
+        cl = np.concatenate([A.getrow(k).indices for A in net.lags])
+        ar = np.concatenate([A.getrow(k).data for A in net.lags]).astype(float)
+        cells, loc = np.unique(cl, return_inverse=True)
+        o = np.argsort(loc, kind="stable")
+        out.append((cells, lag[o], loc[o].astype(np.int64), ar[o]))
+    return out
+
+
+# ---- sub-hourly radar excess (q12): the rain above phi mm/h inside the hour, from the excess ladder of the radar rate frames
+# (riua.radar.qpe.burst_ladder, built by hindcast/subhourly/features.py on GitHub Actions into hindcast/cache/subhourly/).
+# form 5 of _excess: the excess is precomputed per cell-hour; hours without a ladder keep the production term max(p - 45, 0).
+SUB = ROOT / "hindcast" / "cache" / "subhourly"
+SUB_VARIANTS = [("production: hard 45 on the cell mean", 1, 45.0)] + \
+               [(f"sub-hourly excess, phi {f:g}", 5, f) for f in (30.0, 45.0, 60.0, 80.0, 100.0, 130.0, 160.0)]
+
+
+def sub_ladder(t_end):
+    """RAW excess ladders of the hours ending at t_end: (pos (T,) index into lad or -1, lad (K, L, NY*NX) float16)."""
+    from riua.radar import qpe
+    t_end = np.asarray(t_end).astype("datetime64[h]")
+    days = (t_end - np.timedelta64(1, "h")).astype("datetime64[D]")
+    pos = np.full(len(t_end), -1, np.int64)
+    rows = []
+    for d in np.unique(days):
+        f = SUB / (str(d).replace("-", "") + ".npz")
+        if not f.exists():
+            continue
+        z = np.load(f)
+        te = z["t_end"].astype("datetime64[h]")
+        lad = z["ladder"].reshape(len(te), len(qpe.LADDER_U), -1)
+        idx = np.nonzero(days == d)[0]
+        j = np.searchsorted(te, t_end[idx])
+        ok = (j < len(te)) & (te[np.minimum(j, len(te) - 1)] == t_end[idx])
+        ok &= np.isfinite(lad[np.minimum(j, len(te) - 1), 0]).any(axis=1)
+        for i, jj in zip(idx[ok], j[ok]):
+            pos[i] = len(rows)
+            rows.append(lad[jj])
+    return pos, (np.stack(rows) if rows else np.zeros((0, len(qpe.LADDER_U), grid.NY * grid.NX), np.float16))
+
+
+def sub_pk(pos, lad, cells, P, phi, phi_h=45.0):
+    """(T, n) excess above phi (mm in the hour) of the cells: from the ladder where it exists (gauge correction = P / radar),
+    the production hourly term max(P - phi_h, 0) elsewhere."""
+    from riua.radar import qpe
+    PK = np.maximum(P - phi_h, 0.0).astype(np.float32)
+    idx = np.nonzero(pos >= 0)[0]
+    if idx.size:
+        l = lad[:, :, cells][pos[idx]].astype(np.float32)               # (k, L, n)
+        x = qpe.ladder_excess(np.moveaxis(l, 1, 0), P[idx], phi)
+        PK[idx] = np.where(np.isfinite(x), x, PK[idx])
+    return PK
+
+
+def peak_floods(variants=None, out_name="peak_test.json"):
+    """Joint test of the peak-intensity excess on the ordinary floods (gauges, Sep 2024 - 2026) and on q9's big floods
+    (hindcast/floods, 2007-2023), leave-one-event-out.  Writes hindcast/obs/flows/peak_test.json and prints the tables.
+    variants: (name, form, phi) list (default PK_VARIANTS; SUB_VARIANTS = the sub-hourly radar excess, form 5)."""
+    from dataset import Data, gauge_net
+    from riua import params as RP
+    from riua.core import hydro as H
+    PKV = variants or PK_VARIANTS
+    hp = RP.load()["hydro"]
+    phi_h = 45.0                      # the production hourly term, kept where no sub-hourly ladder exists
+    base = dict(p0=hp["p0_mm"], s=hp["s_mm"], tau=hp["wet_memory_h"], p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0), kf=hp["clark_k"])
+    decay = float(np.exp(-1.0 / base["tau"]))
+    cnet, cps = static.hydro_net()
+    thr = H.level_thresholds(cnet, hp)
+    gnet, gpts = gauge_net()
+    fitc = json.loads((GAUGES / "out" / "fit_catchments.json").read_text(encoding="utf-8"))
+    galpha = np.array([fitc.get(i, {}).get("alpha", 0.03) for i in gnet.ids])
+    ctab, gtab = _tables(cnet), _tables(gnet)
+    calpha = cnet.alpha if cnet.alpha is not None else np.full(grid.NY * grid.NX, 0.03)
+
+    def run(p, pk, tab, net, alpha_of, form, phi):
+        q = np.zeros((p.shape[0], net.n))
+        for k, (cells, lag, loc, ar) in enumerate(tab):
+            n = len(cells)
+            q[:, k] = sim_pk(np.ascontiguousarray(p[:, cells]), np.ascontiguousarray(pk[:, cells]), np.full(n, base["p0"]), np.full(n, base["s"]),
+                             decay, phi, form, alpha_of(k, cells), base["p0b"], base["sb"], lag, loc, ar, max(base["kf"] * net.tc_h[k], 0.25))
+        return q
+
+    c_al = lambda k, cells: calpha[cells].astype(float)                     # noqa: E731
+    g_al = lambda k, cells: np.full(len(cells), galpha[k])                   # noqa: E731
+    # ---------------- big floods (q9): cases before the SAIH history (the 2024-25 truth episodes are in the ordinary set)
+    FL = ROOT / "hindcast" / "floods"
+    cases = [c for c in json.loads((FL / "cases.json").read_text(encoding="utf-8"))["cases"] if c["id"] < "2024"]
+    facts = json.loads((FL / "out" / "results.json").read_text(encoding="utf-8"))["rows"]
+    big_rows, unver = [], {}
+    for name, form, phi in PKV:
+        unver[name] = 0
+    sims = {}
+    use_sub = any(form == 5 for _, form, _ in PKV)
+    allc = np.arange(grid.NY * grid.NX)
+    sub_cover = {}
+    for c in cases:
+        f = FL / "cache" / "rain" / f"{c['id']}.npz"
+        if not f.exists():
+            continue
+        z = np.load(f)
+        T = len(z["t_end"])
+        p = np.nan_to_num(z["o_mean"].reshape(T, -1)).astype(np.float32)
+        pk = np.maximum(np.nan_to_num(z["o_max"].reshape(T, -1)).astype(np.float32), p)
+        if use_sub:
+            spos, slad = sub_ladder(z["t_end"])
+            sub_cover[c["id"]] = [int((spos >= 0).sum()), T]
+        for vi, (name, form, phi) in enumerate(PKV):
+            pkv = sub_pk(spos, slad, allc, p, phi, phi_h) if form == 5 else pk
+            sims[(c["id"], vi, "control")] = run(p, pkv, ctab, cnet, c_al, form, phi).max(axis=0)
+            sims[(c["id"], vi, "gauge")] = run(p, pkv, gtab, gnet, g_al, form, phi).max(axis=0)
+        print("  big-flood case", c["id"], "sub-hourly hours", sub_cover.get(c["id"]), flush=True)
+    case_ids = {c["id"] for c in cases}
+    for r in facts:
+        if r["event"] not in case_ids:
+            continue
+        net, kind = (cnet, "control") if r["kind"] == "control" else (gnet, "gauge")
+        if r["point"] not in net.ids:
+            continue
+        k = net.ids.index(r["point"])
+        sims_r = [float(sims[(r["event"], vi, kind)][k]) for vi in range(len(PKV))]
+        big_rows.append(dict(r, sims=sims_r))
+        if kind == "control" and variants is not None:      # q12: the overflow discharge as production has it today
+            big_rows[-1]["capacity_q9"], big_rows[-1]["capacity_used"] = r.get("capacity_used"), float(thr[2, k])
+    # unverified simulated overflows: control points without any fact in that case
+    has_fact = {(r["event"], r["point"]) for r in facts}
+    unver_list = {name: [] for name, _, _ in PKV}
+    for c in cases:
+        for vi, (name, form, phi) in enumerate(PKV):
+            if (c["id"], vi, "control") not in sims:
+                continue
+            pkv = sims[(c["id"], vi, "control")]
+            lst = [f"{c['id']} {pid}" for k, pid in enumerate(cnet.ids) if pkv[k] >= thr[2, k] and (c["id"], pid) not in has_fact]
+            unver[name] += len(lst)
+            unver_list[name] += lst
+    # ---------------- ordinary floods: gauge events of the ravine domain, peak field = truth o_max inside the episodes
+    D = Data(offline=True)
+    attrs = attributes()
+    rows = [r for r in D.events(write=False) if "q_obs" in r and usable(r) and in_domain(r["pid"], attrs)]
+    pk_all = D.p_all.copy()
+    for f in sorted((ROOT / "hindcast" / "truth").glob("*.npz")):
+        zt = np.load(f, allow_pickle=True)
+        te = zt["t_end"].astype("datetime64[h]")
+        pos = (te - D.t[0]).astype(int)
+        ok = (pos >= 0) & (pos < D.T) & (D.src[np.clip(pos, 0, D.T - 1)] == 1)
+        pk_all[pos[ok]] = np.nan_to_num(zt["o_max"].reshape(len(te), -1)[ok])
+    if use_sub:
+        opos, olad = sub_ladder(D.t)
+        print(f"  ordinary period: {int((opos >= 0).sum())} of {D.T} hours have a sub-hourly ladder", flush=True)
+    ord_sim = np.zeros((len(PKV), len(rows)))
+    by = {}
+    for i, r in enumerate(rows):
+        by.setdefault(r["pid"], []).append(i)
+    for pid, ii in by.items():
+        k = gnet.ids.index(pid)
+        c = D.cat(k)
+        cells, lag, loc, ar = gtab[k]
+        assert np.array_equal(cells, c["cells"])
+        P = c["p"].astype(np.float32)
+        PK = pk_all[:, cells]
+        PK = np.maximum(np.where(np.isfinite(PK), PK, P), P).astype(np.float32)
+        for vi, (name, form, phi) in enumerate(PKV):
+            pkv = sub_pk(opos, olad, cells, P, phi, phi_h) if form == 5 else PK
+            q = sim_pk(np.ascontiguousarray(P), np.ascontiguousarray(pkv), np.full(len(cells), base["p0"]), np.full(len(cells), base["s"]), decay, phi, form,
+                       np.full(len(cells), galpha[k]), base["p0b"], base["sb"], lag, loc, ar, max(base["kf"] * gnet.tc_h[k], 0.25))
+            for i in ii:
+                ord_sim[vi, i] = q[rows[i]["i0"]:rows[i]["iw"] + 1].max()
+    # ordinary period, control points: simulated overflows outside 28 Oct - 5 Nov 2024 (none documented in 2025-26)
+    ord_over = np.zeros(len(PKV), int)
+    ord_over_2526 = np.zeros(len(PKV), int)
+    ord_over_list = {name: [] for name, _, _ in PKV}
+    quiet = (D.t < np.datetime64("2024-10-28")) | (D.t > np.datetime64("2024-11-06"))
+    y2526 = D.t >= np.datetime64("2025-01-01")
+    for k, pid in enumerate(cnet.ids):
+        c = D.cat(k, cnet)
+        cells, lag, loc, ar = ctab[k]
+        P = c["p"].astype(np.float32)
+        PK = pk_all[:, cells]
+        PK = np.maximum(np.where(np.isfinite(PK), PK, P), P).astype(np.float32)
+        for vi, (name, form, phi) in enumerate(PKV):
+            pkv = sub_pk(opos, olad, cells, P, phi, phi_h) if form == 5 else PK
+            q = sim_pk(np.ascontiguousarray(P), np.ascontiguousarray(pkv), np.full(len(cells), base["p0"]), np.full(len(cells), base["s"]), decay, phi, form,
+                       calpha[cells].astype(float), base["p0b"], base["sb"], lag, loc, ar, max(base["kf"] * cnet.tc_h[k], 0.25))
+            over = (q >= thr[2, k]) & quiet
+            starts = np.nonzero(np.diff(np.r_[0, over.astype(int)]) == 1)[0]          # separate overflow episodes
+            ord_over[vi] += len(starts)
+            ord_over_2526[vi] += int(y2526[starts].sum())
+            ord_over_list[name] += [f"{str(D.t[s])[:13]} {pid} {q[s:s + 48].max():.0f}/{thr[2, k]:.0f}" for s in starts]
+    # ---------------- scores
+    ob = np.array([r["q_obs"] for r in rows]); cA = c_off([r["area"] for r in rows])
+    r_ord = np.log((ord_sim + cA) / (ob + cA))
+    nat = [r for r in big_rows if r["documented_peak"] and not r["regulated"] and r["peak_kind"] in ("measured", "estimated", "modelled")]
+    dp = np.array([r["documented_peak"] for r in nat]); cB = c_off([r["area_km2"] for r in nat])
+    sb_ = np.array([r["sims"] for r in nat]).T
+    r_big = np.log((sb_ + cB) / (dp + cB))
+    isbig = dp >= 100
+    ovr = [r for r in big_rows if r["kind"] == "control" and r["documented_overflow"] is not None]
+    table = []
+    print("\n== peak-intensity excess (P0 %g, S %g, per-cell alpha as deployed)" % (base["p0"], base["s"]))
+    print(f"  {'variant':38s} | ordinary {len(rows)} events: MAE  bias  hit/miss/false | big floods: all {len(nat)} MAE bias | >=100 ({int(isbig.sum())}) MAE bias median ratio "
+          f"| overflow H/M/F/N | unverified | ordinary-period overflows")
+    for vi, (name, form, phi) in enumerate(PKV):
+        ro, rb = r_ord[vi], r_big[vi]
+        hits = int(((ord_sim[vi] >= cA) & (ob >= cA)).sum()); miss = int(((ord_sim[vi] < cA) & (ob >= cA)).sum()); fa = int(((ord_sim[vi] >= cA) & (ob < cA)).sum())
+        H_ = sum(1 for r in ovr if r["documented_overflow"] and r["sims"][vi] >= r["capacity_used"])
+        M_ = sum(1 for r in ovr if r["documented_overflow"] and r["sims"][vi] < r["capacity_used"])
+        F_ = sum(1 for r in ovr if not r["documented_overflow"] and r["sims"][vi] >= r["capacity_used"])
+        N_ = sum(1 for r in ovr if not r["documented_overflow"] and r["sims"][vi] < r["capacity_used"])
+        d = dict(variant=name, form=form, phi=phi, ord_mae=round(float(np.abs(ro).mean()), 3), ord_bias=round(float(ro.mean()), 3), ord_hmf=[hits, miss, fa],
+                 big_mae=round(float(np.abs(rb).mean()), 3), big_bias=round(float(rb.mean()), 3),
+                 big100_mae=round(float(np.abs(rb[isbig]).mean()), 3), big100_bias=round(float(rb[isbig].mean()), 3),
+                 big100_median_ratio=round(float(np.median(sb_[vi][isbig] / dp[isbig])), 2), overflow=[H_, M_, F_, N_],
+                 unverified=unver[name], ordinary_overflows=int(ord_over[vi]), overflows_2025_26=int(ord_over_2526[vi]),
+                 unverified_list=unver_list[name], ordinary_overflow_list=ord_over_list[name])
+        table.append(d)
+        print(f"  {name:38s} | {d['ord_mae']:.3f} {d['ord_bias']:+.2f}  {hits}/{miss}/{fa} | {d['big_mae']:.3f} {d['big_bias']:+.2f} | {d['big100_mae']:.3f} {d['big100_bias']:+.2f} "
+              f"x{d['big100_median_ratio']:.2f} | {H_}/{M_}/{F_}/{N_} | {unver[name]} | {int(ord_over[vi])} ({int(ord_over_2526[vi])} in 2025-26)")
+    # leave-one-event-out over both sets (ordinary episodes + big-flood cases), choice by pooled MAE
+    ev_o = np.array(["o%03d" % e for e in episodes(rows)])
+    ev_b = np.array([r["event"] for r in nat])
+    allr = np.concatenate([r_ord, r_big], axis=1)
+    allev = np.concatenate([ev_o, ev_b])
+    held = np.zeros(allr.shape[1]); picks = {}; pick_of = {}
+    for e in np.unique(allev):
+        m = allev == e
+        vi = int(np.argmin(np.abs(allr[:, ~m]).mean(axis=1)))
+        held[m] = allr[vi, m]; picks[PKV[vi][0]] = picks.get(PKV[vi][0], 0) + 1
+        pick_of[e] = vi
+    # the overflow call of each big-flood case with the variant picked without that case
+    lo = [0, 0, 0, 0]
+    for r in ovr:
+        vi = pick_of.get(r["event"], int(np.argmin(np.abs(allr).mean(axis=1))))
+        sim_over = r["sims"][vi] >= r["capacity_used"]
+        lo[(0 if sim_over else 1) if r["documented_overflow"] else (2 if sim_over else 3)] += 1
+    no, nb = len(rows), len(nat)
+    loo = dict(ordinary=stats(held[:no], np.ones(no)), big=stats(held[no:], np.ones(nb)), big100=stats(held[no:][isbig], np.ones(int(isbig.sum()))),
+               overflow=lo, picks=picks)
+    print("  leave-one-event-out (variant picked on the other events, pooled MAE):", loo)
+    print("  floods >= 100 m3/s (measured, then each variant):")
+    for r in sorted([r for r in nat if r["documented_peak"] >= 100], key=lambda r: r["event"]):
+        print(f"    {r['event']} {r['point']:16s} {r['rain_input']:6s} obs {r['documented_peak']:6.0f} | " + " ".join(f"{v:6.0f}" for v in r["sims"]))
+    print("  overflow facts (documented, capacity, then each variant):")
+    for r in sorted(ovr, key=lambda r: (r["event"], r["point"])):
+        print(f"    {r['event']} {r['point']:18s} {'yes' if r['documented_overflow'] else 'no ':3s} cap {r['capacity_used']:6.0f} | " + " ".join(f"{v:6.0f}" for v in r["sims"]))
+    out = dict(params=base, table=table, leave_one_event_out=loo, n_ordinary=no, n_big=nb, sub_hourly_cover=sub_cover,
+               big_floods=[dict(event=r["event"], point=r["point"], rain=r["rain_input"], obs=r["documented_peak"],
+                                sims={PKV[i][0]: round(v, 1) for i, v in enumerate(r["sims"])}) for r in nat if r["documented_peak"] >= 100],
+               overflow_facts=[dict(event=r["event"], point=r["point"], documented=r["documented_overflow"], capacity=r["capacity_used"],
+                                    sims={PKV[i][0]: round(v, 1) for i, v in enumerate(r["sims"])}) for r in ovr],
+               check_production_vs_q9=[(r["event"], r["point"], r["simulated_peak"], round(r["sims"][0], 1)) for r in big_rows[:12]])
+    (FLOWS / out_name).write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
+    return out
+
+
 if __name__ == "__main__":
-    main(sys.argv[1] if len(sys.argv) > 1 else "all")
+    if len(sys.argv) > 1 and sys.argv[1] == "peak":
+        peak_floods()
+    elif len(sys.argv) > 1 and sys.argv[1] == "subhourly":       # q12: py -3.11 hindcast/calibrate_hydro.py subhourly
+        peak_floods(SUB_VARIANTS, "subhourly_test.json")
+    else:
+        main(sys.argv[1] if len(sys.argv) > 1 else "all")

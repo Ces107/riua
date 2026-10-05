@@ -86,7 +86,8 @@ def runoff_coefficient(w_mm: np.ndarray, p0: float, s: float | None = None) -> n
 
 
 def net_rain(p: np.ndarray, p0: float, tau_h: float, w0: np.ndarray | float = 0.0, phi: float | None = None,
-             s: float | None = None, alpha: np.ndarray | None = None, p0b: float = 10.0, sb: float = 100.0) -> np.ndarray:
+             s: float | None = None, alpha: np.ndarray | None = None, p0b: float = 10.0, sb: float = 100.0,
+             excess: np.ndarray | None = None) -> np.ndarray:
     """p (T, ncell) mm/h -> net rain (T, ncell) mm/h.
 
     Three ways of producing runoff, as in Mediterranean ravines: the ground fills up
@@ -94,6 +95,10 @@ def net_rain(p: np.ndarray, p0: float, tau_h: float, w0: np.ndarray | float = 0.
     (infiltration excess: what exceeds phi mm/h runs off even on dry ground); and a share alpha
     of every cell (paved and compacted ground, valley bottoms, the channels) runs after only
     p0b mm. alpha (per cell) is what differs between catchments.
+
+    excess (T, ncell) mm, optional: the infiltration excess measured at the scale of the bursts
+    (rain above phi_sub mm/h inside the hour, `burst_excess`); it replaces max(p - phi, 0) where
+    it is finite. NaN keeps the hourly term.
     """
     decay = float(np.exp(-1.0 / tau_h))
     w = np.zeros(p.shape[1], np.float32) + w0
@@ -104,7 +109,10 @@ def net_rain(p: np.ndarray, p0: float, tau_h: float, w0: np.ndarray | float = 0.
         c = runoff_coefficient(wm, p0, s)
         e = p[t] * c
         if phi is not None:
-            e = e + (1.0 - c) * np.maximum(p[t] - phi, 0.0)
+            ex = np.maximum(p[t] - phi, 0.0)
+            if excess is not None:
+                ex = np.where(np.isfinite(excess[t]), np.minimum(np.nan_to_num(excess[t]), p[t]), ex)
+            e = e + (1.0 - c) * ex
         if alpha is not None:
             e = (1.0 - alpha) * e + alpha * p[t] * runoff_coefficient(wm, p0b, sb)
         out[t] = e
@@ -198,6 +206,54 @@ class HydroProduct:
     rp: np.ndarray | None = None   # (2, F, P) return period (years) of the median / p90 peak; 1 = below T2
 
 
+def burst_excess(m: Member, pa: np.ndarray, hp: dict) -> np.ndarray | None:
+    """(T, ncell) mm of rain above hp['phi_sub_mmh'] inside each hour of member m (pa: its hourly cell means as routed),
+    or None when the option is off. NaN = not known (net_rain keeps the hourly term there).
+
+    measured hours        the radar excess ladder of the hour (m.meta['burst_obs'] = (t_end, ladder (K, L, NY, NX)), RAW
+                          radar, gauge-corrected here through the cell mean: radar/qpe.py::ladder_excess);
+    radar nowcast hours   the ladder of the STEPS 10-min rate frames (m.meta['burst_nc'] = (t_end, ladder, radar weight))
+                          while the radar still weighs >= 0.5;
+    other forecast hours  the archive relation X = p G(phi / p) (hp['burst_rel'] = [ratios phi/p], [G]): what the radar
+                          shows on average inside an hour of that cell mean. A forecast cannot place a burst; this is
+                          the expected excess of an hour of that intensity, no more."""
+    phi = hp.get("phi_sub_mmh")
+    if phi is None:
+        return None
+    from ..radar import qpe
+    T = pa.shape[0]
+    X = np.full(pa.shape, np.nan, np.float32)
+    obs = m.observed()
+
+    def fill(src, use):
+        t_b, lad = src[0], src[1]
+        if not len(t_b):
+            return
+        pos = np.searchsorted(t_b, m.t_end)
+        ok = use & (pos < len(t_b)) & (t_b[np.minimum(pos, len(t_b) - 1)] == m.t_end) & ~np.isfinite(X).any(axis=1)
+        if len(src) > 2:                                          # radar weight of the nowcast hour
+            ok &= np.asarray(src[2])[np.minimum(pos, len(t_b) - 1)] >= 0.5
+        k = np.nonzero(ok)[0]
+        if k.size:
+            L = lad.shape[1]
+            X[k] = qpe.ladder_excess(np.moveaxis(lad[pos[k]].reshape(k.size, L, -1), 1, 0), pa[k], phi)
+
+    if m.meta.get("burst_obs") is not None:
+        fill(m.meta["burst_obs"], obs)
+    if m.meta.get("burst_nc") is not None:
+        fill(m.meta["burst_nc"], ~obs)
+    rel = hp.get("burst_rel")
+    if rel is not None:
+        fc = ~obs & ~np.isfinite(X).any(axis=1)
+        if fc.any():
+            r, g = np.log(np.asarray(rel[0], float)), np.asarray(rel[1], float)
+            pp = pa[fc]
+            with np.errstate(divide="ignore", invalid="ignore"):
+                gx = np.interp(np.log(phi / np.maximum(pp, 1e-3)), r, g, left=g[0], right=0.0)
+            X[fc] = np.where(pp >= 0.5, np.minimum(pp * gx, pp), 0.0)
+    return X
+
+
 def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, horizon: str,
                   now: datetime, t_axis: np.ndarray, extra=None) -> HydroProduct:
     """extra: (outflow per scenario key (name, sj, si) -> (T, P) m3/s, its hours): dam releases and spills
@@ -218,11 +274,14 @@ def hydro_product(members: list[Member], frames, net_: HydroNet, params: dict, h
         fam = params["families"][m.family]
         variants = [(0, 0, 0.4), (dj, 0, 0.15), (-dj, 0, 0.15), (0, di, 0.15), (0, -di, 0.15)] \
             if m.family in ("cp", "radar") and (dj or di) else [(0, 0, 1.0)]
+        Tm = len(m.t_end)
+        pa = np.nan_to_num(m.area, nan=0.0) * np.where(m.observed(), 1.0, fam["s12h"])[:, None, None]   # measured rain is not rescaled
+        xa = burst_excess(m, pa.reshape(Tm, -1), hp)          # None unless hydro.phi_sub_mmh is set
         for sj, si, share in variants:
-            p = np.nan_to_num(grid.shift(m.area, sj, si), nan=0.0).reshape(len(m.t_end), -1)
-            p = p * np.where(m.observed(), 1.0, fam["s12h"])[:, None]      # measured rain is not rescaled
+            p = grid.shift(pa, sj, si).reshape(Tm, -1)
+            ex = None if xa is None else grid.shift(xa.reshape(pa.shape), sj, si).reshape(Tm, -1)
             q = route(net_rain(p, hp["p0_mm"], hp["wet_memory_h"], phi=hp.get("phi_mmh"), s=hp.get("s_mm"),
-                               alpha=net_.alpha, p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0)),
+                               alpha=net_.alpha, p0b=hp.get("p0b_mm", 10.0), sb=hp.get("sb_mm", 100.0), excess=ex),
                       net_, hp["clark_k"])      # (Tm, P)
             q0 = route(p, net_, hp["clark_k"]) if fml is not None else None      # zero-loss: rain arriving at each point
             if extra is not None and (m.name, sj, si) in extra[0]:

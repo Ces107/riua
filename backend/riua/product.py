@@ -80,6 +80,11 @@ class Obs:
     o_tail: np.ndarray | None = None
     fine_t: np.ndarray | None = None        # (F,) datetime64[h] hours that have a 1-km field
     fine: np.ndarray | None = None          # (F, 340, 320) RAW 1-km accumulations of the last hours, NaN = no coverage
+    # sub-hourly bursts (only when params hydro.phi_sub_mmh is set): RAW excess ladder of each hour (radar/qpe.py::burst_ladder),
+    # (B, L, NY, NX) mm on its own hour axis burst_t, and the ladder of the hour under way (it adds to the nowcast's)
+    burst_t: np.ndarray | None = None
+    burst: np.ndarray | None = None
+    partial_burst: np.ndarray | None = None
 
 
 def load_obs_state(state: Path) -> Obs:
@@ -93,15 +98,21 @@ def load_obs_state(state: Path) -> Obs:
     if f.exists():
         z = np.load(f)
         obs.fine_t, obs.fine = z["t_end"], z["acc"].astype(np.float32)
+    f = state / "obs_burst.npz"
+    if f.exists():
+        z = np.load(f)
+        obs.burst_t, obs.burst = z["t_end"], z["ladder"].astype(np.float32)
     return obs
 
 
-def save_obs_state(state: Path, obs: Obs, keep_h: int = 96, keep_fine: int = 13) -> None:
+def save_obs_state(state: Path, obs: Obs, keep_h: int = 96, keep_fine: int = 13, keep_burst: int = 24) -> None:
     state.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(state / "obs_raw.npz", t_end=obs.t_end[-keep_h:], o_max=obs.o_max[-keep_h:].astype(np.float16),
                         o_mean=obs.o_mean[-keep_h:].astype(np.float16))
     if obs.fine is not None:
         np.savez_compressed(state / "obs_1km.npz", t_end=obs.fine_t[-keep_fine:], acc=obs.fine[-keep_fine:].astype(np.float16))
+    if obs.burst is not None and len(obs.burst_t):
+        np.savez_compressed(state / "obs_burst.npz", t_end=obs.burst_t[-keep_burst:], ladder=obs.burst[-keep_burst:].astype(np.float16))
 
 
 def update_obs(state: Path, now: datetime, backfill_h: int = 14) -> tuple[Obs, list, dict]:
@@ -149,6 +160,8 @@ def update_obs(state: Path, now: datetime, backfill_h: int = 14) -> tuple[Obs, l
     # hours missing from the state, and the last complete hour again: its newest scans arrive with the
     # OPERA hole on the coast still open and are filled 15-25 min later
     new = []
+    want_burst = P.load()["hydro"].get("phi_sub_mmh") is not None        # sub-hourly bursts: only when the option is on
+    burst = {} if obs.burst is None else {str(t): x for t, x in zip(obs.burst_t, obs.burst)}
     for t in need + [hnow] * (hnow not in need):
         a, b = (t - timedelta(hours=1)).replace(tzinfo=UTC), t.replace(tzinfo=UTC)
         sub = [f for f in rates if a - timedelta(minutes=10) <= f[0] <= b]
@@ -159,6 +172,12 @@ def update_obs(state: Path, now: datetime, backfill_h: int = 14) -> tuple[Obs, l
             continue
         fine[key(t)] = np.minimum(acc / cov, HARD_CAP_1H)       # a partly covered hour is scaled to the whole hour
         new.append(key(t))
+        if want_burst:
+            try:
+                lad, c = qpe.burst_ladder(sub, a, b)
+                burst[key(t)] = lad / max(c, 1e-6)
+            except Exception as e:      # the bursts are an extra: never lose the cycle for them
+                rep["radar"]["burst_error"] = f"{type(e).__name__}: {e}"[:200]
     raw = {str(t): (m, a) for t, m, a in zip(obs.t_end, obs.o_max, obs.o_mean)}
     for k in new:
         raw[k] = (NC.to_analysis_max(np.nan_to_num(fine[k], nan=0.0)), np.nan_to_num(NC.to_analysis_mean(fine[k]), nan=0.0))
@@ -167,13 +186,21 @@ def update_obs(state: Path, now: datetime, backfill_h: int = 14) -> tuple[Obs, l
     obs = Obs(np.array(ks, "datetime64[h]"), stack([raw[k][0] for k in ks]), stack([raw[k][1] for k in ks]))
     if fk:
         obs.fine_t, obs.fine = np.array(fk, "datetime64[h]"), np.stack([fine[k] for k in fk])
+    if want_burst and burst:
+        bk = sorted(burst)[-24:]
+        obs.burst_t, obs.burst = np.array(bk, "datetime64[h]"), np.stack([burst[k] for k in bk]).astype(np.float32)
     save_obs_state(state, obs)
     # the hour under way
-    part = part_end = None
+    part = part_end = part_burst = None
     a = hnow.replace(tzinfo=UTC)
     sub = [f for f in rates if f[0] >= a - timedelta(minutes=10)]
     if len(sub) >= 2 and sub[-1][0] > a:
         part, part_end = qpe.accumulate(sub, a, sub[-1][0])[0], ingest.naive(sub[-1][0])
+        if want_burst:
+            try:
+                part_burst = qpe.burst_ladder(sub, a, sub[-1][0])[0]
+            except Exception as e:
+                rep["radar"]["burst_error"] = f"{type(e).__name__}: {e}"[:200]
     gl = []
     try:
         gl = G.fetch_rain_gauges()
@@ -203,7 +230,7 @@ def update_obs(state: Path, now: datetime, backfill_h: int = 14) -> tuple[Obs, l
     if (state / "obs_adj.npz").exists():
         z = np.load(state / "obs_adj.npz")
         cor = {str(t): (m, a) for t, m, a in zip(z["t_end"], z["o_max"].astype(np.float32), z["o_mean"].astype(np.float32))}
-    out = Obs(obs.t_end, obs.o_max, obs.o_mean, info=rep)
+    out = Obs(obs.t_end, obs.o_max, obs.o_mean, info=rep, burst_t=obs.burst_t, burst=obs.burst, partial_burst=part_burst)
     if adj is not None:
         adj = np.minimum(adj, HARD_CAP_1H)
         if part is not None:
@@ -251,17 +278,20 @@ def with_past(m: risk.Member, obs: Obs, hnow: datetime, bridge: risk.Member | No
     # (summing hourly cell maxima of different pixels overstates the 12-h amount by 13 %)
     p = np.concatenate([(obs.o_max if getattr(obs, "o_tail", None) is None else obs.o_tail)[past], p_f]).astype(np.float32)
     area = np.concatenate([obs.o_mean[past], a_f]).astype(np.float32)
-    return risk.Member(m.name, m.family, m.model, m.run, t, p, m.native_step_h, m.weight, area,
-                       {**m.meta, "obs_until": h})
+    meta = {**m.meta, "obs_until": h}
+    if getattr(obs, "burst", None) is not None:
+        meta["burst_obs"] = (obs.burst_t, obs.burst)        # a reference, shared by all members (core/hydro.py::burst_excess)
+    return risk.Member(m.name, m.family, m.model, m.run, t, p, m.native_step_h, m.weight, area, meta)
 
 
 # --------------------------------------------------------------------------------- now members
 
 def nowcast_members(rates: list, obs: Obs, nwp: list[risk.Member], now: datetime, n_members: int = 20):
     """STEPS radar ensemble blended into the newest convection-permitting runs."""
-    from .radar import nowcast as NC
+    from .radar import nowcast as NC, qpe
     hnow = top_of_hour(now)
     rep = {"method": "none", "members": 0}
+    steps_burst = None
     # donors: runs that cover the six hours; convection-permitting ones if there are any
     full = [m for m in nwp if all((m.t_end == np.datetime64(hnow, "h") + np.timedelta64(k + 1, "h")).any() for k in range(6))]
     cp = sorted([m for m in full if m.family == "cp"], key=lambda m: -m.run.timestamp())
@@ -285,6 +315,8 @@ def nowcast_members(rates: list, obs: Obs, nwp: list[risk.Member], now: datetime
                 steps_h_max = {np.datetime64(ingest.naive(t), "h"): NC.to_analysis_max(acc[:, k]) for k, t in enumerate(t_ends)}
                 steps_h_mean = {np.datetime64(ingest.naive(t), "h"): NC.to_analysis_mean(acc[:, k]) for k, t in enumerate(t_ends)}
                 lead_off = (ingest.naive(nc["t0"]) - hnow).total_seconds() / 3600.0
+                if P.load()["hydro"].get("phi_sub_mmh") is not None:
+                    steps_burst = _steps_burst(nc["rate"], nc["t0"], steps_h_mean)
         except Exception as e:
             rep.update(method=f"failed: {type(e).__name__}: {e}"[:160])
     M = n_members if steps_h_max else 0
@@ -292,11 +324,16 @@ def nowcast_members(rates: list, obs: Obs, nwp: list[risk.Member], now: datetime
         d = donors[k % len(donors)] if donors else None
         p = np.zeros((6, grid.NY, grid.NX), np.float32)
         a = np.zeros_like(p)
+        lad = np.full((6, len(qpe.LADDER_U), grid.NY, grid.NX), np.nan, np.float32) if steps_burst else None
+        wb = np.zeros(6)
         for i, t in enumerate(hours):
             lead = (i + 1) - lead_off                       # hours after the last scan, end of this hour
             w = float(NC.blend_weights(np.array([max(lead - 0.5, 0.0)]))[0])
             if t not in steps_h_max:
                 w = 0.0
+            if steps_burst and t in steps_burst:            # the excess ladder of the STEPS member (+ the hour under way)
+                lad[i] = steps_burst[t][k] + (obs.partial_burst if (i == 0 and obs.partial_burst is not None) else 0.0)
+                wb[i] = w
             r_max = steps_h_max[t][k] if t in steps_h_max else 0.0
             r_mean = steps_h_mean[t][k] if t in steps_h_mean else 0.0
             if i == 0 and obs.partial_max is not None:      # the hour under way: add what already fell
@@ -321,15 +358,31 @@ def nowcast_members(rates: list, obs: Obs, nwp: list[risk.Member], now: datetime
         # the radar signal has faded. It takes the run's family, age and weight, shared among the members
         # blended into the same run, and the run is not counted a second time (see run_cycle). The weight of
         # every source is then the same in the six frames: nothing vanishes at +4 h.
+        bmeta = {"burst_nc": (hours, lad, wb)} if steps_burst else {}
         if d is None:
-            out.append(risk.Member(f"Radar STEPS m{k + 1:02d}", "radar", "steps", hnow, hours, p, 1, 1.0, a, {"donor": None}))
+            out.append(risk.Member(f"Radar STEPS m{k + 1:02d}", "radar", "steps", hnow, hours, p, 1, 1.0, a, {"donor": None, **bmeta}))
         else:
             copies = sum(1 for j in range(M) if donors[j % len(donors)] is d)
             out.append(risk.Member(f"Radar STEPS m{k + 1:02d} → {d.name}", d.family, d.model, d.run, hours, p, 1,
-                                   d.weight / copies, a, {"donor": d.name, "radar": True}))
+                                   d.weight / copies, a, {"donor": d.name, "radar": True, **bmeta}))
     rep["members"] = len(out)
     rep["donors"] = sorted({m.meta["donor"] for m in out if m.meta.get("donor")})
     return out, rep
+
+
+def _steps_burst(rate2: np.ndarray, t0, steps_h_mean: dict) -> dict:
+    """Excess ladder of every STEPS member and clock hour: {hour: (M, L, NY, NX)} mm. rate2 (M, n, ny2, nx2) are the
+    10-min rates on the 2-km grid; each step counts as constant over its 10 min, as in NC.hourly_from_steps.
+    Rung 0 is the hourly accumulation itself (steps_h_mean)."""
+    from .radar import nowcast as NC, qpe
+    out = {t: [steps_h_mean[t]] for t in steps_h_mean}
+    for u in qpe.LADDER_U[1:]:
+        t_ends, acc = NC.hourly_from_steps(np.maximum(rate2 - u, 0.0), t0)
+        for k, t in enumerate(t_ends):
+            h = np.datetime64(ingest.naive(t), "h")
+            if h in out:
+                out[h].append(NC.to_analysis_mean(np.repeat(np.repeat(acc[:, k], 2, axis=1), 2, axis=2)))
+    return {t: np.stack(v, axis=1).astype(np.float32) for t, v in out.items() if len(v) == len(qpe.LADDER_U)}
 
 
 # ------------------------------------------------------------------------------- ENS members
