@@ -78,7 +78,7 @@ DEFAULTS: dict = {
     "level_cap": {"long": 3},
     # at least 2 different models (an ensemble counts as one when 30 % of its weight agrees) reaching the red or
     # extreme threshold outright raise the level to 4 or 5, in every horizon
-    "agreement": {"on": True, "models": 2, "ens_share": 0.3},
+    "agreement": {"on": False, "models": 2, "ens_share": 0.3},   # off until the hindcast shows it helps
     "age_halflife_h": {"now": 3.0, "mid": 12.0, "long": 36.0},
     # --- Hydrology ----------------------------------------------------------------------
     "hydro": {
