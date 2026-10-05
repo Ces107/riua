@@ -73,7 +73,7 @@ jobs:
         run: |
           mkdir -p scratch/out
           python -u hindcast/long_zone.py units --out "scratch/out/units-${{ matrix.case }}.npz"
-          tar -cf "scratch/out/blocks-long-${{ matrix.case }}.tar" hindcast/cache/blocks/long || true
+          tar -cf "scratch/out/blocks-long-${{ matrix.case }}.tar" hindcast/cache/blocks/long $(ls hindcast/cache/ens/ingr_*.npz 2>/dev/null) || true
       - uses: actions/upload-artifact@v4
         with:
           name: long-${{ matrix.case }}

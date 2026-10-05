@@ -57,6 +57,7 @@ def build_units(blocks: Path, strata_file: Path, out: Path) -> None:
                             "agree_cell", "agree_cell_all", "ingr")}
     MMAX = 0
     import long_data as LD
+    LD.ENS = Path(_arg("--ens", str(LD.ENS)))
     from datetime import datetime, timedelta
     codes = {"ifs_ens": 0, "ifs": 1, "aifs_ens": 2}
     ingr_cache = {}
@@ -110,6 +111,15 @@ def build_units(blocks: Path, strata_file: Path, out: Path) -> None:
                 with np.errstate(invalid="ignore"):
                     R = np.stack([np.nanmax(x / t12[k, cells[cs]][None], axis=1) for k in range(4)], axis=1)   # (M, 4)
                 R[~valid[:, fi]] = np.nan
+                # what the site shows today: production kernel per CELL (ENS + IFS runs), largest cell value of the zone
+                pm = np.isin(mcode, (0, 1)) & valid[:, fi]
+                wp = w * pm
+                pc = []
+                for k in range(4):
+                    with np.errstate(divide="ignore", invalid="ignore"):
+                        ph = ndtr(np.log(np.maximum(par["bias"]["long"] * np.nan_to_num(x[pm]) / t12[k, cells[cs]][None], 1e-9)) / par["sigma"]["long"])
+                    pc.append(float(((wp[pm][:, None] * ph).sum(0) / max(wp.sum(), 1e-12)).max()))
+                rows.setdefault("pcell", []).append(pc)
                 rows["case"].append(meta["case"]); rows["issue"].append(meta["issue"]); rows["day"].append(day)
                 rows["lead_h"].append(float(z["lead_h"][fi])); rows["zone"].append(int(zid)); rows["stratum"].append(int(s))
                 rows["obs"].append(ob); rows["R"].append(R); rows["w"].append(w * valid[:, fi]); rows["month"].append(int(day[5:7]))
@@ -128,7 +138,8 @@ def build_units(blocks: Path, strata_file: Path, out: Path) -> None:
                         lead_h=np.array(rows["lead_h"], np.float32), zone=np.array(rows["zone"], np.int16),
                         stratum=np.array(rows["stratum"], np.int8), obs=np.array(rows["obs"], bool), R=R, W=W,
                         month=np.array(rows["month"], np.int8), model=MC, agree_cell=np.array(rows["agree_cell"], bool),
-                        agree_cell_all=np.array(rows["agree_cell_all"], bool), ingr=np.array(rows["ingr"], np.float32))
+                        agree_cell_all=np.array(rows["agree_cell_all"], bool), ingr=np.array(rows["ingr"], np.float32),
+                        pcell=np.array(rows.get("pcell", []), np.float32))
     print(f"{len(files)} blocks -> {U} zone-day units, {len(set(rows['case']))} cases -> {out}")
 
 
@@ -357,5 +368,8 @@ if __name__ == "__main__":
         build_units(Path(_arg("--blocks", str(HC / "cache" / "blocks" / "long"))),
                     Path(_arg("--strata", str(HC / "cache" / "day_strata.json"))),
                     Path(_arg("--out", str(HC / "cache" / "long_units.npz"))))
-    else:
+    elif cmd == "score0":
         score(Path(_arg("--units", str(HC / "cache" / "long_units.npz"))), Path(_arg("--out", str(HC / "cache" / "long_zone.json"))))
+    else:
+        import long_score
+        long_score.main(Path(_arg("--units", str(HC / "cache" / "long_units.npz"))), Path(_arg("--out", str(HC / "cache" / "long_zone.json"))))
