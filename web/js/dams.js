@@ -61,13 +61,15 @@ const hourTxt = (d) => {
   const p = parts(d), today = parts(new Date());
   return esc(p.day === today.day ? `${p.hh} h` : `${p.wd} ${p.hh} h`);
 };
+// above 100 % the dam is over its spillway: say so, and how much it is letting through
+const fillTxt = (n) => (n && n.pct != null ? (n.pct >= 99.5 ? `lleno${n.qout >= 1 ? ` · sale ${num(n.qout)} m³/s` : ''}` : `${num(n.pct)} %`) : '');
 const spillTxt = (s) => (s.ok && s.pSpill >= 0.005 ? pct(s.pSpill) : s.ok ? '<span class="dim">0 %</span>' : '<span class="dim">—</span>');
 
 function rowHtml(s, sel) {
   const n = s.d.now;
   return `<tr class="${sel ? 'open' : ''}"><td><span class="lv lv${s.L}">${s.L || '–'}</span></td>
 <th class="wrap"><button type="button" class="link" data-dm="${esc(s.d.id)}"${sel ? ' aria-current="true"' : ''}>${esc(s.d.name)}</button><span class="town">${esc(s.d.river || '')}</span></th>
-<td class="fillcell">${fillBar(s)}<span class="num">${n && n.pct != null ? `${num(n.pct)} %` : '—'}</span></td><td>${spillTxt(s)}</td><td>${s.ok && s.pSpill >= 0.1 && s.tSpill ? hourTxt(s.tSpill) : ''}</td></tr>`;
+<td class="fillcell">${fillBar(s)}<span class="num">${fillTxt(n) || '—'}</span></td><td>${spillTxt(s)}</td><td>${s.ok && s.pSpill >= 0.1 && s.tSpill ? hourTxt(s.tSpill) : ''}</td></tr>`;
 }
 
 /** The "Embalses" block (appended to the Cauces section). */
@@ -100,7 +102,7 @@ export function damNote(snap, hz, f, pointId) {
   return list.map(({ s }) => {
     const n = s.d.now;
     const sp = s.ok && s.pSpill >= 0.05 ? ` · vierte ${pct(s.pSpill)}` : '';
-    return `<button type="button" class="dam-note" data-dm="${esc(s.d.id)}"><span class="lv lv${s.L}">${s.L || '–'}</span>${fillBar(s)}<span>${esc(s.d.name)} ${n && n.pct != null ? `${num(n.pct)} %` : ''}${sp}</span></button>`;
+    return `<button type="button" class="dam-note" data-dm="${esc(s.d.id)}"><span class="lv lv${s.L}">${s.L || '–'}</span>${fillBar(s)}<span>${esc(s.d.name)} ${fillTxt(n)}${sp}</span></button>`;
   }).join('');
 }
 
