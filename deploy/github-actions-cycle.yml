@@ -44,7 +44,9 @@ jobs:
           cache-dependency-path: backend/requirements.txt
 
       - name: Install
-        run: pip install -r backend/requirements.txt
+        # pinned to the last set that ran (backend/constraints.txt): an upstream release (netCDF4 1.7.5, 2026-10-15)
+        # made the process crash on exit and stopped every deploy for 27 h
+        run: pip install -r backend/requirements.txt -c backend/constraints.txt
 
       - name: Restore state
         uses: actions/cache/restore@v4
@@ -56,14 +58,43 @@ jobs:
       - name: Channel capacities
         run: python geo/hydro/build_capacity.py
 
+      # The data step never decides on its own exit code (a native-library crash at exit used to fail the whole run
+      # after the snapshot was ready): what counts is whether a good snapshot exists. Lighter modes are tried when
+      # the full cycle produces none, and as a last resort the previous good snapshot is published (the page shows
+      # "Desactualizado") so that the site and its code stay up; that run is then marked failed so it is noticed.
       - name: Production cycle
+        id: cycle
         working-directory: backend
         env:
           RIUA_ENS_CACHE: ${{ github.workspace }}/state/ens_cache
           MPLBACKEND: Agg
         run: |
-          python -m riua.product --state ../state --out ../web/data
-          python -c "import json,pathlib; from riua import card; card.from_snapshot(json.loads(pathlib.Path('../web/data/snapshot.json').read_text(encoding='utf-8')), pathlib.Path('../web/data/og.png'))"
+          set +e
+          status=none
+          for mode in "" "--no-ens" "--no-radar --no-ens"; do
+            rm -f ../web/data/snapshot.json
+            timeout 1000 python -m riua.product --state ../state --out ../web/data $mode
+            rc=$?
+            if python -m riua.check_snapshot ../web/data/snapshot.json 30; then
+              status=ok; echo "cycle ok (mode '${mode:-full}', exit code $rc)"; break
+            fi
+            echo "::warning::cycle produced no good snapshot (mode '${mode:-full}', exit code $rc); trying a lighter mode"
+          done
+          if [ "$status" = ok ]; then
+            mkdir -p ../state/last_good && rm -rf ../state/last_good/* && cp -r ../web/data/. ../state/last_good/
+          elif [ -s ../state/last_good/snapshot.json ]; then
+            mkdir -p ../web/data && cp -r ../state/last_good/. ../web/data/ && status=stale
+            echo "::error::no mode produced a snapshot: publishing the previous good one"
+          fi
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          [ "$status" = none ] && exit 1
+          exit 0
+
+      - name: Share card
+        if: steps.cycle.outputs.status == 'ok'
+        continue-on-error: true
+        working-directory: backend
+        run: python -c "import json,pathlib; from riua import card; card.from_snapshot(json.loads(pathlib.Path('../web/data/snapshot.json').read_text(encoding='utf-8')), pathlib.Path('../web/data/og.png'))"
 
       - name: Save state
         if: always()
@@ -73,24 +104,29 @@ jobs:
           key: riua-state-${{ github.run_id }}
 
       - name: Static geodata for the page
+        if: always() && steps.cycle.outputs.status != 'none' && steps.cycle.outputs.status != ''
         run: python web/dev/build_geo.py
 
       - name: Drop development fixtures
+        if: always() && steps.cycle.outputs.status != 'none' && steps.cycle.outputs.status != ''
         run: rm -rf web/dev
 
       # A new page must never run with a cached older stylesheet or script: stamp them per deploy.
       # (the unversioned js/ stays so that a cached older page keeps working for its 10 minutes)
       - name: Version the assets
+        if: always() && steps.cycle.outputs.status != 'none' && steps.cycle.outputs.status != ''
         run: |
           v=${{ github.run_id }}
           cp -r web/js "web/js-$v"
           sed -i "s#\"js/#\"js-$v/#g; s#css/riua.css#css/riua.css?v=$v#g" web/*.html
 
       - uses: actions/upload-pages-artifact@v3
+        if: always() && steps.cycle.outputs.status != 'none' && steps.cycle.outputs.status != ''
         with:
           path: web
 
       - id: deploy
+        if: always() && steps.cycle.outputs.status != 'none' && steps.cycle.outputs.status != ''
         uses: actions/deploy-pages@v4
 
       # Self-sustained 10-minute cycle: wait out the interval, then dispatch the next run,
@@ -111,3 +147,11 @@ jobs:
           done
           others=$(gh run list --workflow cycle.yml --limit 20 --json status,databaseId,createdAt             --jq "[.[] | select((.status==\"queued\" or .status==\"in_progress\" or .status==\"pending\" or .status==\"waiting\" or .status==\"requested\") and .databaseId != ${{ github.run_id }} and ((now - (.createdAt | fromdate)) < 900))] | length")
           if [ "$others" = "0" ]; then gh workflow run cycle.yml --ref main; else echo "another run is already waiting"; fi
+
+      # the previous snapshot was published instead of a new one: the run is red so that it is seen (and the
+      # watchdog workflow reports it), but the site stayed up
+      - name: Flag a stale publish
+        if: always() && steps.cycle.outputs.status == 'stale'
+        run: |
+          echo "::error::published the previous good snapshot: this cycle could not produce a new one"
+          exit 1

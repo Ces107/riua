@@ -887,3 +887,9 @@ if __name__ == "__main__":
     print(json.dumps({"generated": s["generated"], "timing_s": s["timing_s"], "notes": s["notes"],
                       "sources": [{k: v for k, v in x.items() if k in ("id", "ok", "runs", "n", "error", "method", "members")} for x in s["sources"]]},
                      indent=1, ensure_ascii=False))
+    # The snapshot is written and printed. Leave without interpreter teardown: on 2026-10-15/16 the process
+    # died with a segmentation fault while shutting down (native libraries and the ENS download threads),
+    # which made the workflow fail after the data was ready and stopped every deploy for over a day.
+    import os, sys
+    sys.stdout.flush(); sys.stderr.flush()
+    os._exit(0)
