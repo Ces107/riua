@@ -1,0 +1,84 @@
+name: watchdog
+
+# Independent of the update chain: every 15 minutes it looks at the PUBLISHED snapshot, not at the workflow runs.
+# - older than 40 min  -> start an update (unless one is already running), cancelling runs stuck in the queue;
+# - older than 90 min  -> open (or update) a GitHub issue "updates stalled" with the last run results, so that it
+#                         reaches the owner by e-mail; the issue is closed by itself when the data is fresh again.
+# The cycle workflow chains itself; this one exists because a chain can break in ways it cannot see
+# (27 h without updates on 2026-10-15/16 after a library release crashed every run).
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  issues: write
+  contents: read
+
+concurrency:
+  group: watchdog
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Age of the published snapshot
+        id: age
+        run: |
+          gen=$(curl -fsS -m 30 "https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/data/snapshot.json?w=$RANDOM" | python3 -c "import json,sys; print(json.load(sys.stdin)['generated'])" || true)
+          if [ -z "$gen" ]; then age=99999; else age=$(( ( $(date +%s) - $(date -d "${gen/Z/:00Z}" +%s 2>/dev/null || date -d "$gen" +%s) ) / 60 )); fi
+          echo "generated=$gen age=${age} min"
+          echo "age=$age" >> "$GITHUB_OUTPUT"
+          echo "generated=$gen" >> "$GITHUB_OUTPUT"
+
+      - name: Restart the updates when the data is stale
+        if: steps.age.outputs.age > 40
+        run: |
+          now=$(date +%s)
+          # runs waiting in the queue for more than 15 min are cancelled (one of them blocked the chain for 7 h)
+          gh run list --repo "$REPO" --workflow cycle.yml --limit 30 --json status,databaseId,createdAt \
+            --jq '.[] | select(.status=="queued" or .status=="pending" or .status=="waiting" or .status=="requested") | "\(.databaseId) \(.createdAt)"' |
+          while read id t; do
+            if [ $(( now - $(date -d "$t" +%s) )) -gt 900 ]; then gh run cancel "$id" --repo "$REPO" || true; fi
+          done
+          running=$(gh run list --repo "$REPO" --workflow cycle.yml --limit 30 --json status,createdAt \
+            --jq "[.[] | select((.status==\"in_progress\" or .status==\"queued\" or .status==\"pending\") and ((now - (.createdAt | fromdate)) < 1800))] | length")
+          if [ "$running" = "0" ]; then
+            gh workflow run cycle.yml --repo "$REPO" --ref main
+            echo "update started by the watchdog"
+          else
+            echo "an update is already running"
+          fi
+
+      - name: Report a long stall
+        if: steps.age.outputs.age > 90
+        run: |
+          existing=$(gh issue list --repo "$REPO" --state open --label stalled --json number --jq '.[0].number // empty')
+          runs=$(gh run list --repo "$REPO" --workflow cycle.yml --limit 6 --json conclusion,status,createdAt,url \
+            --jq '.[] | "- \(.createdAt) \(.status) \(.conclusion // "") \(.url)"')
+          body="The published snapshot is ${{ steps.age.outputs.age }} minutes old (generated ${{ steps.age.outputs.generated }}).
+
+          Last update runs:
+          $runs
+
+          The watchdog has asked for a new run. If this persists, open the newest failed run of the \`cycle\` workflow and read the step \"Production cycle\"."
+          gh label create stalled --repo "$REPO" --color B60205 --description "updates stalled" 2>/dev/null || true
+          if [ -z "$existing" ]; then
+            gh issue create --repo "$REPO" --label stalled --title "Riuà: updates stalled for more than 90 minutes" --body "$body"
+          else
+            gh issue comment "$existing" --repo "$REPO" --body "$body"
+          fi
+
+      - name: Close the report when the data is fresh
+        if: steps.age.outputs.age < 30
+        run: |
+          for n in $(gh issue list --repo "$REPO" --state open --label stalled --json number --jq '.[].number'); do
+            gh issue close "$n" --repo "$REPO" --comment "Updates are flowing again (snapshot ${{ steps.age.outputs.generated }})."
+          done
