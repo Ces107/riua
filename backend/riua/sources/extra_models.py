@@ -424,7 +424,7 @@ def icon_eu_eps_fetch(run: datetime, steps: list[int], cache: Path, budget_s: fl
 
     def one(step: int) -> None:
         f = d / f"tp_{step:03d}.npy"
-        if f.exists():
+        if f.exists() and np.load(f, mmap_mode="r").shape[-1] == g["idx"].size:
             return
         if step == 0:
             return                                                         # nothing accumulated yet: written below
@@ -447,7 +447,7 @@ def icon_eu_eps_fetch(run: datetime, steps: list[int], cache: Path, budget_s: fl
 
     with ThreadPoolExecutor(max_workers=workers) as ex:
         list(ex.map(one, steps))
-    if 0 in steps and not (d / "tp_000.npy").exists():
+    if 0 in steps:                                  # always rewritten: a copy kept from before the grid changed has the wrong size
         _save(d / "tp_000.npy", np.zeros((40, g["idx"].size), np.float32))
     missing = [s for s in steps if not (d / f"tp_{s:03d}.npy").exists()]
     if missing:
