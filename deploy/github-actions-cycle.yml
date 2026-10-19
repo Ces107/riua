@@ -15,7 +15,7 @@ on:
     paths: ["web/**", "backend/**", "geo/out/**", "geo/hydro/**", ".github/workflows/cycle.yml"]
 
 permissions:
-  contents: read
+  contents: write       # forecast archive (release assets)
   pages: write
   id-token: write
   actions: write        # each run starts the next one (GitHub's cron is best-effort and often skipped)
@@ -119,6 +119,20 @@ jobs:
           v=${{ github.run_id }}
           cp -r web/js "web/js-$v"
           sed -i "s#\"js/#\"js-$v/#g; s#css/riua.css#css/riua.css?v=$v#g" web/*.html
+
+      # Our own past forecasts are not kept anywhere else (the Pages artifacts last a day), so a rain episode could
+      # not be checked afterwards: one compressed snapshot every 3 hours goes to the release "forecast-archive".
+      - name: Archive the forecast
+        if: always() && steps.cycle.outputs.status == 'ok'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          [ $(( 10#$(date -u +%H) % 3 )) -eq 0 ] && [ "$(date -u +%M)" -lt 12 ] || { echo "not the archive hour"; exit 0; }
+          name="snapshot-$(date -u +%Y%m%dT%H%M).json.gz"
+          gzip -9 -c web/data/snapshot.json > "$name"
+          gh release view forecast-archive >/dev/null 2>&1 || gh release create forecast-archive --title "Published forecasts, every 3 h" --notes "snapshot.json of the site, gzip; for checking past episodes"
+          gh release upload forecast-archive "$name" --clobber
 
       - uses: actions/upload-pages-artifact@v3
         if: always() && steps.cycle.outputs.status != 'none' && steps.cycle.outputs.status != ''

@@ -393,10 +393,11 @@ def icon_eu_eps_latest_run(now: datetime, last_step: int = 54) -> datetime | Non
     return None
 
 
-def _icon_grid(run: datetime, cache: Path) -> dict:
-    """Cell centres of the icosahedral grid inside the box (+0.5 deg); downloaded once (2 x 0.17 MB)."""
+def _icon_grid(run: datetime, cache: Path, force: bool = False) -> dict:
+    """Cell centres of the icosahedral grid inside the box (+0.5 deg); downloaded once (2 x 0.17 MB), and again when
+    DWD changes the grid (it did in mid-Oct 2026: the kept copy no longer matched the files)."""
     f = cache / "grid_icon_eu_eps.npz"
-    if f.exists():
+    if f.exists() and not force:
         return dict(np.load(f))
     out = {}
     for name in ("clat", "clon"):
@@ -417,6 +418,7 @@ def icon_eu_eps_fetch(run: datetime, steps: list[int], cache: Path, budget_s: fl
     Every step is one bz2 file with the 40 members on the whole European grid (3-7 MB, no range requests)."""
     dl = _Deadline(budget_s)
     g = _icon_grid(run, cache)
+    grid_lock = threading.Lock()
     d = cache / f"icon_eu_eps_{run:%Y%m%d%H}"
     d.mkdir(parents=True, exist_ok=True)
 
@@ -425,7 +427,7 @@ def icon_eu_eps_fetch(run: datetime, steps: list[int], cache: Path, budget_s: fl
         if f.exists():
             return
         if step == 0:
-            return _save(f, np.zeros((40, g["idx"].size), np.float32))     # nothing accumulated yet
+            return                                                         # nothing accumulated yet: written below
         if dl.t_end is not None and time.monotonic() > dl.t_end:
             return
         raw = _get(_icon_url(run, step))
@@ -435,12 +437,18 @@ def icon_eu_eps_fetch(run: datetime, steps: list[int], cache: Path, budget_s: fl
         for m in _split(bz2.decompress(raw)):
             v, info = _decode(m, ("perturbationNumber",))
             if v.size != int(g["n"]):
-                raise OSError(f"ICON-EU-EPS grid changed: {v.size} points")
+                with grid_lock:
+                    if v.size != int(g["n"]):
+                        g.update(_icon_grid(run, cache, force=True))
+                if v.size != int(g["n"]):
+                    raise OSError(f"ICON-EU-EPS grid changed: {v.size} points")
             rows[int(info["perturbationNumber"])] = v[g["idx"]]
         _save(f, np.stack([rows[k] for k in sorted(rows)]).astype(np.float32))
 
     with ThreadPoolExecutor(max_workers=workers) as ex:
         list(ex.map(one, steps))
+    if 0 in steps and not (d / "tp_000.npy").exists():
+        _save(d / "tp_000.npy", np.zeros((40, g["idx"].size), np.float32))
     missing = [s for s in steps if not (d / f"tp_{s:03d}.npy").exists()]
     if missing:
         raise Incomplete(f"ICON-EU-EPS {run:%d/%m %H}Z: {len(missing)} of {len(steps)} steps left")
